@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        android:id="@+id/event_row_thumbnail_wrap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="1dp"
+        android:orientation="vertical"
+        android:padding="3dp" >
+
+        <ImageView
+            android:id="@+id/event_row_thumbnail"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+
+        <TextView
+            android:id="@+id/event_row_nick_owner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="EVENT OWNER"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/event_row_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/event_row_thumbnail_wrap"
+        android:layout_toRightOf="@+id/event_row_thumbnail_wrap"
+        android:text="EVENT TITLE" />
+
+    <TextView
+        android:id="@+id/event_row_summary"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_row_time_end"
+        android:layout_toRightOf="@+id/event_row_thumbnail_wrap"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." />
+
+    <ImageView
+        android:id="@+id/event_row_unread_mark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:src="?attr/unread_icon" />
+
+    <TextView
+        android:id="@+id/event_row_time_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_row_title"
+        android:layout_below="@+id/event_row_title"
+        android:gravity="right"
+        android:text="12:32 AM 06.10.2012 STA"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/event_row_time_separator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_row_title"
+        android:layout_toRightOf="@+id/event_row_time_start"
+        android:text=" - "
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/event_row_time_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/event_row_time_separator"
+        android:layout_alignBottom="@+id/event_row_time_separator"
+        android:layout_toRightOf="@+id/event_row_time_separator"
+        android:gravity="right"
+        android:text="12:32 AM 06.10.2012 END"
+        android:textSize="10sp" />
+
+</RelativeLayout>

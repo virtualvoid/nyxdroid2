@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/attachment"
+        android:icon="?attr/attachment_icon"
+        android:showAsAction="always"
+        android:title="@string/attachment"/>
+    <item
+        android:id="@+id/send"
+        android:icon="?attr/send_icon"
+        android:showAsAction="always"
+        android:title="@string/send"/>
+
+</menu>

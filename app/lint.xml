@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <issue id="DefaultLocale" severity="ignore" />
+    <issue id="RtlSymmetry" severity="ignore" />
+    <issue id="ValidFragment" severity="ignore" />
+</lint>

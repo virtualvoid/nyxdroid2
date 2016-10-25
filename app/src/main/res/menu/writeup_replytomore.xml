@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/reply"
+        android:icon="?attr/reply_icon"
+        android:showAsAction="always"
+        android:title="@string/reply"/>
+
+</menu>

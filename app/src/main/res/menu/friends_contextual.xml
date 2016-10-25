@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/sendmail"
+        android:icon="?attr/mail_icon"
+        android:showAsAction="always"
+        android:title="@string/send_mail"/>
+    <item
+        android:id="@+id/gotodiscussion"
+        android:icon="?attr/arrow_right_icon"
+        android:showAsAction="always"
+        android:title="@string/go_to_discussion"/>
+
+</menu>

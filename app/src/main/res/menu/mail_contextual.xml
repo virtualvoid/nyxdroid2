@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/reply"
+        android:icon="?attr/reply_icon"
+        android:showAsAction="always"
+        android:title="@string/reply"/>
+    <item
+        android:id="@+id/copy"
+        android:icon="?attr/copy_icon"
+        android:showAsAction="always"
+        android:title="@string/copy"/>
+    <item
+        android:id="@+id/reminder"
+        android:icon="?attr/alarm_icon"
+        android:showAsAction="always"
+        android:title="@string/reminder"/>
+    <item
+        android:id="@+id/delete"
+        android:icon="?attr/trash_icon"
+        android:showAsAction="always"
+        android:title="@string/delete"/>
+
+</menu>

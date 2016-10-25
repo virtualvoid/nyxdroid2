@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/authorization_activity_nick" />
+
+        <EditText
+            android:id="@+id/authorization_activity_nick"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/authorization_activity_get_code"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/authorization_activity_get_code" />
+
+        <TextView
+            android:id="@+id/authorization_activity_result"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="@string/authorization_activity_result_instructions" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/authorization_activity_code" />
+
+        <EditText
+            android:id="@+id/authorization_activity_code"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/authorization_activity_finished"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/authorization_activity_finished" />
+    </LinearLayout>
+
+</ScrollView>

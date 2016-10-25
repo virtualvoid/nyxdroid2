@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp" >
+
+    <LinearLayout
+        android:id="@+id/feed_row_thumbnail_wrap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dp"
+        android:padding="3dp" >
+
+        <ImageView
+            android:id="@+id/feed_row_thumbnail"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/feed_row_nick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/feed_row_thumbnail_wrap"
+        android:layout_toRightOf="@+id/feed_row_thumbnail_wrap"
+        android:text="VIRTUALVOID" />
+
+    <TextView
+        android:id="@+id/feed_row_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/feed_row_nick"
+        android:layout_marginTop="1dp"
+        android:layout_toRightOf="@+id/feed_row_thumbnail_wrap"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." />
+
+    <TextView
+        android:id="@+id/feed_row_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/feed_row_nick"
+        android:layout_marginRight="5dp"
+        android:gravity="right"
+        android:text="12:32 AM 06.10.2012"
+        android:textSize="10dp" />
+
+    <TextView
+        android:id="@+id/feed_row_comments_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/feed_row_time"
+        android:layout_marginRight="17dp"
+        android:gravity="right"
+        android:text="Comments: 1"
+        android:textSize="8dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/black_arrow_next" />
+
+</RelativeLayout>

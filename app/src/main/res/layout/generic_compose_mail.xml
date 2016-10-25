@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/generic_compose_recipient_wrap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" >
+
+        <sk.virtualvoid.core.widgets.CustomAutocompleteTextView
+            android:id="@+id/generic_compose_recipient"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_recipient_apos_s_nick" >
+        </sk.virtualvoid.core.widgets.CustomAutocompleteTextView>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/generic_compose_message_wrap"
+        android:layout_below="@+id/generic_compose_recipient_wrap" >
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/generic_compose_message_wrap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" >
+
+        <EditText
+            android:id="@+id/generic_compose_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_your_message_"
+            android:inputType="textMultiLine"
+            android:singleLine="false" />
+    </LinearLayout>
+
+</RelativeLayout>

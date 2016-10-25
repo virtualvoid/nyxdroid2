@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="sk.virtualvoid.nyxdroid.v2"
+    android:versionCode="46"
+    android:versionName="@string/app_version" >
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="19" />
+
+    <permission
+        android:name="sk.virtualvoid.nyxdroid.v2.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="sk.virtualvoid.nyxdroid.v2.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:name="sk.virtualvoid.nyxdroid.v2.NyxdroidApplication"
+        android:allowBackup="false"
+        android:allowClearUserData="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Holo" >
+        <receiver
+            android:name="com.google.android.gcm.GCMBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="sk.virtualvoid.nyxdroid.v2" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="sk.virtualvoid.nyxdroid.v2.GCMIntentService" />
+
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.LauncherActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.BookmarksPickActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/share_to_discussion" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.CHOOSER" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+                <data android:mimeType="text/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.SettingsActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_settings" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.FeedActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_feed" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.MailActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_mail" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.MailComposeActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_mail"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.BookmarksActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_bookmarks" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.WriteupsActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_writeup" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.WriteupComposeActivity"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_compose_writeup"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.SearchActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_search" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.FriendsActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_friends" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.GalleryActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_gallery" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.GalleryGridActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_gallery" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.NotificationsActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_notifications" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.EventsActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_events" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.EventActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_event_detail" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.AdvertActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_market_detail" />
+        <activity
+            android:name="sk.virtualvoid.nyxdroid.v2.InformationActivity"
+            android:configChanges="orientation|screenSize"
+            android:icon="@drawable/ic_activities"
+            android:label="@string/app_name_about" />
+
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="8a96e0f90db0ce2dc17d9ad4a213ee0a42e10df8" />
+    </application>
+
+</manifest>

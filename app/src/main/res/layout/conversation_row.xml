@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp" >
+
+    <LinearLayout
+        android:id="@+id/conversation_row_thumbnail_wrap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dp"
+        android:padding="3dp" >
+
+        <ImageView
+            android:id="@+id/conversation_row_thumbnail"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/conversation_row_nick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/conversation_row_thumbnail_wrap"
+        android:layout_toRightOf="@+id/conversation_row_thumbnail_wrap"
+        android:text="VIRTUALVOID" />
+
+    <TextView
+        android:id="@+id/conversation_row_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/conversation_row_thumbnail_wrap"
+        android:layout_alignLeft="@+id/conversation_row_nick"
+        android:gravity="right"
+        android:text="12:32 AM 06.10.2012"
+        android:textSize="10dp" />
+
+    <TextView
+        android:id="@+id/conversation_row_direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/conversation_row_time"
+        android:layout_alignBottom="@+id/conversation_row_time"
+        android:layout_toRightOf="@+id/conversation_row_time"
+        android:text="&lt;&lt;&lt;"
+        android:textColor="#888"
+        android:textSize="9dp" />
+
+</RelativeLayout>

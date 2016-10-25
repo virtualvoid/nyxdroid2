@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="default_view_names">
+        <item>feed</item>
+        <item>mail</item>
+        <item>bookmarks</item>
+        <item>history</item>
+        <item>friends</item>
+    </string-array>
+    <string-array name="default_view_ids">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="event_types_names">
+        <item>my events</item>
+    </string-array>
+    <string-array name="event_statuses">
+        <item>attending</item>
+        <item>interested</item>
+        <item>none</item>
+    </string-array>
+    <string-array name="font_size_names">
+        <item>Standard (14sp)</item>
+        <item>Greater (18sp)</item>
+        <item>Large (22sp)</item>
+        <item>Huge (27sp)</item>
+    </string-array>
+    <string-array name="font_size_values">
+        <item>14</item>
+        <item>18</item>
+        <item>22</item>
+        <item>26</item>
+    </string-array>
+    <string-array name="bookmark_padding_names">
+        <item>Standard (0dp)</item>
+        <item>Greater (2dp)</item>
+        <item>Large (4dp)</item>
+        <item>Huge (6dp)</item>
+        <item>Mega (8dp)</item>
+        <item>Shovel (16dp)</item>
+    </string-array>
+    <string-array name="bookmark_padding_values">
+        <item>0</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>8</item>
+        <item>16</item>
+    </string-array>
+    <string-array name="unread_appearance_names">
+        <item>Standard</item>
+        <item>Colored: red</item>
+        <item>Colored: orange</item>
+        <item>Colored: yellow</item>
+        <item>Colored: green</item>
+    </string-array>
+    <string-array name="unread_appearance_values">
+        <item>null</item>
+        <item>#dd0000</item>
+        <item>#ff7f00</item>
+        <item>#ffff00</item>
+        <item>#00ee00</item>
+    </string-array>
+    <string-array name="sendbutton_position_names">
+        <item>Top center</item>
+        <item>Top right</item>
+        <item>Right center</item>
+        <item>Bottom right</item>
+        <item>Bottom center</item>
+        <item>Bottom left</item>
+        <item>Left center</item>
+        <item>Top left</item>
+    </string-array>
+
+    <string-array name="sendbutton_position_ids">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+</resources>

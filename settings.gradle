@@ -1,0 +1,4 @@
+include ':photoview'
+include ':pulltorefreshactionbar'
+include ':slidingmenujf'
+include ':app'

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/connectivity" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="ssl_enabled"
+            android:summaryOff="@string/standard_http_protocol_will_be_used_"
+            android:summaryOn="@string/secure_http_protocol_will_be_used_"
+            android:title="@string/communication_via_ssl" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="ssl_override"
+            android:summaryOff="@string/only_trused_ssl_certificates_will_be_accepted"
+            android:summaryOn="@string/all_ssl_certificates_will_be_accepted"
+            android:title="@string/ssl_certificates" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_beta_api"
+            android:summaryOff="@string/default_non_developer_settings"
+            android:summaryOn="@string/you_have_to_know_what_are_you_doing"
+            android:title="@string/use_beta_api" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/appearance" >
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="use_dark_theme"
+            android:summaryOff="@string/appearance_white_theme"
+            android:summaryOn="@string/appearance_dark_theme"
+            android:title="@string/dark_theme" >
+        </SwitchPreference>
+        
+        <ListPreference
+            android:defaultValue="null"
+            android:entries="@array/unread_appearance_names"
+            android:entryValues="@array/unread_appearance_values"
+            android:key="unread_appearance"
+            android:summary="@string/choose_color_or_standard_settings"
+            android:title="@string/unread_appearance" />
+        <ListPreference
+            android:defaultValue="14"
+            android:entries="@array/font_size_names"
+            android:entryValues="@array/font_size_values"
+            android:key="font_size"
+            android:summary="@string/choose_font_size"
+            android:title="@string/font_size" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/bookmark_padding_names"
+            android:entryValues="@array/bookmark_padding_values"
+            android:key="bookmark_padding"
+            android:summary="@string/choose_bookmarks_padding"
+            android:title="@string/choose_bookmarks_padding_title" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="display_voting_thumbs"
+            android:summaryOff="@string/dont_display_voting_thumbs"
+            android:summaryOn="@string/always_display_voting_thumbs"
+            android:title="@string/display_voting_thumbs" />
+        
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="scale_images_bydpi"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/scale_images_by_device_dpi" />
+        
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/misc_" >
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/default_view_names"
+            android:entryValues="@array/default_view_ids"
+            android:key="default_view"
+            android:summary="@string/choose_which_activity_will_be_started_first"
+            android:title="@string/default_startup_activity" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="true"
+            android:key="unread_bookmarks"
+            android:summaryOff="@string/dont_display"
+            android:summaryOn="@string/always_display"
+            android:title="@string/read_bookmarks" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="true"
+            android:key="unread_bookmarks_history"
+            android:summaryOff="@string/dont_display"
+            android:summaryOn="@string/always_display"
+            android:title="@string/read_history" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:disableDependentsState="true"
+            android:key="backpress_returns_writeup"
+            android:summaryOff="@string/use_regular"
+            android:summaryOn="@string/use_to_return_writeups"
+            android:title="@string/backpress_button" />
+        
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="true"
+            android:key="refresh_after_writeup_send"
+            android:summaryOff="@string/refresh_after_sending_writeup_never"
+            android:summaryOn="@string/refresh_after_sending_writeup_always"
+            android:title="@string/refresh_after_sending_writeup" />
+        
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:disableDependentsState="true"
+            android:key="gif_enabled"
+            android:title="@string/experimental_gif_support" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/notifications" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="true"
+            android:key="notifications_enabled"
+            android:summaryOff="@string/notifications_disabled"
+            android:summaryOn="@string/notifications_enabled"
+            android:title="@string/notifications" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="notifications_enabled"
+            android:disableDependentsState="false"
+            android:key="notifications_mail_enabled"
+            android:title="@string/notify_on_mail" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="notifications_enabled"
+            android:disableDependentsState="false"
+            android:key="notifications_reply_enabled"
+            android:title="@string/notify_on_reply" />
+
+        <RingtonePreference
+            android:dependency="notifications_enabled"
+            android:disableDependentsState="false"
+            android:key="notifications_ringtone"
+            android:ringtoneType="all"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:title="@string/notification_sound" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="unread_icon" format="reference" />
+    <attr name="add_icon" format="reference" />
+    <attr name="reload_icon" format="reference" />
+    <attr name="search_icon" format="reference" />
+    <attr name="mail_icon" format="reference" />
+    <attr name="arrow_right_icon" format="reference" />
+    <attr name="send_icon" format="reference" />
+    <attr name="alarm_icon" format="reference" />
+    <attr name="copy_icon" format="reference" />
+    <attr name="reply_icon" format="reference" />
+    <attr name="trash_icon" format="reference" />
+    <attr name="dialog_icon" format="reference" />
+    <attr name="picture_icon" format="reference" />
+    <attr name="half_star_icon" format="reference" />
+    <attr name="attachment_icon" format="reference" />
+    <attr name="wu_voteup" format="reference" />
+    <attr name="wu_votedown" format="reference" />
+    <attr name="openbrowser" format="reference" />
+    <attr name="main_feed" format="reference" />
+    <attr name="main_mail" format="reference" />
+    <attr name="main_bookmarks" format="reference" />
+    <attr name="main_history" format="reference" />
+	<attr name="main_friends" format="reference" />
+	<attr name="main_notifications" format="reference" />
+	<attr name="main_search" format="reference" />
+	<attr name="main_settings" format="reference" />
+	<attr name="main_about" format="reference" />
+	<attr name="main_exit" format="reference" />
+    
+</resources>

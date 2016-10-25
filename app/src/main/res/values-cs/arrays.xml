@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="default_view_names">
+        <item>přehled</item>
+        <item>pošta</item>
+        <item>sledované</item>
+        <item>historie</item>
+        <item>přátelé</item>
+    </string-array>
+    <string-array name="default_view_ids">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="event_types_names">
+        <item>sledované</item>
+    </string-array>
+    <string-array name="event_statuses">
+        <item>zúčastním se</item>
+        <item>zajímá mě</item>
+        <item>nepojedu</item>
+    </string-array>
+    <string-array name="font_size_names">
+        <item>Standartní (14sp)</item>
+        <item>Větší (18sp)</item>
+        <item>Velké (22sp)</item>
+        <item>Obrovské (27sp)</item>
+    </string-array>
+    <string-array name="font_size_values">
+        <item>14</item>
+        <item>18</item>
+        <item>22</item>
+        <item>26</item>
+    </string-array>
+    <string-array name="bookmark_padding_names">
+        <item>Standartní (0dp)</item>
+        <item>Větší (2dp)</item>
+        <item>Velké (4dp)</item>
+        <item>Obrovské (6dp)</item>
+        <item>Mega (8dp)</item>
+        <item>Shovel (16dp)</item>
+    </string-array>
+    <string-array name="bookmark_padding_values">
+        <item>0</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>8</item>
+        <item>16</item>
+    </string-array>
+    <string-array name="unread_appearance_names">
+        <item>Standartní</item>
+        <item>Barevně: červená</item>
+        <item>Barevně: oranžová</item>
+        <item>Barevně: žlutá</item>
+        <item>Barevně: zelená</item>
+    </string-array>
+    <string-array name="unread_appearance_values">
+        <item>null</item>
+        <item>#dd0000</item>
+        <item>#ff7f00</item>
+        <item>#ffff00</item>
+        <item>#00ee00</item>
+    </string-array>
+    <string-array name="sendbutton_position_names">
+        <item>Top center</item>
+        <item>Top right</item>
+        <item>Right center</item>
+        <item>Bottom right</item>
+        <item>Bottom center</item>
+        <item>Bottom left</item>
+        <item>Left center</item>
+        <item>Top left</item>
+    </string-array>
+
+    <string-array name="sendbutton_position_ids">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+</resources>
