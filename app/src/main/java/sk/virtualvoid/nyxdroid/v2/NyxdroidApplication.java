@@ -7,6 +7,10 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.security.ProviderInstaller;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -20,12 +24,14 @@ import android.graphics.BitmapFactory.Options;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.multidex.MultiDexApplication;
+
 /**
  * 
  * @author Juraj
  * 
  */
-public class NyxdroidApplication extends Application {
+public class NyxdroidApplication extends MultiDexApplication {
 	public static final String logPath = Environment.getExternalStorageDirectory() + File.separator + "nyxdroid.log";
 
 	private static final Logger log = Logger.getLogger(NyxdroidApplication.class);
@@ -43,7 +49,16 @@ public class NyxdroidApplication extends Application {
 		} catch (ClassNotFoundException e) {
 			Log.e(Constants.TAG, "Unable to initialize android.os.AsyncTask !");
 		}
-		
+
+		try {
+			ProviderInstaller.installIfNeeded(this);
+		} catch (GooglePlayServicesRepairableException e) {
+			GoogleApiAvailability.getInstance()
+					.showErrorNotification(this, e.getConnectionStatusCode());
+		} catch (GooglePlayServicesNotAvailableException e) {
+			Log.e(Constants.TAG, "Unable to initialize TLS 1.2!");
+		}
+
 		DisplayImageOptions ilOptions = new DisplayImageOptions.Builder()
 				.cacheOnDisc(true)
 				.cacheInMemory(true)
