@@ -35,6 +35,7 @@ dependencies {
     implementation project(':photoview')
     implementation project(':pulltorefreshactionbar')
     implementation project(':slidingmenujf')
+    implementation "commons-logging:commons-logging-api:1.1"
     compile files('libs/android-logging-log4j-1.0.3.jar')
     compile files('libs/android-support-v4.jar')
     compile files('libs/apache-mime4j-core-0.7.2.jar')
