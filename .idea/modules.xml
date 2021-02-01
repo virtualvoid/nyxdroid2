@@ -4,6 +4,11 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/nyxdroid.iml" filepath="$PROJECT_DIR$/nyxdroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/nyxdroid2.iml" filepath="$PROJECT_DIR$/.idea/modules/nyxdroid2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/nyxdroid2.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/nyxdroid2.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/photoview/nyxdroid2.photoview.iml" filepath="$PROJECT_DIR$/.idea/modules/photoview/nyxdroid2.photoview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pulltorefreshactionbar/nyxdroid2.pulltorefreshactionbar.iml" filepath="$PROJECT_DIR$/.idea/modules/pulltorefreshactionbar/nyxdroid2.pulltorefreshactionbar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/slidingmenujf/nyxdroid2.slidingmenujf.iml" filepath="$PROJECT_DIR$/.idea/modules/slidingmenujf/nyxdroid2.slidingmenujf.iml" />
       <module fileurl="file://$PROJECT_DIR$/photoview/photoview.iml" filepath="$PROJECT_DIR$/photoview/photoview.iml" />
       <module fileurl="file://$PROJECT_DIR$/pulltorefreshactionbar/pulltorefreshactionbar.iml" filepath="$PROJECT_DIR$/pulltorefreshactionbar/pulltorefreshactionbar.iml" />
       <module fileurl="file://$PROJECT_DIR$/slidingmenujf/slidingmenujf.iml" filepath="$PROJECT_DIR$/slidingmenujf/slidingmenujf.iml" />

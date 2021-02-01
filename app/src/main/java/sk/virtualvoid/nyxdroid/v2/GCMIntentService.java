@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
@@ -46,7 +47,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String ringtoneUrl = prefs.getString("notification_ringtone", "");
 
-		Notification.Builder builder = new Notification.Builder(context);
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 		builder.setContentTitle(title);
 		builder.setContentText(text);
 		builder.setAutoCancel(true);
