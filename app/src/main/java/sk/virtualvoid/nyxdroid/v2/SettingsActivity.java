@@ -36,7 +36,7 @@ import com.google.android.gcm.GCMRegistrar;
 public class SettingsActivity extends BaseActivity {
 	private static final String SETTINGS_FRAGMENT_TAG = "nd2_settingsf";
 
-	private SettingsFragment settingsFragment;
+	public SettingsFragment settingsFragment;
 	
 	@Override
 	protected int getContentViewId() {
@@ -159,21 +159,4 @@ public class SettingsActivity extends BaseActivity {
 		}
 	}
 
-	/**
-	 * 
-	 * @author Juraj
-	 *
-	 */
-	private class SettingsFragment extends PreferenceFragment {
-		public SettingsFragment() {
-			super();
-		}
-
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-
-			addPreferencesFromResource(R.xml.settings);
-		}
-	}
 }
