@@ -4,10 +4,6 @@
     android:versionCode="46"
     android:versionName="@string/app_version" >
 
-    <uses-sdk
-        android:minSdkVersion="15"
-        android:targetSdkVersion="19" />
-
     <permission
         android:name="sk.virtualvoid.nyxdroid.v2.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
