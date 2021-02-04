@@ -1,18 +1,35 @@
 apply plugin: 'com.android.application'
 
+def androidHome = System.getenv("ANDROID_HOME")
+def pass = System.getenv("RELEASE_PASS")
+
+def versionMajor = 0
+def versionMinor = 1
+def versionPatch = 0
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "sk.virtualvoid.nyxdroid.v2"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 30
         //TODO hack for the DefaultHttpClient, its better to use another library, DefaultHttpClient is deprecated
         useLibrary 'org.apache.http.legacy'
         multiDexEnabled true
-
+        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
     }
+
+    signingConfigs {
+        release {
+                storeFile file(androidHome + "/release_key.jks")
+                storePassword pass
+                keyAlias "nyxdroid"
+                keyPassword pass
+            }
+        }
 
 
     buildTypes {
@@ -43,11 +60,13 @@ dependencies {
     implementation "commons-logging:commons-logging-api:1.1"
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.android.gms:play-services-base:17.5.0'
-
+    implementation 'com.google.android.gms:play-services-base:17.6.0'
+    implementation 'com.google.firebase:firebase-core:18.0.2'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
     def multidex_version = "2.0.1"
     implementation "androidx.multidex:multidex:$multidex_version"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
 }
+apply plugin: 'com.google.gms.google-services'

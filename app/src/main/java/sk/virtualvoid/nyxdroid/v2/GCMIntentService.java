@@ -1,6 +1,7 @@
 package sk.virtualvoid.nyxdroid.v2;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -17,41 +18,46 @@ import sk.virtualvoid.nyxdroid.v2.data.dac.MailDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.dac.NoticeDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.query.NoticeQuery;
 import sk.virtualvoid.nyxdroid.v2.internal.PushNotificationRegistrar;
+
+import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
+
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 /**
  * 
  * @author Juraj
  * 
  */
-public class GCMIntentService extends GCMBaseIntentService {
+public class GCMIntentService extends FirebaseMessagingService {
 	private static final GetMailNotificationsListener getMailNotificationsListener = new GetMailNotificationsListener();
 	private static final GetReplyNotificationsListener getReplyNotificationsListener = new GetReplyNotificationsListener();
-
-	public GCMIntentService() {
-		super(Constants.GCM_SENDER_ID);
-	}
 
 	private static void generateNotification(Context context, int id, String title, String text, PendingIntent pendingIntent) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String ringtoneUrl = prefs.getString("notification_ringtone", "");
 
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "main");
+
 		builder.setContentTitle(title);
 		builder.setContentText(text);
 		builder.setAutoCancel(true);
-		builder.setSmallIcon(R.drawable.ic_stat_notification);
+		builder.setSmallIcon(R.drawable.ic_stat_message);
 		builder.setContentIntent(pendingIntent);
 		builder.setWhen(System.currentTimeMillis());
 
@@ -62,33 +68,40 @@ public class GCMIntentService extends GCMBaseIntentService {
 			builder.setVibrate(new long[] { 100, 200, 300, 400, 500 });
 		}
 
-		Notification notification = builder.getNotification();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			NotificationManager service = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+			builder.setChannelId(createNotificationChannel("nyxdroid", "main", service));
+		}
+
+		Notification notification = builder.build();
 
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationManager.notify(id, notification);
 	}
 
-	@Override
-	protected void onError(Context context, String message) {
-		Log.e(Constants.TAG, "GCM ERROR: " + message);
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	private static String createNotificationChannel(String channelId, String channelName,NotificationManager service ) {
+		NotificationChannel chan = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+		service.createNotificationChannel(chan);
+		return channelId;
 	}
 
 	@Override
-	protected void onMessage(Context context, Intent intent) {
-		if (Connector.authorizationRequired(context)) {
+	public void onMessageReceived(RemoteMessage remoteMessage) {
+		if (Connector.authorizationRequired(this)) {
 			Log.w(Constants.TAG, "Authorization not complete yet !");
 			return;
 		}
+		Map data = remoteMessage.getData();
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean mailEnabled = (boolean) data.get("notifications_mail_enabled");
+		boolean replyEnabled = (boolean) data.get("notifications_reply_enabled");
 
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		boolean mailEnabled = prefs.getBoolean("notifications_mail_enabled", true);
-		boolean replyEnabled = prefs.getBoolean("notifications_reply_enabled", true);
-
-		if (intent.hasExtra("type")) {
-			String type = intent.getStringExtra("type");
+		if (data.get("type") != null) {
+			String type = (String) data.get("type");
 
 			if (type.equalsIgnoreCase("new_mail") && mailEnabled) {
-				Task<ITaskQuery, MailNotification> task = MailDataAccess.getNotifications(context, getMailNotificationsListener);
+				Task<ITaskQuery, MailNotification> task = MailDataAccess.getNotifications(this, getMailNotificationsListener);
 				TaskManager.startTask(task, ITaskQuery.empty);
 			}
 
@@ -96,7 +109,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 				NoticeQuery query = new NoticeQuery();
 				query.KeepNew = true;
 
-				Task<NoticeQuery, ArrayList<Notice>> task = NoticeDataAccess.getNotifications(context, getReplyNotificationsListener);
+				Task<NoticeQuery, ArrayList<Notice>> task = NoticeDataAccess.getNotifications(this, getReplyNotificationsListener);
 				TaskManager.startTask(task, query);
 			}
 
@@ -107,15 +120,13 @@ public class GCMIntentService extends GCMBaseIntentService {
 	}
 
 	@Override
-	protected void onRegistered(Context context, String registrationId) {
-		Log.d(Constants.TAG, "GCM Registered: " + registrationId);
-		PushNotificationRegistrar.register(context, registrationId);
-	}
-
-	@Override
-	protected void onUnregistered(Context context, String registrationId) {
-		Log.d(Constants.TAG, "GCM Unregistered: " + registrationId);
-		PushNotificationRegistrar.unregister(context);
+	public void onNewToken(String s) {
+		super.onNewToken(s);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		String token = prefs.getString("FIREBASE_TOKEN", null);
+		if(token == null){
+			PushNotificationRegistrar.register(this, s);
+		}
 	}
 
 	/**

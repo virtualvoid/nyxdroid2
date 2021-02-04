@@ -265,7 +265,7 @@ public abstract class BaseActivity extends Activity implements IConnectorReporte
 		initializeMenu();
 
 		// push notifications setup
-		launchGcm();
+		//launchGcm();
 
 		// rating tracker
 		GooglePlayRating.getGooglePlayRating(this).execute();
