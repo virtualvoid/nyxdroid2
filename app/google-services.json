@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "745190859348",
+    "firebase_url": "https://nyx-cz-api-project-745190859348.firebaseio.com",
+    "project_id": "nyx.cz:api-project-745190859348"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745190859348:android:5a746da8a90bb110",
+        "android_client_info": {
+          "package_name": "sk.virtualvoid.nyxdroid.v2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "745190859348-fso77emdlivtaqh89ll24v2379cm8a2u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAaTOvCZbYrOHTyC9LBWWTn7aRcSrubVA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "745190859348-fso77emdlivtaqh89ll24v2379cm8a2u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
