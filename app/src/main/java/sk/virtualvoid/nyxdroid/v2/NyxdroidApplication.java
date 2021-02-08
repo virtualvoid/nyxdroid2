@@ -66,7 +66,7 @@ public class NyxdroidApplication extends MultiDexApplication {
 		} catch (GooglePlayServicesNotAvailableException e) {
 			Log.e(Constants.TAG, "Unable to initialize TLS 1.2!");
 		}
-
+		/*
 		FirebaseMessaging.getInstance().getToken()
 				.addOnCompleteListener(new OnCompleteListener<String>() {
 					@Override
@@ -84,6 +84,7 @@ public class NyxdroidApplication extends MultiDexApplication {
 						}
 					}
 				});
+				*/
 
 		DisplayImageOptions ilOptions = new DisplayImageOptions.Builder()
 				.cacheOnDisc(true)

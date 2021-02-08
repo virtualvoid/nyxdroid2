@@ -92,22 +92,20 @@ public class GCMIntentService extends FirebaseMessagingService {
 			Log.w(Constants.TAG, "Authorization not complete yet !");
 			return;
 		}
-		Intent intent = remoteMessage.toIntent();
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean mailEnabled = prefs.getBoolean("notifications_mail_enabled", true);
 		boolean replyEnabled = prefs.getBoolean("notifications_reply_enabled", true);
-		Log.i("TAGTAG", "messae");
+		String type = remoteMessage.getData().get("type");
+		if (type != null) {
+			String typeStr = remoteMessage.getData().get("type");
 
-		if (intent.hasExtra("type")) {
-			String type = intent.getStringExtra("type");
-
-			if (type.equalsIgnoreCase("new_mail") && mailEnabled) {
+			if (typeStr.equalsIgnoreCase("new_mail") && mailEnabled) {
 				Task<ITaskQuery, MailNotification> task = MailDataAccess.getNotifications(this, getMailNotificationsListener);
 				TaskManager.startTask(task, ITaskQuery.empty);
 			}
 
-			if (type.equalsIgnoreCase("reply") && replyEnabled) {
+			if (typeStr.equalsIgnoreCase("reply") && replyEnabled) {
 				NoticeQuery query = new NoticeQuery();
 				query.KeepNew = true;
 
@@ -125,12 +123,8 @@ public class GCMIntentService extends FirebaseMessagingService {
 	public void onNewToken(String s) {
 		super.onNewToken(s);
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String token = prefs.getString("FIREBASE_TOKEN", null);
-		Log.i("TAGTAG","NEW TOKEN");
-		if(token == null){
-			PushNotificationRegistrar.register(this, s);
-			prefs.edit().putString("FIREBASE_TOKEN", s).apply();
-		}
+		PushNotificationRegistrar.register(this, s);
+		prefs.edit().putString("FIREBASE_TOKEN", s).apply();
 	}
 
 	/**
