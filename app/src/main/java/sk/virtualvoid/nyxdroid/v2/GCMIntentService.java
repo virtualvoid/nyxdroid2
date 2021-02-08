@@ -97,6 +97,7 @@ public class GCMIntentService extends FirebaseMessagingService {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean mailEnabled = prefs.getBoolean("notifications_mail_enabled", true);
 		boolean replyEnabled = prefs.getBoolean("notifications_reply_enabled", true);
+		Log.i("TAGTAG", "messae");
 
 		if (intent.hasExtra("type")) {
 			String type = intent.getStringExtra("type");
