@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "855383046743",
+    "project_id": "nyxdroid-8124f",
+    "storage_bucket": "nyxdroid-8124f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855383046743:android:452fe7ead4cc2782e20112",
+        "android_client_info": {
+          "package_name": "sk.virtualvoid.nyxdroid.v2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "855383046743-m3ei7c6rfoe5mj2lfovigpmdnskfl2ct.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwYy9qgLaKoUQSxaWjH5J_QDJqEBY61v8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "855383046743-m3ei7c6rfoe5mj2lfovigpmdnskfl2ct.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="sk.virtualvoid.nyxdroid.v2"
-    android:versionCode="46"
-    android:versionName="@string/app_version" >
-
-    <uses-sdk
-        android:minSdkVersion="15"
-        android:targetSdkVersion="19" />
+    package="sk.virtualvoid.nyxdroid.v2">
 
     <permission
         android:name="sk.virtualvoid.nyxdroid.v2.permission.C2D_MESSAGE"
@@ -17,8 +11,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="sk.virtualvoid.nyxdroid.v2.permission.C2D_MESSAGE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -28,18 +20,13 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo" >
-        <receiver
-            android:name="com.google.android.gcm.GCMBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+
+        <service android:name="sk.virtualvoid.nyxdroid.v2.GCMIntentService"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-
-                <category android:name="sk.virtualvoid.nyxdroid.v2" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </receiver>
-
-        <service android:name="sk.virtualvoid.nyxdroid.v2.GCMIntentService" />
+        </service>
 
         <activity
             android:name="sk.virtualvoid.nyxdroid.v2.LauncherActivity"
