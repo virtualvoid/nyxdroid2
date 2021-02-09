@@ -30,4 +30,4 @@ android-release:
     - echo 'Android release job'
   release:
     tag_name: $CI_COMMIT_TAG
-    description: 'Android release ' $CI_COMMIT_TAG
+    description: 'Android release'
