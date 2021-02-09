@@ -42,8 +42,6 @@ android {
 
     lintOptions {
         checkReleaseBuilds false
-        // Or, if you prefer, you can continue to check for errors in release builds,
-        // but continue the build even when errors are found:
         abortOnError false
     }
 
@@ -59,6 +57,15 @@ android {
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def project = "nyxdroid"
+            def newApkName = project + "-" + "${defaultConfig.versionName}" + ".apk"
+            outputFileName = newApkName
+        }
+    }
+
 }
 
 dependencies {
