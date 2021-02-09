@@ -4,7 +4,6 @@ stages:
   - build
   - release
 
-
 before_script:
   - export GRADLE_USER_HOME=$(pwd)/.gradle
   - chmod +x ./gradlew
@@ -25,7 +24,7 @@ build:
     paths:
       - ./app/build/outputs/apk/release/*.apk
 
-android-release:
+release:
   only:
     - tags
   script:
