@@ -113,6 +113,11 @@
             android:title="@string/experimental_gif_support" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/notifications" >
+        <Preference
+            android:title="Get new FCM token"
+            android:key="notifications_clear_token"
+            android:summary="If notifications not work, you can try re-register FCM token"
+            />
         <CheckBoxPreference
             android:defaultValue="true"
             android:disableDependentsState="true"
