@@ -14,9 +14,20 @@ cache:
 
 build:
   stage: build
+  only:
+    - tags
   script:
     - echo -n ${BASE64_KEYSTORE} | base64 --decode --ignore-garbage > $(pwd)/release_key.keystore
     - ./gradlew assembleRelease
   artifacts:
     paths:
       - ./app/build/outputs/apk/release/*.apk
+
+android-release:
+  only:
+    - tags
+  script:
+    - echo 'Android release job'
+  release:
+    tag_name: $CI_COMMIT_TAG
+    description: 'Android release ' $CI_COMMIT_TAG
