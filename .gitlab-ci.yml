@@ -2,6 +2,8 @@ image: jangrewe/gitlab-ci-android:30
 
 stages:
   - build
+  - android-release
+
 
 before_script:
   - export GRADLE_USER_HOME=$(pwd)/.gradle
