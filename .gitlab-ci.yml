@@ -15,8 +15,6 @@ cache:
 
 build:
   stage: build
-  only:
-    - tags
   script:
     - echo -n ${BASE64_KEYSTORE} | base64 --decode --ignore-garbage > $(pwd)/release_key.keystore
     - ./gradlew assembleRelease
@@ -26,8 +24,6 @@ build:
 
 release:
   stage: release
-  only:
-    - tags
   script:
     - echo 'Android release job'
   release:
