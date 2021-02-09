@@ -24,7 +24,7 @@ build:
     paths:
       - ./app/build/outputs/apk/release/*.apk
 
-release-android:
+release:
   stage: release
   only:
     - tags
