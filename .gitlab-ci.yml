@@ -2,7 +2,7 @@ image: jangrewe/gitlab-ci-android:30
 
 stages:
   - build
-  - android-release
+  - release
 
 
 before_script:
