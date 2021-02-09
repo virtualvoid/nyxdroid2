@@ -25,7 +25,7 @@ android {
 
     signingConfigs {
         release {
-                storeFile file(androidHome + "/release_key.jks")
+                storeFile file(androidHome + "/release_key.keystore")
                 storePassword pass
                 keyAlias "nyxdroid"
                 keyPassword pass
