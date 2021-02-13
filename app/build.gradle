@@ -29,6 +29,7 @@ android {
                 storePassword pass
                 keyAlias "nyxdroid"
                 keyPassword pass
+                v2SigningEnabled false
             }
         }
 
