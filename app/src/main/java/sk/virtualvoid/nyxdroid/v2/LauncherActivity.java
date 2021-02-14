@@ -70,10 +70,10 @@ public class LauncherActivity extends Activity implements OnClickListener {
 
 		if(bundle != null){
 			String fromFcm = bundle.getString("type");
-			if(fromFcm.equalsIgnoreCase("new_mail")){
+			if(fromFcm != null && fromFcm.equalsIgnoreCase("new_mail")){
 				defaultViewId = 1;
 			}
-			if(fromFcm.equalsIgnoreCase("reply")){
+			if(fromFcm != null && fromFcm.equalsIgnoreCase("reply")){
 				defaultViewId = 5;
 			}
 
