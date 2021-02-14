@@ -127,7 +127,7 @@ public class FeedCommentDialog extends Dialog {
 
 			FeedComment comment = (FeedComment) getItem(position);
 
-			imageDownloader.download(BasePoco.nickToUrl(comment.Nick), holder.Thumbnail);
+			imageDownloader.download(BasePoco.nickToUrl(comment.Nick, context), holder.Thumbnail);
 			holder.Header.setText(CustomHtml.fromHtml(String.format("<b>%s</b> <small>%s</small>", comment.Nick, BasePoco.timeToString(context, comment.Time))));
 			holder.Text.setText(CustomHtml.fromHtml(comment.Text));
 

@@ -57,7 +57,7 @@ public class FriendAdapter extends BasePocoAdapter<Friend> {
 		
 		Friend friend = (Friend) getItem(position);
 		
-		imageDownloader.download(BasePoco.nickToUrl(friend.Nick), holder.Thumbnail);
+		imageDownloader.download(BasePoco.nickToUrl(friend.Nick, context), holder.Thumbnail);
 		
 		holder.Nick.setText(friend.Nick);
 		holder.Time.setText(friend.Location.toRelativeTimeSpanString(now));

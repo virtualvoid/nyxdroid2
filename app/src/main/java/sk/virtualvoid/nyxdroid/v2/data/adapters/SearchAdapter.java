@@ -63,7 +63,7 @@ public class SearchAdapter extends BasePocoAdapter<Search> {
 			holder = (ViewHolder) row.getTag();
 		}
 
-		imageDownloader.download(BasePoco.nickToUrl(search.Nick), holder.Thumbnail);
+		imageDownloader.download(BasePoco.nickToUrl(search.Nick, context), holder.Thumbnail);
 
 		holder.Discussion.setText(search.DiscussionName);
 		holder.Nick.setText(search.Nick);

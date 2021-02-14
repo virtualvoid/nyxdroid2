@@ -104,7 +104,7 @@ public class MailAdapter extends BasePocoAdapter<Mail> {
 			}
 		}
 
-		imageDownloader.download(BasePoco.nickToUrl(mail.Nick), holder.Thumbnail);
+		imageDownloader.download(BasePoco.nickToUrl(mail.Nick, context), holder.Thumbnail);
 
 		holder.Nick.setText(mail.Nick);
 		holder.Time.setText(BasePoco.timeToString(context, mail.Time));

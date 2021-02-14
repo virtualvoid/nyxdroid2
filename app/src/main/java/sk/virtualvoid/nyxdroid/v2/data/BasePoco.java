@@ -4,8 +4,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.R;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 public abstract class BasePoco {
 	public Long Id;
@@ -41,8 +44,14 @@ public abstract class BasePoco {
 		return result;
 	}
 
-	public static String nickToUrl(String nick) {
-		String nickup = nick.toUpperCase(), result = "http://i.nyx.cz/" + nickup.charAt(0) + "/" + nickup + ".gif";
+	public static String nickToUrl(String nick, Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		Boolean overrideSsl = prefs.getBoolean(Constants.SETTINGS_SSL_OVERRIDE, false);
+		String https = "https";
+		if(overrideSsl){
+			https = "http";
+		}
+		String nickup = nick.toUpperCase(), result = https+ "://i.nyx.cz/" + nickup.charAt(0) + "/" + nickup + ".gif";
 		return result;
 	}
 	

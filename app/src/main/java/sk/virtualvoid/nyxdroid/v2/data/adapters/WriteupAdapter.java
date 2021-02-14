@@ -162,7 +162,7 @@ public class WriteupAdapter extends BasePocoAdapter<Writeup> implements Responsi
 			}
 		}
 
-		imageDownloader.download(BasePoco.nickToUrl(wu.Nick), holder.Thumbnail);
+		imageDownloader.download(BasePoco.nickToUrl(wu.Nick, context), holder.Thumbnail);
 
 		holder.Nick.setText(wu.Nick);
 

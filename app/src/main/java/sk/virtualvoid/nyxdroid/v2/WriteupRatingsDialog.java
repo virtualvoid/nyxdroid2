@@ -191,7 +191,7 @@ public class WriteupRatingsDialog extends Dialog {
 
 			String nick = (String) getItem(position);
 
-			getImageDownloader().download(BasePoco.nickToUrl(nick), holder.Thumbnail);
+			getImageDownloader().download(BasePoco.nickToUrl(nick, context), holder.Thumbnail);
 			holder.Nick.setText(nick);
 
 			return row;

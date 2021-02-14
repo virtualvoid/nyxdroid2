@@ -95,7 +95,7 @@ public class EventCommentsFragment extends BaseFragment implements EventFragment
 
 			EventComment comment = (EventComment) getItem(position);
 
-			imageDownloader.download(BasePoco.nickToUrl(comment.Nick), holder.Thumbnail);
+			imageDownloader.download(BasePoco.nickToUrl(comment.Nick, getActivity()), holder.Thumbnail);
 
 			holder.Header.setText(CustomHtml.fromHtml(String.format("<b>%s</b> <small>%s</small>", comment.Nick, BasePoco.timeToString(context, comment.Time))));
 			holder.Contents.setText(CustomHtml.fromHtml(comment.Text));

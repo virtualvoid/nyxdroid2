@@ -61,7 +61,7 @@ public class FeedAdapter extends BasePocoAdapter<Feed> {
 
 		Feed feed = (Feed) getItem(position);
 
-		imageDownloader.download(BasePoco.nickToUrl(feed.Nick), holder.Thumbnail);
+		imageDownloader.download(BasePoco.nickToUrl(feed.Nick, context), holder.Thumbnail);
 
 		holder.Nick.setText(feed.Nick);
 		holder.Text.setText(CustomHtml.fromHtml(feed.Text));
