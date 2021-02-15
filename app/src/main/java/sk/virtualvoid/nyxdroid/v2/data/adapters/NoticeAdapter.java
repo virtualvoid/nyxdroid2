@@ -85,7 +85,7 @@ public class NoticeAdapter extends BasePocoAdapter<Notice> {
 				holder = (NoticeViewHolder) row.getTag();
 			}
 
-			imageDownloader.download(BasePoco.nickToUrl(notice.Nick), holder.Thumbnail);
+			imageDownloader.download(BasePoco.nickToUrl(notice.Nick, context), holder.Thumbnail);
 
 			holder.Nick.setText(notice.Nick);
 			holder.Time.setText(BasePoco.timeToString(context, notice.Time));
@@ -113,7 +113,7 @@ public class NoticeAdapter extends BasePocoAdapter<Notice> {
 				holder = (ReplyViewHolder) row.getTag();
 			}
 
-			imageDownloader.download(BasePoco.nickToUrl(notice.Nick), holder.Thumbnail);
+			imageDownloader.download(BasePoco.nickToUrl(notice.Nick, context), holder.Thumbnail);
 
 			if (notice.IsNew) {
 				holder.Indent.setBackgroundColor(Color.parseColor("#cacaca"));

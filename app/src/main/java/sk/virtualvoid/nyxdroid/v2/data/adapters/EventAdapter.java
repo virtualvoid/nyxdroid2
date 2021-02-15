@@ -59,7 +59,7 @@ public class EventAdapter extends BasePocoAdapter<Event> {
 
 		Event data = (Event) getItem(position);
 
-		imageDownloader.download(BasePoco.nickToUrl(data.Nick), holder.Thumbnail);
+		imageDownloader.download(BasePoco.nickToUrl(data.Nick, context), holder.Thumbnail);
 
 		holder.Nick.setText(data.Nick);
 		holder.Title.setText(data.Title);

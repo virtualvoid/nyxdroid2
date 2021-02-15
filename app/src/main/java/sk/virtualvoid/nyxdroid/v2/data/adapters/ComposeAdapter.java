@@ -86,7 +86,7 @@ public class ComposeAdapter<TComposePoco extends BaseComposePoco> extends BasePo
 			
 			BaseComposePoco writeup = (BaseComposePoco) item.ChildPoco;
 			
-			imageDownloader.download(BasePoco.nickToUrl(writeup.Nick), holder.Thumbnail);
+			imageDownloader.download(BasePoco.nickToUrl(writeup.Nick, context), holder.Thumbnail);
 
 			holder.Header.setText(CustomHtml.fromHtml(String.format("<b>%s</b>&nbsp;<small>%s</small>", writeup.Nick, BasePoco.timeToString(context, writeup.Time))));
 

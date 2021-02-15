@@ -6,7 +6,7 @@ def pass = System.getenv("RELEASE_PASS")
 
 def versionMajor = 2
 def versionMinor = 1
-def versionPatch = 0
+def versionPatch = 4
 
 android {
     compileSdkVersion 30
@@ -25,7 +25,7 @@ android {
 
     signingConfigs {
         release {
-                storeFile file(androidHome + "/release_key.jks")
+                storeFile file(androidHome + "/release_key.keystore")
                 storePassword pass
                 keyAlias "nyxdroid"
                 keyPassword pass
@@ -40,6 +40,11 @@ android {
         }
     }
 
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
         exclude 'META-INF/LICENSE.txt'
@@ -52,6 +57,15 @@ android {
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def project = "nyxdroid"
+            def newApkName = project + "-" + "${defaultConfig.versionName}" + ".apk"
+            outputFileName = newApkName
+        }
+    }
+
 }
 
 dependencies {
@@ -64,7 +78,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-base:17.6.0'
     implementation 'com.google.firebase:firebase-core:18.0.2'
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
-
+    // Hack for universal image loader :)
+    implementation 'com.github.nostra13:Android-Universal-Image-Loader:f6a9615868482672c3630cb7db6dcf43391e80de'
     def multidex_version = "2.0.1"
     implementation "androidx.multidex:multidex:$multidex_version"
 

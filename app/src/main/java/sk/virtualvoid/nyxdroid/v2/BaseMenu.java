@@ -86,7 +86,7 @@ public class BaseMenu {
 
 					TaskManager.startTask(mailNotificationTask, ITaskQuery.empty);
 				}
-				imageDownloader.download(BasePoco.nickToUrl(nick), ivIcon);
+				imageDownloader.download(BasePoco.nickToUrl(nick, activity), ivIcon);
 			}
 		});
 

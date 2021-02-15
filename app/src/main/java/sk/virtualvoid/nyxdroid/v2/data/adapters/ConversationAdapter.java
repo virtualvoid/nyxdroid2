@@ -60,7 +60,7 @@ public class ConversationAdapter extends BaseAdapter {
 		
 		Conversation item = (Conversation) getItem(position);
 		
-		imageDownloader.download(BasePoco.nickToUrl(item.Nick), holder.Thumnbail);
+		imageDownloader.download(BasePoco.nickToUrl(item.Nick, context), holder.Thumnbail);
 		
 		holder.Time.setText(BasePoco.timeToString(context, item.Time));
 		holder.Nick.setText(item.Nick);

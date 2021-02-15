@@ -66,6 +66,18 @@ public class LauncherActivity extends Activity implements OnClickListener {
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int defaultViewId = Integer.parseInt(prefs.getString("default_view", "0"));
+		Bundle bundle = getIntent().getExtras();
+
+		if(bundle != null){
+			String fromFcm = bundle.getString("type");
+			if(fromFcm != null && fromFcm.equalsIgnoreCase("new_mail")){
+				defaultViewId = 1;
+			}
+			if(fromFcm != null && fromFcm.equalsIgnoreCase("reply")){
+				defaultViewId = 5;
+			}
+
+		}
 	
 		String userName = prefs.getString(Constants.AUTH_NICK, "");
 		
@@ -88,6 +100,9 @@ public class LauncherActivity extends Activity implements OnClickListener {
 				break;
 			case 4:
 				intent = new Intent(LauncherActivity.this, FriendsActivity.class);
+				break;
+			case 5:
+				intent = new Intent(LauncherActivity.this, NotificationsActivity.class);
 				break;
 			default:
 				intent = new Intent(LauncherActivity.this, SettingsActivity.class);

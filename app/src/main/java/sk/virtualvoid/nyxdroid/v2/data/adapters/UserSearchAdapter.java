@@ -74,7 +74,7 @@ public class UserSearchAdapter extends BasePocoAdapter<UserSearch> implements Fi
 
 		UserSearch userSearch = (UserSearch) getItem(position);
 
-		imageDownloader.download(BasePoco.nickToUrl(userSearch.Nick), holder.Thumbnail);
+		imageDownloader.download(BasePoco.nickToUrl(userSearch.Nick, context), holder.Thumbnail);
 		holder.Nick.setText(userSearch.Nick);
 
 		return row;

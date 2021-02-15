@@ -1,0 +1,24 @@
+image: jangrewe/gitlab-ci-android:30
+
+stages:
+  - build
+  - release
+
+before_script:
+  - export GRADLE_USER_HOME=$(pwd)/.gradle
+  - chmod +x ./gradlew
+
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+    - .gradle/
+
+build:
+  stage: build
+  script:
+    - echo -n ${BASE64_KEYSTORE} | base64 --decode --ignore-garbage > $(pwd)/release_key.keystore
+    - ./gradlew assembleRelease
+  artifacts:
+    paths:
+      - ./app/build/outputs/apk/release/*.apk
+
