@@ -23,6 +23,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -68,10 +69,6 @@ public class Connector {
 	protected Context context = null;
 	protected String authNick = null;
 	protected String authToken = null;
-	protected String authCode = null;
-	protected boolean sslEnabled = false;
-	protected boolean overrideSsl = false;
-	protected boolean useBetaApi = false;
 
 	public static final HashMap<String, Object> EmptyParams = new HashMap<String, Object>();
 
@@ -87,25 +84,12 @@ public class Connector {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		authNick = prefs.getString(Constants.AUTH_NICK, null);
 		authToken = prefs.getString(Constants.AUTH_TOKEN, null);
-		authCode = prefs.getString(Constants.AUTH_CODE, null);
-		sslEnabled = prefs.getBoolean(Constants.SETTINGS_SSL_ENABLED, true);
-		overrideSsl = prefs.getBoolean(Constants.SETTINGS_SSL_OVERRIDE, false);
-		useBetaApi = prefs.getBoolean(Constants.SETTINGS_USE_BETA_API, false);
 	}
 
 	public String getAuthNick() {
 		return authNick;
 	}
 
-	@Deprecated
-	public String getAuthToken() {
-		return null;
-	}
-
-	@Deprecated
-	public String getAuthCode() {
-		return null;
-	}
 
 	public static boolean authorizationRequired(Context context) {
 		if (context == null) {
@@ -115,11 +99,9 @@ public class Connector {
 		}
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String nick = prefs.getString(Constants.AUTH_NICK, null);
 		String token = prefs.getString(Constants.AUTH_TOKEN, null);
-		String code = prefs.getString(Constants.AUTH_CODE, null);
 		boolean confirmed = prefs.getBoolean(Constants.AUTH_CONFIRMED, false);
-		return !confirmed || (nick == null && code == null && token == null);
+		return !confirmed || token == null;
 	}
 
 	public static void authorizationRemove(Context context) {
@@ -133,7 +115,6 @@ public class Connector {
 
 		SharedPreferences.Editor prefsEditable = prefs.edit();
 		prefsEditable.remove(Constants.AUTH_NICK);
-		prefsEditable.remove(Constants.AUTH_CODE);
 		prefsEditable.remove(Constants.AUTH_TOKEN);
 		prefsEditable.remove(Constants.AUTH_CONFIRMED);
 		prefsEditable.commit();
@@ -144,17 +125,7 @@ public class Connector {
 		try {
 			DefaultHttpClient client = getHttpClient(false);
 
-			HttpPost post = new HttpPost(Constants.getApiUrl(false, false));
-			List<NameValuePair> form = new ArrayList<NameValuePair>();
-
-			form.add(new BasicNameValuePair("auth_nick", nick));
-			form.add(new BasicNameValuePair("auth_token", ""));
-
-			form.add(new BasicNameValuePair("l", "help"));
-			form.add(new BasicNameValuePair("l2", "test"));
-
-			post.setEntity(new UrlEncodedFormEntity(form, HTTP.UTF_8));
-
+			HttpPost post = new HttpPost(Constants.getApiUrl() + "/create_token/" + nick);
 			HttpResponse response = client.execute(post);
 			int statusCode = getStatusCode(response);
 			if (statusCode == 200) {
@@ -171,115 +142,52 @@ public class Connector {
 		return null;
 	}
 
-	private HttpEntity buildMultipartEntity(String l, String l2, HashMap<String, Object> other) throws UnsupportedEncodingException {
-		MultipartEntityBuilder postEntityBuilder = MultipartEntityBuilder.create();
-
-		postEntityBuilder.addTextBody("auth_nick", authNick);
-		postEntityBuilder.addTextBody("auth_token", authToken);
-		postEntityBuilder.addTextBody("l", l);
-		postEntityBuilder.addTextBody("l2", l2);
-
-		Set<Entry<String, Object>> set = other.entrySet();
-		Iterator<Entry<String, Object>> it = set.iterator();
-
-		while (it.hasNext()) {
-			Entry<String, Object> curr = (Entry<String, Object>) it.next();
-
-			String key = curr.getKey();
-			Object value = curr.getValue();
-
-			if (value instanceof String) {
-				postEntityBuilder.addPart(key, new StringBody((String) value, ContentType.create("text/plain", Constants.DEFAULT_CHARSET)));
-			} else if (value instanceof File) {
-				postEntityBuilder.addPart(key, new FileBody((File) value));
-			} else {
-				log.error(String.format("Unknown type for http call with key: %s", key));
-			}
-		}
-
-		//postEntityBuilder.setCharset(Constants.DEFAULT_CHARSET);
-
-		return postEntityBuilder.build();
-	}
-
-	private HttpEntity buildUrlEncodedEntity(String l, String l2, HashMap<String, Object> other) throws UnsupportedEncodingException {
-		List<NameValuePair> form = new ArrayList<NameValuePair>();
-		form.add(new BasicNameValuePair("auth_nick", authNick));
-		form.add(new BasicNameValuePair("auth_token", authToken));
-		form.add(new BasicNameValuePair("l", l));
-		form.add(new BasicNameValuePair("l2", l2));
-
-		Set<Entry<String, Object>> set = other.entrySet();
-		Iterator<Entry<String, Object>> it = set.iterator();
-
-		while (it.hasNext()) {
-			Entry<String, Object> curr = (Entry<String, Object>) it.next();
-			form.add(new BasicNameValuePair(curr.getKey(), (String) curr.getValue()));
-		}
-
-		return new UrlEncodedFormEntity(form, HTTP.UTF_8);
-	}
-
-	public JSONObject call(String l, String l2, HashMap<String, Object> other, TaskWorker<?, ?> taskWorker) {
+	public JSONObject get(String url) {
 		String jsonString = "";
 		try {
-			DefaultHttpClient client = getHttpClient(true);
+			DefaultHttpClient client = getHttpClient(false);
 
-			HttpPost post = new HttpPost(Constants.getApiUrl(sslEnabled, useBetaApi));
+			HttpGet get = new HttpGet(Constants.getApiUrl() + url);
+			get.addHeader("Authorization", "Bearer " + authToken);
 
-			HttpEntity postEntity = null;
-
-			if (isMultipart(other)) {
-				postEntity = buildMultipartEntity(l, l2, other);
-			} else {
-				postEntity = buildUrlEncodedEntity(l, l2, other);
-			}
-
-			post.setEntity(postEntity);
-
-			HttpResponse response = client.execute(post);
-
+			HttpResponse response = client.execute(get);
 			int statusCode = getStatusCode(response);
-			if (statusCode != HttpStatus.SC_OK) {
-				log.warn(String.format("call %s / %s STATUS CODE = %d", l, l2, statusCode));
+			if (statusCode == 200) {
+				HttpEntity entity = response.getEntity();
+
+				jsonString = convertInputStreamToString(entity.getContent());
+
+				JSONObject obj = new JSONObject(jsonString);
+				return obj;
 			}
-
-			HttpEntity entity = response.getEntity();
-
-			jsonString = convertInputStreamToString(entity.getContent());
-			JSONObject jsonObj = new JSONObject(jsonString);
-
-			taskWorker.setConnectorReporter(createErrorReporter(jsonObj, response.getAllHeaders()));
-
-			return jsonObj;
 		} catch (Throwable t) {
-			log.error(String.format("call (outer catch): %s / %s = %s", l, l2, jsonString), t);
+			log.error(String.format("get=%s", url), t);
 		}
 		return null;
 	}
 
-	private IConnectorReporter createErrorReporter(JSONObject obj, Header[] headers) throws JSONException {
-		ConnectorReporter reporter = new ConnectorReporter();
+	public JSONObject post(String url) {
+		String jsonString = "";
+		try {
+			DefaultHttpClient client = getHttpClient(false);
 
-		if (obj.has("error")) {
-			reporter.setDescription(obj.getString("error"));
-		}
+			HttpPost post = new HttpPost(Constants.getApiUrl() + url);
+			post.addHeader("Authorization", "Bearer " + authToken);
 
-		if (obj.has("code") && !obj.isNull("code")) {
-			reporter.setStatus(obj.getInt("code"));
-		}
+			HttpResponse response = client.execute(post);
+			int statusCode = getStatusCode(response);
+			if (statusCode == 200) {
+				HttpEntity entity = response.getEntity();
 
-		if (headers != null) {
-			ArrayList<String> list = new ArrayList<String>();
+				jsonString = convertInputStreamToString(entity.getContent());
 
-			for (Header header : headers) {
-				list.add(String.format("%s = %s", header.getName(), header.getValue()));
+				JSONObject obj = new JSONObject(jsonString);
+				return obj;
 			}
-
-			reporter.setHeaders(list);
+		} catch (Throwable t) {
+			log.error(String.format("post=%s", url), t);
 		}
-
-		return reporter;
+		return null;
 	}
 
 	private DefaultHttpClient getHttpClient(boolean includeGzip) {
@@ -297,19 +205,12 @@ public class Connector {
 
 		SchemeRegistry registry = new SchemeRegistry();
 		registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-
-		if (overrideSsl) {
-			registry.register(new Scheme("https", new OverridenSSLSocketFactory(), 443));
-		} else {
-			final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
-			sslSocketFactory.setHostnameVerifier(SSLSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
-			registry.register(new Scheme("https", sslSocketFactory, 443));
-		}
+		registry.register(new Scheme("https", new OverridenSSLSocketFactory(), 443));
 
 		ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(ps, registry);
 
 		client = new DefaultHttpClient(manager, ps);
-		client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(12, true));
+		client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(3, true));
 
 		if (includeGzip) {
 			client.addRequestInterceptor(new GZipRequestInterceptor());
@@ -340,19 +241,5 @@ public class Connector {
 		}
 		is.close();
 		return sb.toString();
-	}
-
-	private static boolean isMultipart(HashMap<String, Object> other) {
-		Set<Entry<String, Object>> set = other.entrySet();
-		Iterator<Entry<String, Object>> it = set.iterator();
-
-		while (it.hasNext()) {
-			Entry<String, Object> curr = (Entry<String, Object>) it.next();
-			if (curr.getValue() instanceof File) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

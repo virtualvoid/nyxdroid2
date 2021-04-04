@@ -32,34 +32,14 @@ public class UserActivityDataAccess {
 	public static class InactivateTaskWorker extends TaskWorker<ITaskQuery, NullResponse> {
 		@Override
 		public NullResponse doWork(ITaskQuery input) throws NyxException {
-			NullResponse result = new NullResponse();
-			try {
-				Connector connector = new Connector(getContext());
-				JSONObject obj = connector.call("util", "make_inactive", Connector.EmptyParams, this);
-				String strResult = obj.getString("result");
-				result.Success = strResult != null && strResult.equalsIgnoreCase(Constants.OK);
-			} catch (Throwable e) {
-				log.error("InactivateTaskWorker", e);
-				throw new NyxException(e);
-			}
-			return result;
+			throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
 		}
 	}
 	
 	public static class ClearCredentialsTaskWorker extends TaskWorker<ITaskQuery, NullResponse> {
 		@Override
 		public NullResponse doWork(ITaskQuery input) throws NyxException {
-			NullResponse result = new NullResponse();
-			try {
-				Connector connector = new Connector(getContext());
-				JSONObject obj = connector.call("util", "remove_authorization", Connector.EmptyParams, this);
-				String strResult = obj.getString("result");
-				result.Success = strResult != null && strResult.equalsIgnoreCase(Constants.OK);
-			} catch (Throwable e) {
-				log.error("ClearCredentialsTaskWorker", e);
-				throw new NyxException(e);
-			}
-			return result;
+			throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
 		}
 	}
 }

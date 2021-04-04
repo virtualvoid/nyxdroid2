@@ -79,10 +79,7 @@ public class LauncherActivity extends Activity implements OnClickListener {
 
 		}
 	
-		String userName = prefs.getString(Constants.AUTH_NICK, "");
-		
 		Intent intent = null;
-
 		switch (defaultViewId) {
 			case 0:
 				intent = new Intent(LauncherActivity.this, FeedActivity.class);
@@ -165,11 +162,11 @@ public class LauncherActivity extends Activity implements OnClickListener {
 			public void done(JSONObject result) {
 				boolean isNew = false;
 				try {
-					String authState = result.has("auth_state") ? result.getString("auth_state") : "";
-					String authCode = result.has("auth_code") ? result.getString("auth_code") : "";
-					String authToken = result.has("auth_token") ? result.getString("auth_token") : "";
+					Long authState = result.has("id") ? result.getLong("id") : (long) -1;
+					String authCode = result.has("confirmation_code") ? result.getString("confirmation_code") : "";
+					String authToken = result.has("token") ? result.getString("token") : "";
 
-					if (isNew = authState.equalsIgnoreCase("auth_new")) {
+					if (isNew = authState != (long)-1) {
 						tvResult.setText(R.string.authorization_activity_result_new);
 						txtCode.setText(authCode);
 
@@ -177,12 +174,9 @@ public class LauncherActivity extends Activity implements OnClickListener {
 						SharedPreferences.Editor prefsEditor = prefs.edit();
 
 						prefsEditor.putString(Constants.AUTH_NICK, authNick);
-						prefsEditor.putString(Constants.AUTH_CODE, authCode);
 						prefsEditor.putString(Constants.AUTH_TOKEN, authToken);
 						prefsEditor.putBoolean(Constants.AUTH_CONFIRMED, false);
 						prefsEditor.commit();
-					} else if (authState.equalsIgnoreCase("auth_existing")) {
-						tvResult.setText(R.string.authorization_activity_result_existing);
 					} else {
 						tvResult.setText(R.string.authorization_activity_result_error);
 					}

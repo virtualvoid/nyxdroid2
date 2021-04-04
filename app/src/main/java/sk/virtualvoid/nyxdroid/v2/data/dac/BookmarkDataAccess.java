@@ -1,7 +1,6 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -14,277 +13,124 @@ import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
 import sk.virtualvoid.net.nyx.Connector;
+import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.Bookmark;
 import sk.virtualvoid.nyxdroid.v2.data.BookmarkCategory;
 import sk.virtualvoid.nyxdroid.v2.data.query.BookmarkQuery;
+
 import android.app.Activity;
 
 /**
- * 
  * @author Juraj
- * 
  */
 public class BookmarkDataAccess {
-	private final static Logger log = Logger.getLogger(BookmarkDataAccess.class);
+    private final static Logger log = Logger.getLogger(BookmarkDataAccess.class);
 
-	public static Task<BookmarkQuery, ArrayList<Bookmark>> getBookmarks(Activity context, TaskListener<ArrayList<Bookmark>> listener) {
-		return new Task<BookmarkQuery, ArrayList<Bookmark>>(context, new GetBookmarksTaskWorker(), listener);
-	}
+    public static Task<BookmarkQuery, ArrayList<Bookmark>> getBookmarks(Activity context, TaskListener<ArrayList<Bookmark>> listener) {
+        return new Task<BookmarkQuery, ArrayList<Bookmark>>(context, new GetBookmarksTaskWorker(), listener);
+    }
 
-	public static Task<BookmarkQuery, ArrayList<Bookmark>> searchBookmarks(Activity context, TaskListener<ArrayList<Bookmark>> listener) {
-		return new Task<BookmarkQuery, ArrayList<Bookmark>>(context, new SearchBookmarksTaskWorker(), listener);
-	}
+    public static Task<BookmarkQuery, ArrayList<Bookmark>> searchBookmarks(Activity context, TaskListener<ArrayList<Bookmark>> listener) {
+        return new Task<BookmarkQuery, ArrayList<Bookmark>>(context, new SearchBookmarksTaskWorker(), listener);
+    }
 
-	public static Task<BookmarkQuery, ArrayList<Bookmark>> getMovement(Activity context, TaskListener<ArrayList<Bookmark>> listener) {
-		return new Task<BookmarkQuery, ArrayList<Bookmark>>(context, new GetMovementTaskWorker(), listener);
-	}
+    public static Task<BookmarkQuery, ArrayList<Bookmark>> getMovement(Activity context, TaskListener<ArrayList<Bookmark>> listener) {
+        return new Task<BookmarkQuery, ArrayList<Bookmark>>(context, new GetMovementTaskWorker(), listener);
+    }
 
-	public static Task<BookmarkQuery, ArrayList<Bookmark>> getInCategory(Activity context, TaskListener<ArrayList<Bookmark>> listener) {
-		return new Task<BookmarkQuery, ArrayList<Bookmark>>(context, new GetBookmarksInCategoryTaskWorker(), listener);
-	}
+    public static Task<BookmarkQuery, ArrayList<Bookmark>> getInCategory(Activity context, TaskListener<ArrayList<Bookmark>> listener) {
+        return new Task<BookmarkQuery, ArrayList<Bookmark>>(context, new GetBookmarksInCategoryTaskWorker(), listener);
+    }
 
-	public static Task<ITaskQuery, ArrayList<BookmarkCategory>> getBookmarkCategories(Activity context, TaskListener<ArrayList<BookmarkCategory>> listener) {
-		return new Task<ITaskQuery, ArrayList<BookmarkCategory>>(context, new GetBookmarkCategoriesTaskWorker(), listener);
-	}
+    public static Task<ITaskQuery, ArrayList<BookmarkCategory>> getBookmarkCategories(Activity context, TaskListener<ArrayList<BookmarkCategory>> listener) {
+        return new Task<ITaskQuery, ArrayList<BookmarkCategory>>(context, new GetBookmarkCategoriesTaskWorker(), listener);
+    }
 
-	private static Bookmark convertFull(JSONObject obj) throws JSONException {
-		Bookmark bookmark = new Bookmark();
-		bookmark.Id = obj.getLong("id_klub");
-		bookmark.CategoryId = obj.getLong("id_cat");
-		bookmark.Name = obj.getString("jmeno");
-		bookmark.Unread = obj.getInt("unread");
+    private static Bookmark convert(JSONObject bookmark, JSONObject category) throws JSONException {
+        Bookmark result = new Bookmark();
+        result.Id = bookmark.getLong("discussion_id");
+        result.CategoryId = category.getLong("id");
+        result.Name = bookmark.getString("full_name");
 
-		if (obj.has("replies") && !obj.isNull("replies")) {
-			bookmark.Replies = obj.getInt("replies");
-		}
+        if (bookmark.has("new_posts_count")) {
+            result.Unread = bookmark.getInt("new_posts_count"); // TODO: new_links_count, new_images_count
+        }
+        // TODO: last_visited_at
 
-		return bookmark;
-	}
+//        if (bookmark.has("replies") && !bookmark.isNull("replies")) {
+//            result.Replies = bookmark.getInt("replies");
+//        }
 
-	private static Bookmark convertMinimal(JSONObject obj) throws JSONException {
-		Bookmark bookmark = new Bookmark();
-		bookmark.Id = obj.getLong("id_klub");
-		bookmark.Name = obj.getString("jmeno");
+        return result;
+    }
 
-		if (obj.has("unread") && !obj.isNull("unread")) {
-			bookmark.Unread = obj.getInt("unread");
-		}
+    private static BookmarkCategory convert(JSONObject category) throws JSONException {
+        BookmarkCategory result = new BookmarkCategory();
+        result.Id = category.getLong("id");
+        result.Name = category.getString("category_name");
+        return result;
+    }
 
-		return bookmark;
-	}
+    public static class GetBookmarkCategoriesTaskWorker extends TaskWorker<ITaskQuery, ArrayList<BookmarkCategory>> {
+        @Override
+        public ArrayList<BookmarkCategory> doWork(ITaskQuery input) throws NyxException {
+            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+        }
+    }
 
-	private static BookmarkCategory convertCategory(JSONObject obj) throws JSONException {
-		BookmarkCategory category = new BookmarkCategory();
-		category.Id = obj.getLong("id_cat");
-		category.Name = obj.getString("jmeno");
-		return category;
-	}
+    public static class GetBookmarksTaskWorker extends TaskWorker<BookmarkQuery, ArrayList<Bookmark>> {
+        @Override
+        public ArrayList<Bookmark> doWork(BookmarkQuery input) throws NyxException {
+            ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
 
-	public static class GetBookmarkCategoriesTaskWorker extends TaskWorker<ITaskQuery, ArrayList<BookmarkCategory>> {
-		@Override
-		public ArrayList<BookmarkCategory> doWork(ITaskQuery input) throws NyxException {
-			ArrayList<BookmarkCategory> categoryList = new ArrayList<BookmarkCategory>();
+            Connector connector = new Connector(getContext());
 
-			Connector connector = new Connector(getContext());
+            JSONObject json = connector.get("/bookmarks" + (input.IncludeUnread ? "/all" : ""));
+            if (json == null) {
+                throw new NyxException("Json result was null ?");
+            } else {
+                try {
+                    JSONArray rootmarks = json.getJSONArray("bookmarks");
+                    for (int rootMarkIndex = 0; rootMarkIndex < rootmarks.length(); rootMarkIndex++) {
+                        JSONObject rootmark = rootmarks.getJSONObject(rootMarkIndex);
 
-			JSONObject json = connector.call("bookmarks", "new", Connector.EmptyParams, this);
-			if (json == null) {
-				throw new NyxException("Json result was null ?");
-			} else {
-				try {
-					if (!json.isNull("data")) {
-						JSONObject data = json.getJSONObject("data");
+                        JSONObject category = rootmark.getJSONObject("category");
+                        resultList.add(convert(category));
 
-						if (data.has("categories") && !data.isNull("categories")) {
-							JSONArray categories = data.getJSONArray("categories");
-							for (int i = 0; i < categories.length(); i++) {
-								BookmarkCategory category = convertCategory(categories.getJSONObject(i));
-								// vsetky okrem "vlastni diskuze"
-								if (category.Id != -1) {
-									categoryList.add(category);
-								}
-							}
+                        JSONArray bookmarksInCategory = rootmark.getJSONArray("bookmarks");
+                        for (int bookmarkInCategoryIndex = 0; bookmarkInCategoryIndex < bookmarksInCategory.length(); bookmarkInCategoryIndex++) {
+                            JSONObject bookmark = bookmarksInCategory.getJSONObject(bookmarkInCategoryIndex);
+                            resultList.add(convert(bookmark, category));
+                        }
+                    }
+                } catch (Throwable e) {
+                    log.error("GetBookmarksTaskWorker", e);
+                    throw new NyxException(e);
+                }
+            }
 
-						}
-					}
-				} catch (JSONException e) {
-					log.error("GetBookmarkCategoriesTaskWorker", e);
-					throw new NyxException(e);
-				}
-			}
+            return resultList;
+        }
+    }
 
-			return categoryList;
-		}
-	}
+    public static class SearchBookmarksTaskWorker extends TaskWorker<BookmarkQuery, ArrayList<Bookmark>> {
+        @Override
+        public ArrayList<Bookmark> doWork(BookmarkQuery input) throws NyxException {
+            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+        }
+    }
 
-	public static class GetBookmarksTaskWorker extends TaskWorker<BookmarkQuery, ArrayList<Bookmark>> {
-		@Override
-		public ArrayList<Bookmark> doWork(BookmarkQuery input) throws NyxException {
-			ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
-			ArrayList<Bookmark> bookmarkList = new ArrayList<Bookmark>();
-			ArrayList<BookmarkCategory> categoryList = new ArrayList<BookmarkCategory>();
+    public static class GetMovementTaskWorker extends TaskWorker<BookmarkQuery, ArrayList<Bookmark>> {
+        @Override
+        public ArrayList<Bookmark> doWork(BookmarkQuery input) throws NyxException {
+            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+        }
+    }
 
-			Connector connector = new Connector(getContext());
-
-			JSONObject json = connector.call("bookmarks", input.IncludeUnread ? "all" : "new", Connector.EmptyParams, this);
-			if (json == null) {
-				throw new NyxException("Json result was null ?");
-			} else {
-				try {
-					if (!json.isNull("data")) {
-						int replyCount = 0;
-
-						JSONObject data = json.getJSONObject("data");
-						if (data.has("discussions") && !data.isNull("discussions")) {
-							JSONArray discussions = data.getJSONArray("discussions");
-							for (int i = 0; i < discussions.length(); i++) {
-								Bookmark converted = convertFull(discussions.getJSONObject(i));
-								if (converted.Replies > 0) {
-									converted.CategoryId = BookmarkCategory.RepliesCategoryId;
-									replyCount++;
-								}
-								bookmarkList.add(converted);
-							}
-						}
-
-						if (replyCount > 0) {
-							categoryList.add(new BookmarkCategory(BookmarkCategory.RepliesCategoryId, "replies"));
-						}
-
-						if (data.has("categories") && !data.isNull("categories")) {
-							JSONArray categories = data.getJSONArray("categories");
-							for (int i = 0; i < categories.length(); i++) {
-								categoryList.add(convertCategory(categories.getJSONObject(i)));
-							}
-						}
-
-						for (BookmarkCategory category : categoryList) {
-							resultList.add(category);
-
-							ArrayList<Bookmark> toRemove = new ArrayList<Bookmark>();
-							for (Bookmark bookmark : bookmarkList) {
-								if (bookmark.CategoryId == category.Id) {
-									resultList.add(bookmark);
-									toRemove.add(bookmark);
-								}
-							}
-							bookmarkList.removeAll(toRemove);
-						}
-					}
-				} catch (JSONException e) {
-					log.error("GetBookmarksTaskWorker", e);
-					throw new NyxException(e);
-				}
-			}
-
-			return resultList;
-		}
-	}
-
-	public static class SearchBookmarksTaskWorker extends TaskWorker<BookmarkQuery, ArrayList<Bookmark>> {
-		@Override
-		public ArrayList<Bookmark> doWork(BookmarkQuery input) throws NyxException {
-			ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
-			try {
-				Connector connector = new Connector(getContext());
-
-				HashMap<String, Object> params = new HashMap<String, Object>();
-				params.put("term", input.SearchTerm);
-
-				JSONObject json = connector.call("search", "discussions", params, this);
-				if (json == null) {
-					throw new NyxException("Json result was null ?");
-				} else {
-					if (!json.isNull("data")) {
-						JSONObject data = json.getJSONObject("data");
-						if (data.has("discussions") && !data.isNull("discussions")) {
-							JSONArray discussions = data.getJSONArray("discussions");
-							for (int i = 0; i < discussions.length(); i++) {
-								JSONObject obj = discussions.getJSONObject(i);
-								resultList.add(convertMinimal(obj));
-							}
-						}
-					}
-				}
-			} catch (JSONException e) {
-				log.error("SearchBookmarksTaskWorker", e);
-				throw new NyxException(e);
-			}
-			return resultList;
-		}
-	}
-
-	public static class GetMovementTaskWorker extends TaskWorker<BookmarkQuery, ArrayList<Bookmark>> {
-		@Override
-		public ArrayList<Bookmark> doWork(BookmarkQuery input) throws NyxException {
-			ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
-			try {
-				Connector connector = new Connector(getContext());
-
-				HashMap<String, Object> params = new HashMap<String, Object>();
-				params.put("more_results", "1");
-
-				JSONObject json = connector.call("bookmarks", "history", params, this);
-				if (json == null) {
-					throw new NyxException("Json result was null ?");
-				} else {
-					if (!json.isNull("data")) {
-						JSONObject data = json.getJSONObject("data");
-						if (data.has("discussions") && !data.isNull("discussions")) {
-							JSONArray discussions = data.getJSONArray("discussions");
-							for (int i = 0; i < discussions.length(); i++) {
-								JSONObject obj = discussions.getJSONObject(i);
-								Bookmark bookmark = convertMinimal(obj);
-								if (input.IncludeUnread) {
-									resultList.add(bookmark);
-								} else if (bookmark.Unread > 0) {
-									resultList.add(bookmark);
-								}
-							}
-						}
-					}
-				}
-			} catch (JSONException e) {
-				log.error("GetMovementTaskWorker", e);
-				throw new NyxException(e);
-			}
-			return resultList;
-		}
-	}
-
-	public static class GetBookmarksInCategoryTaskWorker extends TaskWorker<BookmarkQuery, ArrayList<Bookmark>> {
-		@Override
-		public ArrayList<Bookmark> doWork(BookmarkQuery input) throws NyxException {
-			ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
-			try {
-				Connector connector = new Connector(getContext());
-
-				HashMap<String, Object> params = new HashMap<String, Object>();
-				params.put("cat", Long.toString(input.CategoryId));
-
-				JSONObject json = connector.call("bookmarks", "cat", params, this);
-				if (json == null) {
-					throw new NyxException("Json result was null ?");
-				} else {
-					if (!json.isNull("data")) {
-						JSONObject data = json.getJSONObject("data");
-						if (data.has("discussions") && !data.isNull("discussions")) {
-							JSONArray discussions = data.getJSONArray("discussions");
-							for (int i = 0; i < discussions.length(); i++) {
-								JSONObject obj = discussions.getJSONObject(i);
-								Bookmark bookmark = convertFull(obj);
-								if (bookmark.CategoryId == input.CategoryId) {
-									resultList.add(bookmark);
-								}
-							}
-						}
-					}
-				}
-			} catch (JSONException e) {
-				log.error("GetBookmarksInCategoryTaskWorker", e);
-				throw new NyxException(e);
-			}
-			return resultList;
-		}
-	}
+    public static class GetBookmarksInCategoryTaskWorker extends TaskWorker<BookmarkQuery, ArrayList<Bookmark>> {
+        @Override
+        public ArrayList<Bookmark> doWork(BookmarkQuery input) throws NyxException {
+            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+        }
+    }
 }

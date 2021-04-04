@@ -193,34 +193,36 @@ public abstract class BaseActivity extends Activity implements IConnectorReporte
 
 	// ===================================================================================
 
-	private void launchGcm() {
-		try {
-			GCMRegistrar.checkDevice(this);
-			GCMRegistrar.checkManifest(this);
+	// TODO: zasa inokedy
 
-			final String registrationId = GCMRegistrar.getRegistrationId(this);
-			if (registrationId.equals("")) {
-				GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
-				Log.i(Constants.TAG, "GCM not yet registered");
-			} else {
-				if (!GCMRegistrar.isRegisteredOnServer(this)) {
-					PushNotificationRegistrar.register(this, registrationId);
-				}
-				Log.i(Constants.TAG, "GCM registered");
-			}
-		} catch (Throwable t) {
-			Log.e(Constants.TAG, "launchGcm error: " + t.getMessage());
-		}
+	private void launchGcm() {
+//		try {
+//			GCMRegistrar.checkDevice(this);
+//			GCMRegistrar.checkManifest(this);
+//
+//			final String registrationId = GCMRegistrar.getRegistrationId(this);
+//			if (registrationId.equals("")) {
+//				GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
+//				Log.i(Constants.TAG, "GCM not yet registered");
+//			} else {
+//				if (!GCMRegistrar.isRegisteredOnServer(this)) {
+//					PushNotificationRegistrar.register(this, registrationId);
+//				}
+//				Log.i(Constants.TAG, "GCM registered");
+//			}
+//		} catch (Throwable t) {
+//			Log.e(Constants.TAG, "launchGcm error: " + t.getMessage());
+//		}
 	}
 
 	private void stopGcm() {
-		try {
-			GCMRegistrar.onDestroy(this);
-
-			Log.i(Constants.TAG, "GCM registrar destroy.");
-		} catch (Throwable t) {
-			Log.e(Constants.TAG, "stopGcm error: " + t.getMessage());
-		}
+//		try {
+//			GCMRegistrar.onDestroy(this);
+//
+//			Log.i(Constants.TAG, "GCM registrar destroy.");
+//		} catch (Throwable t) {
+//			Log.e(Constants.TAG, "stopGcm error: " + t.getMessage());
+//		}
 	}
 
 	// ===================================================================================

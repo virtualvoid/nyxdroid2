@@ -44,17 +44,7 @@ public class Constants {
 
 	public static final String AUTH_NICK = "AuthNick";
 	public static final String AUTH_TOKEN = "AuthToken";
-	public static final String AUTH_CODE = "AuthCode";
 	public static final String AUTH_CONFIRMED = "AuthConfirmed";
-
-	public static final int SUCCEEDED = 0;
-	public static final int FAILED = -1;
-	public static final int EXCEPTION = -2;
-	public static final int HTTPERROR = -3;
-
-	public static final String SETTINGS_SSL_ENABLED = "ssl_enabled";
-	public static final String SETTINGS_SSL_OVERRIDE = "ssl_override";
-	public static final String SETTINGS_USE_BETA_API = "use_beta_api";
 
 	public static final String OK = "ok";
 
@@ -124,23 +114,10 @@ public class Constants {
 
 	}
 	
-	public static String getApiUrl(boolean useSsl, boolean useBetaApi) {
-		String result = "";
-		
-		if (useSsl) {
-			result += "https://";
-		} else {
-			result += "http://";
-		}
-
-		if (useBetaApi) {
-			result += "beta";
-		} else {
-			result += "www";
-		}
-		
-		result += ".nyx.cz/api.php";
-		
+	public static String getApiUrl() {
+		final String result = "https://nyx.cz/api";
 		return result;
 	}
+
+	public static final String NOT_IMPLEMENTED_YET = "Je to rozbité, treba to opraviť.";
 }

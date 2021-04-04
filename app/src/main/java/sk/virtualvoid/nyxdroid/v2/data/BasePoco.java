@@ -46,12 +46,7 @@ public abstract class BasePoco {
 
 	public static String nickToUrl(String nick, Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		Boolean overrideSsl = prefs.getBoolean(Constants.SETTINGS_SSL_OVERRIDE, false);
-		String https = "https";
-		if(overrideSsl){
-			https = "http";
-		}
-		String nickup = nick.toUpperCase(), result = https+ "://i.nyx.cz/" + nickup.charAt(0) + "/" + nickup + ".gif";
+		String nickUp = nick.toUpperCase(), result = "https://nyx.cz/" + nickUp.charAt(0) + "/" + nickUp + ".gif";
 		return result;
 	}
 	
