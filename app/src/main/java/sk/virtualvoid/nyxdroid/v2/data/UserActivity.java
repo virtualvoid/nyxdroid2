@@ -124,15 +124,15 @@ public class UserActivity implements Parcelable {
 	 * @throws JSONException
 	 */
 	public static UserActivity fromJson(JSONObject obj) throws JSONException {
-		if (!obj.has("active") || obj.isNull("active")) {
+		if (!obj.has("activity") || obj.isNull("activity")) {
 			return null;
 		}
 
 		UserActivity userLocation = new UserActivity();
 
-		JSONObject active = obj.getJSONObject("active");
+		JSONObject active = obj.getJSONObject("activity");
 
-		userLocation.Time = (active.has("time") && !active.isNull("time")) ? active.getLong("time") : InvalidTime;
+		// TODO: cas aktivity
 		userLocation.Location = (active.has("location") && !active.isNull("location")) ? active.getString("location") : null;
 		userLocation.LocationUrl = (active.has("location_url") && !active.isNull("location_url")) ? active.getString("location_url") : null;
 

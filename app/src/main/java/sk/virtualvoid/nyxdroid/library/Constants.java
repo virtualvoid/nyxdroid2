@@ -10,7 +10,10 @@ import java.nio.charset.Charset;
 public class Constants {
 	/** DATA **/
 	public enum WriteupDirection {
-		WRITEUP_DIRECTION_NEWEST("newest"), WRITEUP_DIRECTION_NEWER("newer"), WRITEUP_DIRECTION_OLDER("older");
+		WRITEUP_DIRECTION_NEWEST("newest"),
+		WRITEUP_DIRECTION_NEWER("newer_than"),
+		WRITEUP_DIRECTION_OLDER("older_than"),
+		WRITEUP_DIRECTION_OLDEST("oldest");
 
 		private String value;
 
