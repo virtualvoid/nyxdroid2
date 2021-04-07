@@ -17,13 +17,13 @@ public abstract class BasePoco {
 
 	public static Date timeToLocal(long time) {
 		Date dt = new Date();
-		dt.setTime((time * 1000));
+		dt.setTime(time);
 		return dt;
 	}
 
 	public static long timeNow() {
 		Date dt = new Date();
-		return dt.getTime() / 1000;
+		return dt.getTime();
 	}
 
 	public static String timeToString(Context context, long timestamp) {

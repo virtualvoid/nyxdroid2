@@ -190,6 +190,38 @@ public class Connector {
 		return null;
 	}
 
+	public JSONObject form(String url, String body) {
+		String jsonString = "";
+		try {
+			DefaultHttpClient client = getHttpClient(false);
+
+			HttpPost post = new HttpPost(Constants.getApiUrl() + url);
+			post.addHeader("Authorization", "Bearer " + authToken);
+
+			List<NameValuePair> form = new ArrayList<NameValuePair>();
+
+			form.add(new BasicNameValuePair("content", body));
+			//form.add(new BasicNameValuePair("format", "text/plain"));
+
+			post.setEntity(new UrlEncodedFormEntity(form, HTTP.UTF_8));
+
+			HttpResponse response = client.execute(post);
+			int statusCode = getStatusCode(response);
+			if (statusCode == 200) {
+				HttpEntity entity = response.getEntity();
+
+				jsonString = convertInputStreamToString(entity.getContent());
+
+				JSONObject obj = new JSONObject(jsonString);
+				return obj;
+			}
+		} catch (Throwable t) {
+			log.error(String.format("post=%s", url), t);
+		}
+		return null;
+	}
+
+
 	private DefaultHttpClient getHttpClient(boolean includeGzip) {
 		DefaultHttpClient client = null;
 

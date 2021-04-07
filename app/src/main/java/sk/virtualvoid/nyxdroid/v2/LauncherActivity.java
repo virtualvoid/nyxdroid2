@@ -65,7 +65,7 @@ public class LauncherActivity extends Activity implements OnClickListener {
 		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		int defaultViewId = Integer.parseInt(prefs.getString("default_view", "0"));
+		int defaultViewId = Integer.parseInt(prefs.getString("default_view", "2"));
 		Bundle bundle = getIntent().getExtras();
 
 		if(bundle != null){

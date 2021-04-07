@@ -49,7 +49,9 @@ public class BookmarkDataAccess {
     private static Bookmark convert(JSONObject bookmark, JSONObject category) throws JSONException {
         Bookmark result = new Bookmark();
         result.Id = bookmark.getLong("discussion_id");
-        result.CategoryId = category.getLong("id");
+        if (category != null) {
+            result.CategoryId = category.getLong("id");
+        }
         result.Name = bookmark.getString("full_name");
 
         if (bookmark.has("new_posts_count")) {
@@ -123,7 +125,27 @@ public class BookmarkDataAccess {
     public static class GetMovementTaskWorker extends TaskWorker<BookmarkQuery, ArrayList<Bookmark>> {
         @Override
         public ArrayList<Bookmark> doWork(BookmarkQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
+
+            Connector connector = new Connector(getContext());
+
+            JSONObject json = connector.get("/bookmarks/history"); // TODO: /bookmarks/history/more ?
+            if (json == null) {
+                throw new NyxException("Json result was null ?");
+            } else {
+                try {
+                    JSONArray discussions = json.getJSONArray("discussions");
+                    for (int discussionIndex = 0; discussionIndex < discussions.length(); discussionIndex++) {
+                        JSONObject discussion = discussions.getJSONObject(discussionIndex);
+                        resultList.add(convert(discussion, null));
+                    }
+                } catch (Throwable e) {
+                    log.error("GetBookmarksTaskWorker", e);
+                    throw new NyxException(e);
+                }
+            }
+
+            return resultList;
         }
     }
 

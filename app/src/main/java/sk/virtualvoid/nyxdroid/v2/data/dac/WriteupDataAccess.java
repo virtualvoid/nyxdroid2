@@ -77,8 +77,29 @@ public class WriteupDataAccess {
 
             Connector connector = new Connector(getContext());
 
-            // TODO: newer_than/newest/oldest/older_than
-            JSONObject root = connector.get("/discussion/" + input.Id);
+            String baseUrl = "/discussion/" + input.Id;
+            if (input.Direction == Constants.WriteupDirection.WRITEUP_DIRECTION_OLDER && input.LastId != null) {
+                baseUrl = baseUrl + "?order=older_than&from_id=" + input.LastId;
+            }
+
+            if (input.isFilterUser()) {
+                if (!baseUrl.contains("?")) {
+                    baseUrl = baseUrl + "?";
+                } else {
+                    baseUrl = baseUrl + "&";
+                }
+                baseUrl =baseUrl + "user="+input.FilterUser;
+            }
+            if (input.isFilterContents()) {
+                if (!baseUrl.contains("?")) {
+                    baseUrl = baseUrl + "?";
+                } else {
+                    baseUrl = baseUrl + "&";
+                }
+                baseUrl =baseUrl + "text="+input.FilterContents;
+            }
+
+            JSONObject root = connector.get(baseUrl);
             if (root == null) {
                 throw new NyxException("Json result was null ?");
             } else {
@@ -140,7 +161,13 @@ public class WriteupDataAccess {
     public static class SendWriteupTaskWorker extends TaskWorker<WriteupQuery, NullResponse> {
         @Override
         public NullResponse doWork(WriteupQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            Connector connector = new Connector(getContext());
+
+            String baseUrl = "/discussion/" + input.Id + "/send/text";
+
+            JSONObject json = connector.form(baseUrl, input.Contents);
+
+            return new NullResponse();
         }
     }
 

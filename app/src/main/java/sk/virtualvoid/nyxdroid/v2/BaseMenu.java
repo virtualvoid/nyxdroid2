@@ -82,7 +82,8 @@ public class BaseMenu {
 				if (!(activity instanceof MailActivity)) {
 					TaskManager.killIfNeeded(mailNotificationTask);
 
-					mailNotificationTask = MailDataAccess.getNotifications(activity, mailNotificationTaskListener);
+					// TODO: maily
+					//mailNotificationTask = MailDataAccess.getNotifications(activity, mailNotificationTaskListener);
 
 					TaskManager.startTask(mailNotificationTask, ITaskQuery.empty);
 				}
@@ -246,17 +247,17 @@ public class BaseMenu {
 
 		public BaseMenuItemAdapter() {
 			model = new ArrayList<BaseMenu.BaseMenuItem>();
-			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_FEED, R.drawable.light_action_feed, R.drawable.dark_action_feed, R.string.app_name_feed));
-			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_MAIL, R.drawable.light_action_mail, R.drawable.dark_action_mail, R.string.app_name_mail));
+			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_FEED, R.drawable.light_action_feed, R.drawable.dark_action_feed, R.string.app_name_feed));
+			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_MAIL, R.drawable.light_action_mail, R.drawable.dark_action_mail, R.string.app_name_mail));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_BOOKMARKS, R.drawable.light_action_bookmark, R.drawable.dark_action_bookmark, R.string.app_name_bookmarks));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_HISTORY, R.drawable.light_action_clock, R.drawable.dark_action_clock, R.string.app_name_bookmarks_history));
-			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_FRIENDS, R.drawable.light_action_users, R.drawable.dark_action_users, R.string.app_name_friends));
-			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_NOTIFICATIONS, R.drawable.light_action_bulb, R.drawable.dark_action_bulb, R.string.app_name_notifications));
-			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_SEARCH, R.drawable.light_action_search, R.drawable.dark_action_search, R.string.app_name_search));
-			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_EVENTS, R.drawable.light_action_calendar_day, R.drawable.dark_action_calendar_day, R.string.app_name_events));
+			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_FRIENDS, R.drawable.light_action_users, R.drawable.dark_action_users, R.string.app_name_friends));
+			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_NOTIFICATIONS, R.drawable.light_action_bulb, R.drawable.dark_action_bulb, R.string.app_name_notifications));
+			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_SEARCH, R.drawable.light_action_search, R.drawable.dark_action_search, R.string.app_name_search));
+			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_EVENTS, R.drawable.light_action_calendar_day, R.drawable.dark_action_calendar_day, R.string.app_name_events));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_SETTINGS, R.drawable.light_action_gear, R.drawable.dark_action_gear, R.string.app_name_settings));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_ABOUT, R.drawable.light_action_info, R.drawable.dark_action_info, R.string.app_name_about));
-			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_EXIT, R.drawable.light_action_exit, R.drawable.dark_action_exit, R.string.app_name_exit));
+			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_EXIT, R.drawable.light_action_exit, R.drawable.dark_action_exit, R.string.app_name_exit));
 		}
 
 		@Override
