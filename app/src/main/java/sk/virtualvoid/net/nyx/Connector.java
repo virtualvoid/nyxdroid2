@@ -46,6 +46,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -165,6 +166,31 @@ public class Connector {
 		}
 		return null;
 	}
+
+	public JSONArray getArray(String url) {
+		String jsonString = "";
+		try {
+			DefaultHttpClient client = getHttpClient(false);
+
+			HttpGet get = new HttpGet(Constants.getApiUrl() + url);
+			get.addHeader("Authorization", "Bearer " + authToken);
+
+			HttpResponse response = client.execute(get);
+			int statusCode = getStatusCode(response);
+			if (statusCode == 200) {
+				HttpEntity entity = response.getEntity();
+
+				jsonString = convertInputStreamToString(entity.getContent());
+
+				JSONArray arr = new JSONArray(jsonString);
+				return arr;
+			}
+		} catch (Throwable t) {
+			log.error(String.format("get=%s", url), t);
+		}
+		return null;
+	}
+
 
 	public JSONObject post(String url) {
 		String jsonString = "";

@@ -252,9 +252,9 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
 						WriteupQuery query = new WriteupQuery();
 
 						query.Id = WriteupsActivity.this.id;
-						query.TempId = wu.Id;
-						query.Direction = WriteupDirection.WRITEUP_DIRECTION_NEWEST;
-						query.FilterContents = Long.toString(wu.Id);
+						query.LastId = wu.Id;
+						query.Direction = WriteupDirection.WRITEUP_DIRECTION_NEWER;
+						//query.FilterContents = Long.toString(wu.Id);
 
 						TaskManager.killIfNeeded(tempDataTask);
 

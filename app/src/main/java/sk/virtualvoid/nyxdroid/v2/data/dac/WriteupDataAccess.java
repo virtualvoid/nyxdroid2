@@ -77,9 +77,15 @@ public class WriteupDataAccess {
 
             Connector connector = new Connector(getContext());
 
+            // older posts (scrolling down)
             String baseUrl = "/discussion/" + input.Id;
             if (input.Direction == Constants.WriteupDirection.WRITEUP_DIRECTION_OLDER && input.LastId != null) {
                 baseUrl = baseUrl + "?order=older_than&from_id=" + input.LastId;
+            }
+
+            // replies to particular post
+            if (input.Direction == Constants.WriteupDirection.WRITEUP_DIRECTION_NEWER && input.TempId != null) {
+                baseUrl = baseUrl + "?order=newer_than&from_id=" + input.LastId;
             }
 
             if (input.isFilterUser()) {
@@ -88,7 +94,7 @@ public class WriteupDataAccess {
                 } else {
                     baseUrl = baseUrl + "&";
                 }
-                baseUrl =baseUrl + "user="+input.FilterUser;
+                baseUrl = baseUrl + "user=" + input.FilterUser;
             }
             if (input.isFilterContents()) {
                 if (!baseUrl.contains("?")) {
@@ -96,7 +102,7 @@ public class WriteupDataAccess {
                 } else {
                     baseUrl = baseUrl + "&";
                 }
-                baseUrl =baseUrl + "text="+input.FilterContents;
+                baseUrl = baseUrl + "text=" + input.FilterContents;
             }
 
             JSONObject root = connector.get(baseUrl);
@@ -167,21 +173,74 @@ public class WriteupDataAccess {
 
             JSONObject json = connector.form(baseUrl, input.Contents);
 
-            return new NullResponse();
+            NullResponse result = new NullResponse();
+            result.Success = true;
+            return result;
         }
     }
 
     public static class RateWriteupTaskWorker extends TaskWorker<WriteupQuery, VotingResponse> {
         @Override
         public VotingResponse doWork(WriteupQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            VotingResponse result = new VotingResponse();
+
+            Connector connector = new Connector(getContext());
+
+            String baseUrl = "/discussion/" + input.Id + "/rating/" + input.TempId + "/" + input.VotingType.toString();
+            JSONObject root = connector.post(baseUrl);
+            if (root == null) {
+                throw new NyxException("Json result was null ?");
+            } else {
+                try {
+                    result.CurrentRating = root.getInt("rating");
+                    // TODO:
+                    result.Result = VotingResult.RATING_CHANGED;
+                } catch (Throwable t) {
+                    log.error("RatingOverviewTaskWorker", t);
+                    throw new NyxException(t);
+                }
+            }
+
+            return result;
         }
     }
 
     public static class RatingOverviewTaskWorker extends TaskWorker<WriteupQuery, VotingInfoResult> {
         @Override
         public VotingInfoResult doWork(WriteupQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            VotingInfoResult result = new VotingInfoResult();
+
+            Connector connector = new Connector(getContext());
+
+            String baseUrl = "/discussion/" + input.Id + "/rating/" + input.TempId;
+            JSONArray root = connector.getArray(baseUrl);
+            if (root == null) {
+                throw new NyxException("Json result was null ?");
+            } else {
+                try {
+                    for (int voteIndex = 0; voteIndex < root.length(); voteIndex++) {
+                        JSONObject vote = root.getJSONObject(voteIndex);
+
+                        String nick = vote.getString("username");
+                        String tag = vote.getString("tag");
+
+                        if (tag.equalsIgnoreCase("positive")) {
+                            result.Positive++;
+                            result.PositiveList.add(nick);
+                        } else if (tag.equalsIgnoreCase("negative")) {
+                            result.Negative++;
+                            result.NegativeList.add(nick);
+                        } else {
+                            log.trace("wtf vote:" + nick + ", " + tag);
+                        }
+                    }
+                } catch (Throwable t) {
+                    log.error("RatingOverviewTaskWorker", t);
+                    throw new NyxException(t);
+                }
+            }
+
+            return result;
         }
     }
 

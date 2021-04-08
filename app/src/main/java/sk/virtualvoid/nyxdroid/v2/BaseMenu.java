@@ -85,7 +85,7 @@ public class BaseMenu {
 					// TODO: maily
 					//mailNotificationTask = MailDataAccess.getNotifications(activity, mailNotificationTaskListener);
 
-					TaskManager.startTask(mailNotificationTask, ITaskQuery.empty);
+					//TaskManager.startTask(mailNotificationTask, ITaskQuery.empty);
 				}
 				imageDownloader.download(BasePoco.nickToUrl(nick, activity), ivIcon);
 			}
