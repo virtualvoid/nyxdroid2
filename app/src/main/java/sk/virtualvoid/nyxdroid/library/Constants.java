@@ -43,7 +43,7 @@ public class Constants {
 
 	public static final Charset DEFAULT_CHARSET = Charset.forName("utf-8");
 
-	public static final String INDEX = "http://www.nyx.cz/index.php";
+	public static final String INDEX = "https://www.nyx.cz";
 
 	public static final String AUTH_NICK = "AuthNick";
 	public static final String AUTH_TOKEN = "AuthToken";

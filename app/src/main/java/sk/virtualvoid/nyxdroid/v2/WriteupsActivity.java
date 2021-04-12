@@ -314,10 +314,10 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
 
 					@Override
 					public void onCopyLink() {
-						// www.nyx.cz/index.php?l=topic;id=21293;wu=39531584;n=e47f
+						// www.nyx.cz/discussion/21293/id/39531584
 						amhWriteups.finish();
 
-						Item item = new Item(String.format("%s?l=topic;id=%d;wu=%d", Constants.INDEX, WriteupsActivity.this.id, wu.Id));
+						Item item = new Item(String.format("%s/discussion/%d/id/%d", Constants.INDEX, WriteupsActivity.this.id, wu.Id));
 						ClipData data = new ClipData(new ClipDescription("WU Link Copied", new String[] { ClipDescription.MIMETYPE_TEXT_PLAIN }), item);
 						ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 						clipboardManager.setPrimaryClip(data);
