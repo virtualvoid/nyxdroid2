@@ -6,7 +6,7 @@ def pass = System.getenv("RELEASE_PASS")
 
 def versionMajor = 2
 def versionMinor = 1
-def versionPatch = 41
+def versionPatch = 42
 
 android {
     compileSdkVersion 30
