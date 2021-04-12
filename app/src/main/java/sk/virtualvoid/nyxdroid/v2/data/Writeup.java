@@ -30,6 +30,8 @@ public class Writeup extends BaseComposePoco implements Parcelable {
 	public UserActivity Location;
 	public boolean IsSelected;
 
+	public boolean CanDelete;
+
 	public Writeup() {
 
 	}
@@ -44,6 +46,7 @@ public class Writeup extends BaseComposePoco implements Parcelable {
 		Type = source.readInt();
 		Location = source.readParcelable(UserActivity.class.getClassLoader());
 		IsMine = source.readByte() == 1;
+		CanDelete = source.readByte() == 1;
 	}
 	
 	@Override
@@ -119,6 +122,7 @@ public class Writeup extends BaseComposePoco implements Parcelable {
 		dest.writeInt(Type);
 		dest.writeParcelable(Location, 0);
 		dest.writeByte((byte) (IsMine ? 1 : 0));
+		dest.writeByte((byte) (CanDelete ? 1 : 0));
 	}
 
 	/**

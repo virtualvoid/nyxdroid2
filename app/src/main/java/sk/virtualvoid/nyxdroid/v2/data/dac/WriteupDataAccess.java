@@ -148,8 +148,8 @@ public class WriteupDataAccess {
                             writeup.Rating = post.has("rating") ? post.getInt("rating") : 0;
                             writeup.Type = Writeup.TYPE_DEFAULT; // TODO: ked sa dorobi market tak checknut o co ide
                             writeup.Location = UserActivity.fromJson(post);
-                            writeup.IsMine = connector.getAuthNick()
-                                    .equalsIgnoreCase(post.getString("username"));
+                            writeup.IsMine = connector.getAuthNick().equalsIgnoreCase(post.getString("username"));
+                            writeup.CanDelete = post.has("can_be_deleted") && post.getBoolean("can_be_deleted");
 
                             result.Writeups.add(writeup);
                         }
@@ -170,12 +170,9 @@ public class WriteupDataAccess {
             Connector connector = new Connector(getContext());
 
             String baseUrl = "/discussion/" + input.Id + "/send/text";
-
             JSONObject json = connector.form(baseUrl, input.Contents);
 
-            NullResponse result = new NullResponse();
-            result.Success = true;
-            return result;
+            return NullResponse.success();
         }
     }
 
@@ -254,14 +251,52 @@ public class WriteupDataAccess {
     public static class DeleteTaskWorker extends TaskWorker<WriteupQuery, NullResponse> {
         @Override
         public NullResponse doWork(WriteupQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            Connector connector = new Connector(getContext());
+
+            String baseUrl = "/discussion/" + input.Id + "/delete/" + input.TempId;
+            JSONObject root = connector.delete(baseUrl);
+            if (root == null) {
+                throw new NyxException("Json result was null ?");
+            }
+
+            return NullResponse.success();
         }
     }
 
     public static class GetHomeTaskWorker extends TaskWorker<WriteupQuery, WriteupHomeResponse> {
         @Override
         public WriteupHomeResponse doWork(WriteupQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            StringBuilder sb = new StringBuilder();
+            WriteupHomeResponse result = new WriteupHomeResponse();
+
+            Connector connector = new Connector(getContext());
+
+            String baseUrl = "/discussion/" + input.Id;
+            JSONObject root = connector.get(baseUrl);
+            if (root == null) {
+                throw new NyxException("Json result was null ?");
+            } else {
+                try {
+                    if (root.has("discussion_common") && root.getJSONObject("discussion_common").has("discussion_specific_data")) {
+                        JSONObject discussionCommon = root.getJSONObject("discussion_common");
+                        JSONObject discussionSpecific = discussionCommon.getJSONObject("discussion_specific_data");
+                        if (discussionSpecific.has("header")) {
+                            JSONArray headers = discussionSpecific.getJSONArray("header");
+                            for (int headerIndex = 0; headerIndex < headers.length(); headerIndex++) {
+                                JSONObject header = headers.getJSONObject(headerIndex);
+                                sb.append(header.getString("content"));
+                                sb.append("<br/>"); // hehe
+                            }
+                        }
+                    }
+                } catch (Throwable t) {
+                    log.error("RatingOverviewTaskWorker", t);
+                    throw new NyxException(t);
+                }
+            }
+
+            result.Header = sb.toString();
+            return result;
         }
     }
 

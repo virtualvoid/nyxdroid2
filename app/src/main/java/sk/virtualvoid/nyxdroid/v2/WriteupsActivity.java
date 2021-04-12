@@ -609,10 +609,11 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
 	}
 
 	private boolean composeMore(ArrayList<Writeup> wuList) {
-		if (!canWrite) {
-			Toast.makeText(WriteupsActivity.this, R.string.you_dont_have_write_rights, Toast.LENGTH_SHORT).show();
-			return true;
-		}
+		// TODO: nyx to zatial nema v api vyriesene
+//		if (!canWrite) {
+//			Toast.makeText(WriteupsActivity.this, R.string.you_dont_have_write_rights, Toast.LENGTH_SHORT).show();
+//			return true;
+//		}
 
 		final Intent intent = new Intent(WriteupsActivity.this, WriteupComposeActivity.class);
 

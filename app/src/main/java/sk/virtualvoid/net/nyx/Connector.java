@@ -23,6 +23,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -186,7 +187,7 @@ public class Connector {
 				return arr;
 			}
 		} catch (Throwable t) {
-			log.error(String.format("get=%s", url), t);
+			log.error(String.format("getArray=%s", url), t);
 		}
 		return null;
 	}
@@ -242,7 +243,31 @@ public class Connector {
 				return obj;
 			}
 		} catch (Throwable t) {
-			log.error(String.format("post=%s", url), t);
+			log.error(String.format("form=%s", url), t);
+		}
+		return null;
+	}
+
+	public JSONObject delete(String url) {
+		String jsonString = "";
+		try {
+			DefaultHttpClient client = getHttpClient(false);
+
+			HttpDelete get = new HttpDelete(Constants.getApiUrl() + url);
+			get.addHeader("Authorization", "Bearer " + authToken);
+
+			HttpResponse response = client.execute(get);
+			int statusCode = getStatusCode(response);
+			if (statusCode == 200) {
+				HttpEntity entity = response.getEntity();
+
+				jsonString = convertInputStreamToString(entity.getContent());
+
+				JSONObject obj = new JSONObject(jsonString);
+				return obj;
+			}
+		} catch (Throwable t) {
+			log.error(String.format("delete=%s", url), t);
 		}
 		return null;
 	}

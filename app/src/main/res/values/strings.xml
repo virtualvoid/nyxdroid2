@@ -1,8 +1,8 @@
 <resources>
 
     <string name="app_name">nyxdroid</string>
-    <string name="app_version">v2.0.40-lite</string>
-    <string name="app_name_and_version">nyxdroid v2.0.40-lite - change log</string>
+    <string name="app_version">v2.0.41-lite</string>
+    <string name="app_name_and_version">nyxdroid v2.0.41-lite - change log</string>
     <string name="general_error_occured">Error occurred, please try again later.</string>
     <string name="authorization_activity_nick">ID :</string>
     <string name="authorization_activity_code">Code :</string>
