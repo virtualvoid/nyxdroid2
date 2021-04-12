@@ -270,7 +270,7 @@ public abstract class BaseActivity extends Activity implements IConnectorReporte
 		//launchGcm();
 
 		// rating tracker
-		GooglePlayRating.getGooglePlayRating(this).execute();
+		//GooglePlayRating.getGooglePlayRating(this).execute();
 
 		// restore ?
 		if (savedInstanceState == null) {

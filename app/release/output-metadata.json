@@ -10,9 +10,9 @@
     {
       "type": "SINGLE",
       "filters": [],
-      "versionCode": 20104,
-      "versionName": "2.1.4",
-      "outputFile": "nyxdroid-2.1.4.apk"
+      "versionCode": 20141,
+      "versionName": "2.1.41",
+      "outputFile": "nyxdroid-2.1.41.apk"
     }
   ]
 }
