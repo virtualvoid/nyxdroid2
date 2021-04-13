@@ -45,6 +45,7 @@ public class Constants {
 
 	public static final String INDEX = "https://www.nyx.cz";
 
+
 	public static final String AUTH_NICK = "AuthNick";
 	public static final String AUTH_TOKEN = "AuthToken";
 	public static final String AUTH_CONFIRMED = "AuthConfirmed";

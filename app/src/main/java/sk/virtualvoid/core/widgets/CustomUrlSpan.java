@@ -8,49 +8,64 @@ import android.view.View;
 //import android.view.ViewParent;
 
 /**
- * 
  * @author Juraj
- * 
  */
-public class CustomUrlSpan extends ClickableSpan /*implements ParcelableSpan*/ {
-	private static final int spanTypeId = 88;
-	private String url;
-	private boolean isImage;
+public class CustomUrlSpan extends ClickableSpan implements INavigationSpan {
+    private String url;
+    private Long discussionId;
+    private Long postId;
 
-	public CustomUrlSpan(String url) {
-		this.url = url;
-		this.isImage = false;
-	}
+    private boolean isImage;
+    private boolean isNavigation;
 
-	public CustomUrlSpan(String url, boolean isImage) {
-		this.url = url;
-		this.isImage = isImage;
-	}
-	
-	public String getUrl() {
-		return this.url;
-	}
-	
-//	@Override
-//	public int describeContents() {
-//		return 0;
-//	}
-//
-//	@Override
-//	public void writeToParcel(Parcel dest, int flags) {
-//		dest.writeString(url);
-//	}
-//
-//	public int getSpanTypeId() {
-//		return spanTypeId;
-//	}
+    public CustomUrlSpan(String url) {
+        this.url = url;
+        this.isImage = false;
+    }
 
-	@Override
-	public void onClick(View view) {
-		View parent = (View) view.getParent();
-		Object parentTag = parent.getTag();
-		
-		NavigationHandler navigation = new NavigationHandler(getUrl(), isImage, parentTag, view.getContext());
-		navigation.doNavigation();
-	}
+    public CustomUrlSpan(String url, long discussionId, Long postId) {
+        this.url = url;
+        this.discussionId = discussionId;
+        this.postId = postId;
+        this.isNavigation = true;
+    }
+
+    public CustomUrlSpan(String url, boolean isImage) {
+        this.url = url;
+        this.isImage = isImage;
+    }
+
+    @Override
+    public void onClick(View view) {
+        View parent = (View) view.getParent();
+        Object parentTag = parent.getTag();
+
+        NavigationHandler navigation = new NavigationHandler(this, parentTag, view.getContext());
+        navigation.doNavigation();
+    }
+
+    @Override
+    public String getUrl() {
+        return url;
+    }
+
+    @Override
+    public Long getDiscussionId() {
+        return discussionId;
+    }
+
+    @Override
+    public Long getPostId() {
+        return postId;
+    }
+
+    @Override
+    public boolean isImage() {
+        return isImage;
+    }
+
+    @Override
+    public boolean isNavigation() {
+        return isNavigation;
+    }
 }

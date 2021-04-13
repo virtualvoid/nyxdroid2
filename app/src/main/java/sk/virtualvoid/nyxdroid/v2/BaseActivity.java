@@ -168,13 +168,13 @@ public abstract class BaseActivity extends Activity implements IConnectorReporte
 			NavigationHandler.startNavigateTopic(this, WriteupsActivity.class, discussionId, writeupId);
 		}
 
-		if (navigationType == NavigationType.EVENT) {
-			NavigationHandler.startNavigateEvent(this, EventActivity.class, discussionId, null);
-		}
+//		if (navigationType == NavigationType.EVENT) {
+//			NavigationHandler.startNavigateEvent(this, EventActivity.class, discussionId, null);
+//		}
 
-		if (navigationType == NavigationType.MARKET) {
-			NavigationHandler.startNavigateMarket(this, AdvertActivity.class, discussionId);
-		}
+//		if (navigationType == NavigationType.MARKET) {
+//			NavigationHandler.startNavigateMarket(this, AdvertActivity.class, discussionId);
+//		}
 
 		if (navigationType == NavigationType.IMAGE) {
 			try {
