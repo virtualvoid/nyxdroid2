@@ -110,7 +110,7 @@ public class WriteupDataAccess {
                 throw new NyxException("Json result was null ?");
             } else {
                 try {
-                    if (root.has("discussion_common")) {
+                    if (root.has("discussion_common") && !root.isNull("discussion_common")) {
                         JSONObject discussionCommon = root.getJSONObject("discussion_common");
                         JSONObject discussion = discussionCommon.getJSONObject("discussion");
 
@@ -120,14 +120,14 @@ public class WriteupDataAccess {
                         result.CanWrite = discussion.getBoolean("ar_write");
                         result.CanDelete = discussion.getBoolean("ar_delete");
 
-                        if (discussionCommon.has("bookmark")) {
+                        if (discussionCommon.has("bookmark") && !discussionCommon.isNull("bookmark")) {
                             JSONObject bookmark = discussionCommon.getJSONObject("bookmark");
 
                             result.Booked = bookmark.getBoolean("bookmark");
                         }
                     }
 
-                    if (root.has("posts")) {
+                    if (root.has("posts") && !root.isNull("posts")) {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
                         result.Writeups = new ArrayList<>();

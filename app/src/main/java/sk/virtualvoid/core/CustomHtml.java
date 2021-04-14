@@ -9,6 +9,7 @@ import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
+import android.util.Log;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +28,8 @@ public class CustomHtml {
     }
 
     public static Spanned correctLinkPaths(Spanned input) {
-        Pattern discussionPtr = Pattern.compile(".*/discussion/(\\d+)/id/(\\d+)", Pattern.CASE_INSENSITIVE);
+        Pattern discussionPostPtr = Pattern.compile(".*/discussion/(\\d+)/id/(\\d+)", Pattern.CASE_INSENSITIVE);
+        Pattern discussionPtr = Pattern.compile(".*/discussion/(\\d+)", Pattern.CASE_INSENSITIVE);
 
         URLSpan[] urlSpans = input.getSpans(0, input.length(), URLSpan.class);
         for (URLSpan span : urlSpans) {
@@ -35,23 +37,10 @@ public class CustomHtml {
             int end = input.getSpanEnd(span);
             int flags = input.getSpanFlags(span);
 
-            String spanUrl = span.getURL();
-            Matcher discussionMatch = discussionPtr.matcher(spanUrl);
-            if (discussionMatch.matches()) {
-                // discussion id at pos 1
-                long discussionId = Long.parseLong(discussionMatch.group(1));
-
-                // discussion post id at pos 2
-                Long postId = null;
-                if (discussionMatch.groupCount() == 2) {
-                    postId = Long.parseLong(discussionMatch.group(2));
-                }
-
-                ((Spannable) input).removeSpan(span);
-
-                CustomUrlSpan replacement = new CustomUrlSpan(span.getURL(), discussionId, postId);
-
-                ((Spannable) input).setSpan(replacement, start, end, flags);
+            if (createCustomUrlSpan(input, span, start, end, flags, discussionPostPtr)) {
+                Log.i(Constants.TAG, String.format("correctLinkPaths: %s", span.getURL()));
+            } else if (createCustomUrlSpan(input, span, start, end, flags, discussionPtr)) {
+                Log.i(Constants.TAG, String.format("correctLinkPaths: %s", span.getURL()));
             }
         }
 
@@ -70,7 +59,30 @@ public class CustomHtml {
 
             ((Spannable) input).setSpan(replacement, start, end, flags);
         }
-
         return input;
     }
+
+    private static boolean createCustomUrlSpan(Spanned input, URLSpan span, int start, int end, int flags, Pattern ptr) {
+        Matcher matcher = ptr.matcher(span.getURL());
+        if (matcher.matches()) {
+            // discussion id at pos 1
+            long discussionId = Long.parseLong(matcher.group(1));
+
+            // discussion post id at pos 2
+            Long postId = null;
+            if (matcher.groupCount() == 2) {
+                postId = Long.parseLong(matcher.group(2));
+            }
+
+            ((Spannable) input).removeSpan(span);
+
+            CustomUrlSpan replacement = new CustomUrlSpan(span.getURL(), discussionId, postId);
+
+            ((Spannable) input).setSpan(replacement, start, end, flags);
+
+            return true;
+        }
+        return false;
+    }
+
 }
