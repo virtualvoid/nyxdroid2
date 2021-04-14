@@ -87,7 +87,7 @@ public class MailAdapter extends BasePocoAdapter<Mail> {
 		Mail mail = (Mail) getItem(position);
 
 		if (appearance.isEntryUnreadColorStandard()) {
-			if (mail.IsUnread || !mail.OtherSawIt) {
+			if (mail.IsUnread) {
 				holder.UnreadMarker.setVisibility(View.VISIBLE);
 			} else {
 				holder.UnreadMarker.setVisibility(View.INVISIBLE);
@@ -95,7 +95,7 @@ public class MailAdapter extends BasePocoAdapter<Mail> {
 		} else {
 			holder.UnreadMarker.setVisibility(View.INVISIBLE);
 			
-			if (mail.IsUnread || !mail.OtherSawIt) {
+			if (mail.IsUnread) {
 				holder.Nick.setTextColor(appearance.getEntryUnreadColor());
 				holder.Time.setTextColor(appearance.getEntryUnreadColor());
 			} else {

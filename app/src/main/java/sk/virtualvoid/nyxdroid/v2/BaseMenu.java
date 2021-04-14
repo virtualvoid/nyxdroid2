@@ -82,10 +82,9 @@ public class BaseMenu {
 				if (!(activity instanceof MailActivity)) {
 					TaskManager.killIfNeeded(mailNotificationTask);
 
-					// TODO: maily
-					//mailNotificationTask = MailDataAccess.getNotifications(activity, mailNotificationTaskListener);
+					mailNotificationTask = MailDataAccess.getNotifications(activity, mailNotificationTaskListener);
 
-					//TaskManager.startTask(mailNotificationTask, ITaskQuery.empty);
+					TaskManager.startTask(mailNotificationTask, ITaskQuery.empty);
 				}
 				imageDownloader.download(BasePoco.nickToUrl(nick, activity), ivIcon);
 			}
@@ -248,7 +247,7 @@ public class BaseMenu {
 		public BaseMenuItemAdapter() {
 			model = new ArrayList<BaseMenu.BaseMenuItem>();
 			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_FEED, R.drawable.light_action_feed, R.drawable.dark_action_feed, R.string.app_name_feed));
-			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_MAIL, R.drawable.light_action_mail, R.drawable.dark_action_mail, R.string.app_name_mail));
+			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_MAIL, R.drawable.light_action_mail, R.drawable.dark_action_mail, R.string.app_name_mail));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_BOOKMARKS, R.drawable.light_action_bookmark, R.drawable.dark_action_bookmark, R.string.app_name_bookmarks));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_HISTORY, R.drawable.light_action_clock, R.drawable.dark_action_clock, R.string.app_name_bookmarks_history));
 			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_FRIENDS, R.drawable.light_action_users, R.drawable.dark_action_users, R.string.app_name_friends));

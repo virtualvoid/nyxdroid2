@@ -4,7 +4,10 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -169,8 +172,11 @@ public class WriteupDataAccess {
         public NullResponse doWork(WriteupQuery input) throws NyxException {
             Connector connector = new Connector(getContext());
 
-            String baseUrl = "/discussion/" + input.Id + "/send/text";
-            JSONObject json = connector.form(baseUrl, input.Contents);
+            List<NameValuePair> form = new ArrayList<NameValuePair>();
+            form.add(new BasicNameValuePair("content", input.Contents));
+            //form.add(new BasicNameValuePair("format", "text/plain"));
+
+            JSONObject json = connector.form("/discussion/" + input.Id + "/send/text", form);
 
             return NullResponse.success();
         }
