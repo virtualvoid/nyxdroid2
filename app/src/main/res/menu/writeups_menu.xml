@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/compose"
         android:icon="?attr/add_icon"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="@string/new_writeup"/>
     <item
         android:id="@+id/search"
-        android:actionViewClass="android.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         android:icon="?attr/search_icon"
-        android:showAsAction="ifRoom|collapseActionView"
+        app:showAsAction="ifRoom|collapseActionView"
         android:title="@string/search"/>
     <item
         android:id="@+id/refresh"
         android:icon="?attr/reload_icon"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="@string/writeup_refresh"/>
     <item
         android:id="@+id/gallery"
         android:icon="?attr/picture_icon"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/view_as_gallery"/>
     <item
         android:id="@+id/replytomorewriteups"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/reply_to_more_writeups"/>
     <item
         android:id="@+id/book_or_unbook"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/book_or_unbook_placeholder"/>
 
 </menu>

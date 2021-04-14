@@ -21,7 +21,7 @@ import sk.virtualvoid.nyxdroid.v2.internal.NavigationHandler;
 import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
 import sk.virtualvoid.nyxdroid.v2.internal.PushNotificationRegistrar;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
-import android.app.ActionBar;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -38,6 +38,9 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gcm.GCMRegistrar;
 
 /**
@@ -45,7 +48,7 @@ import com.google.android.gcm.GCMRegistrar;
  * @author juraj
  * 
  */
-public abstract class BaseActivity extends Activity implements IConnectorReporterHandler, INavigationHandler, ITaskKey {
+public abstract class BaseActivity extends AppCompatActivity implements IConnectorReporterHandler, INavigationHandler, ITaskKey {
 	private final static Logger log = Logger.getLogger(BaseActivity.class);
 	private static volatile int ACTIVITY_COUNT = 0;
 
@@ -252,7 +255,7 @@ public abstract class BaseActivity extends Activity implements IConnectorReporte
 		// requestWindowFeature)
 		setProgressBarIndeterminateVisibility(false);
 
-		ActionBar actionBar = getActionBar();
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
