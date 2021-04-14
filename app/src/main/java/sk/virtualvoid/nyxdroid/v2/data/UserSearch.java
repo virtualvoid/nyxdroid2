@@ -8,7 +8,8 @@ package sk.virtualvoid.nyxdroid.v2.data;
 public class UserSearch extends BasePoco {
 	public UserActivity Location;
 	
-	public UserSearch() {
+	public UserSearch(String nick) {
+		this.Nick = nick;
 	}
 	
 	@Override

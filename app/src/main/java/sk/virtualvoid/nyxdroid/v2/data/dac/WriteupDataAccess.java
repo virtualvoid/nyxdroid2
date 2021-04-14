@@ -19,6 +19,7 @@ import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
 import sk.virtualvoid.net.nyx.Connector;
 import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.BaseResponse;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
 import sk.virtualvoid.nyxdroid.v2.data.UserActivity;
@@ -131,8 +132,6 @@ public class WriteupDataAccess {
                     }
 
                     if (root.has("posts") && !root.isNull("posts")) {
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
                         result.Writeups = new ArrayList<>();
 
                         JSONArray posts = root.getJSONArray("posts");
@@ -144,7 +143,7 @@ public class WriteupDataAccess {
                             writeup.Id = post.getLong("id");
                             writeup.Nick = post.getString("username");
 
-                            writeup.Time = sdf.parse(post.getString("inserted_at")).getTime();
+                            writeup.Time = BasePoco.timeFromString(post.getString("inserted_at"));
 
                             writeup.Content = post.getString("content");
                             writeup.Unread = post.has("new") && post.getBoolean("new");

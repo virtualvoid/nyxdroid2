@@ -19,6 +19,7 @@ import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
 import sk.virtualvoid.net.nyx.Connector;
 import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.Conversation;
 import sk.virtualvoid.nyxdroid.v2.data.Mail;
 import sk.virtualvoid.nyxdroid.v2.data.MailNotification;
@@ -98,8 +99,6 @@ public class MailDataAccess {
                 throw new NyxException("Json result was null ?");
             } else {
                 try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
                     if (root.has("posts") && !root.isNull("posts")) {
                         JSONArray posts = root.getJSONArray("posts");
 
@@ -122,7 +121,7 @@ public class MailDataAccess {
 
                             mail.IsMine = connector.getAuthNick().equalsIgnoreCase(post.getString("username"));
 
-                            mail.Time = sdf.parse(post.getString("inserted_at")).getTime();
+                            mail.Time = BasePoco.timeFromString(post.getString("inserted_at"));
 
                             result.add(mail);
                         }
@@ -201,7 +200,36 @@ public class MailDataAccess {
     public static class GetConversationTaskWorker extends TaskWorker<ITaskQuery, ArrayList<Conversation>> {
         @Override
         public ArrayList<Conversation> doWork(ITaskQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            ArrayList<Conversation> result = new ArrayList<>();
+
+            Connector connector = new Connector(getContext());
+
+            JSONObject root = connector.get("/mail");
+            if (root == null) {
+                throw new NyxException("Json result was null ?");
+            } else {
+                try {
+                    if (root.has("conversations") && !root.isNull("conversations")) {
+                        JSONArray conversations = root.getJSONArray("conversations");
+                        for (int conversationIndex = 0; conversationIndex < conversations.length(); conversationIndex++) {
+                            JSONObject conversation = conversations.getJSONObject(conversationIndex);
+
+                            result.add(
+                                    new Conversation(
+                                            BasePoco.timeFromString(conversation.getString("conversed_at")),
+                                            (conversation.has("incoming") && conversation.getBoolean("incoming")) ? Constants.FROM : Constants.TO,
+                                            conversation.getString("username")
+                                    )
+                            );
+                        }
+                    }
+                } catch (Throwable t) {
+                    log.error("GetConversationTaskWorker", t);
+                    throw new NyxException(t);
+                }
+            }
+
+            return result;
         }
     }
 }

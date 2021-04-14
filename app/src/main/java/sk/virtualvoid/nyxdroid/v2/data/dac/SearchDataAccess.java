@@ -47,7 +47,33 @@ public class SearchDataAccess {
 	public static class UserSearchTaskWorker extends TaskWorker<UserSearchQuery, ArrayList<UserSearch>> {
 		@Override
 		public ArrayList<UserSearch> doWork(UserSearchQuery input) throws NyxException {
-			throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+			ArrayList<UserSearch> result = new ArrayList<>();
+
+			Connector connector = new Connector(getContext());
+
+			JSONObject root = connector.get("/search/username/" + input.Nick);
+			if (root == null) {
+				throw new NyxException("Json result was null ?");
+			} else {
+				try {
+					if (root.has("others") && !root.isNull("others")) {
+						JSONArray others = root.getJSONArray("others");
+
+						for (int userIndex = 0; userIndex < others.length(); userIndex++) {
+							JSONObject user = others.getJSONObject(userIndex);
+
+							String nick = user.getString("username");
+
+							result.add(new UserSearch(nick));
+						}
+					}
+				} catch(Throwable t) {
+					log.error("UserSearchTaskWorker", t);
+					throw new NyxException(t);
+				}
+			}
+
+			return result;
 		}
 	}
 }

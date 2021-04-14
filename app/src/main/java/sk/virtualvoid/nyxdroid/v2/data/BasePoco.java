@@ -1,5 +1,6 @@
 package sk.virtualvoid.nyxdroid.v2.data;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -11,9 +12,19 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public abstract class BasePoco {
+	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
 	public Long Id;
 	public String Nick;
 	public boolean IsMine;
+
+	public static long timeFromString(String input) {
+		try {
+			return dateFormatter.parse(input).getTime();
+		} catch (Throwable t) {
+			return -1; // java, meh
+		}
+	}
 
 	public static Date timeToLocal(long time) {
 		Date dt = new Date();
