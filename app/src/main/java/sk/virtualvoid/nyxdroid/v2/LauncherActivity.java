@@ -9,7 +9,7 @@ import sk.virtualvoid.core.TaskWorker;
 import sk.virtualvoid.net.nyx.Connector;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.query.AuthorizationQuery;
-import android.app.ActionBar;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -25,12 +25,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * 
  * @author juraj
  * 
  */
-public class LauncherActivity extends Activity implements OnClickListener {
+public class LauncherActivity extends AppCompatActivity implements OnClickListener {
 	private static final String isRegistering = "is_registering";
 
 	private ActionBar actionBar;
@@ -115,7 +118,7 @@ public class LauncherActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.authorization);
 		setProgressBarIndeterminateVisibility(false);
 
-		actionBar = getActionBar();
+		actionBar = getSupportActionBar();
 		actionBar.setHomeButtonEnabled(false);
 
 		tvResult = (TextView) findViewById(R.id.authorization_activity_result);

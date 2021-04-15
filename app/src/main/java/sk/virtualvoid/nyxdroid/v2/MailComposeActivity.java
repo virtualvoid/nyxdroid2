@@ -25,7 +25,7 @@ import sk.virtualvoid.nyxdroid.v2.data.dac.SearchDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.query.MailQuery;
 import sk.virtualvoid.nyxdroid.v2.data.query.UserSearchQuery;
 import sk.virtualvoid.nyxdroid.v2.internal.DelayedTextWatcher;
-import android.app.ActionBar;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -41,6 +41,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
 
 /**
  * 
@@ -83,7 +85,7 @@ public class MailComposeActivity extends BaseActivity {
 
 		imageDownloader = new ImageDownloader(this, emptyAvatar);
 
-		ActionBar actionBar = getActionBar();
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		txtRecipient = (CustomAutocompleteTextView) findViewById(R.id.generic_compose_recipient);

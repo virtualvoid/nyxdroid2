@@ -18,7 +18,7 @@ import sk.virtualvoid.nyxdroid.v2.data.adapters.ComposeAdapter;
 import sk.virtualvoid.nyxdroid.v2.data.dac.WriteupDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.query.WriteupQuery;
 import sk.virtualvoid.nyxdroid.v2.internal.VotingType;
-import android.app.ActionBar;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -30,6 +30,8 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
 
 /**
  * 
@@ -71,7 +73,7 @@ public class WriteupComposeActivity extends BaseActivity {
 		imageDownloader = new ImageDownloader(this, emptyAvatar);
 		imageGetterAsync = new ImageGetterAsync(this);
 
-		ActionBar actionBar = getActionBar();
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		txtMessage = (EditText) findViewById(R.id.generic_compose_message);

@@ -37,13 +37,8 @@ import sk.virtualvoid.nyxdroid.v2.internal.VotingType;
 import sk.virtualvoid.nyxdroid.v2.internal.WriteupBookmarkQueryType;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.ActionBar.TabListener;
+
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.ClipDescription;
@@ -62,8 +57,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import androidx.appcompat.widget.SearchView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBar.Tab;
+import androidx.appcompat.app.ActionBar.TabListener;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.widget.Toast;
 
 /**
@@ -134,10 +135,10 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
         useBackPressWriteupReturn = prefs.getBoolean("backpress_returns_writeup", false);
         refreshAfterWriteupSend = prefs.getBoolean("refresh_after_writeup_send", true);
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
 
         // nebol ten chuj uz vytvoreny ?

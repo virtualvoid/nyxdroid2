@@ -54,8 +54,8 @@ public class BookmarksPickActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		getActionBar().setHomeButtonEnabled(false);
-		getActionBar().setDisplayHomeAsUpEnabled(false);
+		getSupportActionBar().setHomeButtonEnabled(false);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
 		final Intent intent = getIntent();
 		final String action = intent.getAction();

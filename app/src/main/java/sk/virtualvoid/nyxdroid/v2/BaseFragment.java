@@ -1,8 +1,10 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import android.app.Fragment;
+
 import android.os.Bundle;
 import android.widget.ListView;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * 
