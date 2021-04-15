@@ -308,7 +308,22 @@ public class WriteupDataAccess {
     public static class BookOrUnbookWriteupTaskWorker extends TaskWorker<WriteupBookmarkQuery, WriteupBookmarkResponse> {
         @Override
         public WriteupBookmarkResponse doWork(WriteupBookmarkQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            WriteupBookmarkResponse result = new WriteupBookmarkResponse();
+
+            // /api/discussion/1/bookmark?new_state=true&category=5
+            Connector connector = new Connector(getContext());
+
+            boolean book = input.QueryType == WriteupBookmarkQueryType.BOOK;
+            String baseUrl = "/discussion/" + input.DiscussionId + "/bookmark?new_state=" + book;
+            if (book) {
+                baseUrl += "&category=" + input.CategoryId;
+            }
+
+            JSONObject root = connector.get(baseUrl);
+
+            result.Booked = book;
+
+            return result;
         }
     }
 }

@@ -11,6 +11,7 @@ import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.Bookmark;
 import sk.virtualvoid.nyxdroid.v2.data.BookmarkCategory;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
+import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.adapters.BookmarkAdapter;
 import sk.virtualvoid.nyxdroid.v2.data.dac.BookmarkDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.dac.WriteupDataAccess;
@@ -89,7 +90,7 @@ public class BookmarksPickActivity extends BaseActivity {
 		BookmarkQuery query = new BookmarkQuery();
 		query.IncludeUnread = true;
 
-		Task<BookmarkQuery, ArrayList<Bookmark>> task = BookmarkDataAccess.getBookmarks(BookmarksPickActivity.this, bookmarksTaskListener);
+		Task<BookmarkQuery, SuccessResponse<ArrayList<Bookmark>>> task = BookmarkDataAccess.getBookmarks(BookmarksPickActivity.this, bookmarksTaskListener);
 		TaskManager.startTask(task, query);
 	}
 
@@ -174,11 +175,11 @@ public class BookmarksPickActivity extends BaseActivity {
 		Log.w(Constants.TAG, "URI: " + imageUri + ", URL: " + imageUrl);
 	}
 
-	private static class BookmarksTaskListener extends TaskListener<ArrayList<Bookmark>> {
+	private static class BookmarksTaskListener extends TaskListener<SuccessResponse<ArrayList<Bookmark>>> {
 		@Override
-		public void done(ArrayList<Bookmark> output) {
+		public void done(SuccessResponse<ArrayList<Bookmark>> output) {
 			BookmarksPickActivity context = (BookmarksPickActivity) getContext();
-			BookmarkAdapter adapter = new BookmarkAdapter(context, output);
+			BookmarkAdapter adapter = new BookmarkAdapter(context, output.getData());
 			context.setListAdapter(adapter);
 		}
 	}

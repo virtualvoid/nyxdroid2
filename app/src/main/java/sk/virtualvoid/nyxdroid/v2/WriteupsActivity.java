@@ -19,6 +19,7 @@ import sk.virtualvoid.nyxdroid.v2.am.WriteupsActionMode;
 import sk.virtualvoid.nyxdroid.v2.am.WriteupsReplyMoreActionMode;
 import sk.virtualvoid.nyxdroid.v2.data.BookmarkCategory;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
+import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.Writeup;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupBookmarkResponse;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupResponse;
@@ -754,7 +755,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
         } else {
             // ak nemame zaradene v bookmarkoch tak najprv zistime kategoriu kam
             // ju chce dat
-            Task<ITaskQuery, ArrayList<BookmarkCategory>> task = BookmarkDataAccess.getBookmarkCategories(this, bookmarkCategoriesTaskListener);
+            Task<ITaskQuery, SuccessResponse<ArrayList<BookmarkCategory>>> task = BookmarkDataAccess.getBookmarkCategories(this, bookmarkCategoriesTaskListener);
             TaskManager.startTask(task, ITaskQuery.empty);
         }
 
@@ -871,17 +872,18 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
         }
     }
 
-    private class BookmarkCategoriesTaskListener extends TaskListener<ArrayList<BookmarkCategory>> {
+    private class BookmarkCategoriesTaskListener extends TaskListener<SuccessResponse<ArrayList<BookmarkCategory>>> {
         @Override
-        public void done(final ArrayList<BookmarkCategory> output) {
-            if (output.size() == 0) {
+        public void done(SuccessResponse<ArrayList<BookmarkCategory>> response) {
+            final ArrayList<BookmarkCategory> categories = response.getData();
+            if (categories.size() == 0) {
                 Toast.makeText(getContext(), R.string.add_discussion_to_category_no_categories, Toast.LENGTH_LONG).show();
                 return;
             }
 
-            String[] categoryTitles = new String[output.size()];
-            for (int i = 0; i < output.size(); i++) {
-                BookmarkCategory category = output.get(i);
+            String[] categoryTitles = new String[categories.size()];
+            for (int i = 0; i < categories.size(); i++) {
+                BookmarkCategory category = categories.get(i);
                 categoryTitles[i] = category.Name;
             }
 
@@ -891,7 +893,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
             builder.setItems(categoryTitles, new OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    BookmarkCategory selected = output.get(which);
+                    BookmarkCategory selected = categories.get(which);
                     bookOrUnbook(selected);
                 }
             });

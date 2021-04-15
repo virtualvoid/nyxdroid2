@@ -9,6 +9,7 @@ import sk.virtualvoid.core.TaskManager;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.Bookmark;
 import sk.virtualvoid.nyxdroid.v2.data.BookmarkCategory;
+import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.adapters.BookmarkAdapter;
 import sk.virtualvoid.nyxdroid.v2.data.dac.BookmarkDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.query.BookmarkQuery;
@@ -35,9 +36,9 @@ public class BookmarksActivity extends BaseActivity {
 	private boolean unreadBookmarks;
 	private boolean unreadHistory;
 	private HashMap<Long, Boolean> expandState;
-	private Task<BookmarkQuery, ArrayList<Bookmark>> tempTask = null;
+	private Task<BookmarkQuery, SuccessResponse<ArrayList<Bookmark>>> tempTask = null;
 	private BookmarkAdapter adapter;
-	private BookmarksTaskListener bookmarksTaskListener = new BookmarksTaskListener();
+	private final BookmarksTaskListener bookmarksTaskListener = new BookmarksTaskListener();
 	private SearchView searchView;
 
 	@Override
@@ -58,6 +59,7 @@ public class BookmarksActivity extends BaseActivity {
 
 		expandState = new HashMap<Long, Boolean>();
 
+		// TODO: v api je teraz EXPAND parameter, takze niekedy v buducnosti toto rozklikavanie kategorii treba optimalizovat
 		ListView lv = getListView();
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -189,26 +191,26 @@ public class BookmarksActivity extends BaseActivity {
 	 * @author Juraj
 	 * 
 	 */
-	private static class BookmarksTaskListener extends TaskListener<ArrayList<Bookmark>> {
+	private static class BookmarksTaskListener extends TaskListener<SuccessResponse<ArrayList<Bookmark>>> {
 		@Override
-		public void done(ArrayList<Bookmark> output) {
-			BookmarksActivity context = (BookmarksActivity) getContext();
+		public void done(SuccessResponse<ArrayList<Bookmark>> output) {
+			BookmarksActivity activity = (BookmarksActivity) getContext();
 			BookmarkQuery query = (BookmarkQuery) getTag();
 
 			if (query.CategoryId == null) {
-				context.expandState.clear();
-				context.setListAdapter(context.adapter = new BookmarkAdapter(context, output));
+				activity.expandState.clear();
+				activity.setListAdapter(activity.adapter = new BookmarkAdapter(activity, output.getData()));
 			} else {
-				boolean expand = context.expandState.get(query.CategoryId);
+				boolean expand = activity.expandState.get(query.CategoryId);
 				if (expand) {
-					context.adapter.clearCategory(query.CategoryId);
+					activity.adapter.clearCategory(query.CategoryId);
 				} else {
-					context.adapter.replaceCategory(query.CategoryId, output);
+					activity.adapter.replaceCategory(query.CategoryId, output.getData());
 				}
-				context.adapter.notifyDataSetChanged();
+				activity.adapter.notifyDataSetChanged();
 			}
 			
-			context.getPullToRefreshAttacher().setRefreshComplete();
+			activity.getPullToRefreshAttacher().setRefreshComplete();
 		}
 	}
 }
