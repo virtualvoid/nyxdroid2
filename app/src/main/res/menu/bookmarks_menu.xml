@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/search"
-        android:actionViewClass="android.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         android:icon="?attr/search_icon"
-        android:showAsAction="ifRoom|collapseActionView"
+        app:showAsAction="ifRoom|collapseActionView"
         android:title="@string/bookmarks_search"/>
     <item
         android:id="@+id/refresh"
         android:icon="?attr/reload_icon"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="@string/refresh"/>
 
 </menu>

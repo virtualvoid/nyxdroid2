@@ -38,6 +38,8 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * FIXME
  */
@@ -119,7 +121,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
         final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
 
         // Create Header view and then add to Decor View
-        mHeaderView = LayoutInflater.from(mEnvironmentDelegate.getContextForInflater(activity))
+        mHeaderView = LayoutInflater.from(mEnvironmentDelegate.getContextForInflater((AppCompatActivity) activity))
                 .inflate(options.headerLayout, decorView, false);
         if (mHeaderView == null) {
             throw new IllegalArgumentException("Must supply valid layout id for header.");
@@ -508,9 +510,9 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
         /**
          * @return Context which should be used for inflating the header layout
          */
-        public Context getContextForInflater(Activity activity) {
+        public Context getContextForInflater(AppCompatActivity activity) {
             if (Build.VERSION.SDK_INT >= 14) {
-                return activity.getActionBar().getThemedContext();
+                return activity.getSupportActionBar().getThemedContext();
             } else {
                 return activity;
             }
