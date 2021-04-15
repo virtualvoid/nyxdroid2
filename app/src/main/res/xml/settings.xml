@@ -138,14 +138,7 @@
             android:key="notifications_reply_enabled"
             android:title="@string/notify_on_reply" />
 
-        <RingtonePreference
-            android:dependency="notifications_enabled"
-            android:disableDependentsState="false"
-            android:key="notifications_ringtone"
-            android:ringtoneType="all"
-            android:showDefault="true"
-            android:showSilent="true"
-            android:title="@string/notification_sound" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

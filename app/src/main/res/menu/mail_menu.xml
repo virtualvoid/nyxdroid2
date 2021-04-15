@@ -5,19 +5,19 @@
     <item
         android:id="@+id/compose"
         android:icon="?attr/add_icon"
-        android:showAsAction="always"
-        android:title="@string/mail_new"/>
+        android:title="@string/mail_new"
+        app:showAsAction="always" />
      
     <item
         android:id="@+id/refresh"
         android:icon="?attr/reload_icon"
-        android:showAsAction="always"
-        android:title="@string/mail_refresh"/>
+        android:title="@string/mail_refresh"
+        app:showAsAction="always" />
     <item
         android:id="@+id/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         android:icon="?attr/search_icon"
-        android:showAsAction="ifRoom|collapseActionView"
-        android:title="@string/search"/>
+        android:title="@string/search"
+        app:showAsAction="ifRoom|collapseActionView" />
 
 </menu>
