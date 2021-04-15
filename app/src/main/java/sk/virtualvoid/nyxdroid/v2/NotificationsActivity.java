@@ -54,14 +54,6 @@ public class NotificationsActivity extends BaseActivity {
 						startActivity(intent);
 						overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
 					}
-					
-					if (notice.Section.equalsIgnoreCase(Notice.SECTION_EVENTS)) {
-						Intent intent = new Intent(NotificationsActivity.this, EventActivity.class);
-						intent.putExtra(Constants.KEY_ID, notice.Id);
-						intent.putExtra(Constants.KEY_COMMENT_ID, notice.CommentId);
-						startActivity(intent);
-						overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
-					}
 				}
 				
 				if (notice.Type == NoticeType.THUMBS) {

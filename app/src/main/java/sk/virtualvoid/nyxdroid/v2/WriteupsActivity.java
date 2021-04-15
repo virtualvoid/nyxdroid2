@@ -208,16 +208,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
             @Override
             public void onItemClick(AdapterView<?> parent, View row, int position, long id) {
                 Writeup wu = (Writeup) parent.getItemAtPosition(position);
-
-                switch (wu.Type) {
-                    case Writeup.TYPE_MARKET:
-                        market(wu);
-                        break;
-
-                    default:
-                        composeOne(wu);
-                        break;
-                }
+                composeOne(wu);
             }
         });
 
@@ -627,20 +618,6 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
 
         startActivityForResult(intent, Constants.REQUEST);
 
-        return true;
-    }
-
-    private boolean market(Writeup wu) {
-        Long marketId = wu.marketId();
-        if (marketId == null) {
-            Toast.makeText(WriteupsActivity.this, R.string.iam_not_sure_if_this_is_market_or_njot, Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        Intent intent = new Intent(WriteupsActivity.this, AdvertActivity.class);
-        intent.putExtra(Constants.KEY_ID, marketId);
-
-        startActivity(intent);
         return true;
     }
 

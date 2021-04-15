@@ -54,11 +54,6 @@
             android:icon="@drawable/ic_activities"
             android:label="@string/app_name_settings" />
         <activity
-            android:name="sk.virtualvoid.nyxdroid.v2.FeedActivity"
-            android:configChanges="orientation|screenSize"
-            android:icon="@drawable/ic_activities"
-            android:label="@string/app_name_feed" />
-        <activity
             android:name="sk.virtualvoid.nyxdroid.v2.MailActivity"
             android:configChanges="orientation|screenSize"
             android:icon="@drawable/ic_activities"
@@ -90,11 +85,6 @@
             android:icon="@drawable/ic_activities"
             android:label="@string/app_name_search" />
         <activity
-            android:name="sk.virtualvoid.nyxdroid.v2.FriendsActivity"
-            android:configChanges="orientation|screenSize"
-            android:icon="@drawable/ic_activities"
-            android:label="@string/app_name_friends" />
-        <activity
             android:name="sk.virtualvoid.nyxdroid.v2.GalleryActivity"
             android:configChanges="orientation|screenSize"
             android:icon="@drawable/ic_activities"
@@ -109,21 +99,6 @@
             android:configChanges="orientation|screenSize"
             android:icon="@drawable/ic_activities"
             android:label="@string/app_name_notifications" />
-        <activity
-            android:name="sk.virtualvoid.nyxdroid.v2.EventsActivity"
-            android:configChanges="orientation|screenSize"
-            android:icon="@drawable/ic_activities"
-            android:label="@string/app_name_events" />
-        <activity
-            android:name="sk.virtualvoid.nyxdroid.v2.EventActivity"
-            android:configChanges="orientation|screenSize"
-            android:icon="@drawable/ic_activities"
-            android:label="@string/app_name_event_detail" />
-        <activity
-            android:name="sk.virtualvoid.nyxdroid.v2.AdvertActivity"
-            android:configChanges="orientation|screenSize"
-            android:icon="@drawable/ic_activities"
-            android:label="@string/app_name_market_detail" />
         <activity
             android:name="sk.virtualvoid.nyxdroid.v2.InformationActivity"
             android:configChanges="orientation|screenSize"

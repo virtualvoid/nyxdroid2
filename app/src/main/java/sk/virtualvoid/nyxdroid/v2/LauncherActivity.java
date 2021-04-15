@@ -82,8 +82,6 @@ public class LauncherActivity extends Activity implements OnClickListener {
 		Intent intent = null;
 		switch (defaultViewId) {
 			case 0:
-				intent = new Intent(LauncherActivity.this, FeedActivity.class);
-				break;
 			case 1:
 				intent = new Intent(LauncherActivity.this, MailActivity.class);
 				break;
@@ -96,8 +94,6 @@ public class LauncherActivity extends Activity implements OnClickListener {
 				intent.putExtra(Constants.KEY_BOOKMARKS_IS_HISTORY, true);
 				break;
 			case 4:
-				intent = new Intent(LauncherActivity.this, FriendsActivity.class);
-				break;
 			case 5:
 				intent = new Intent(LauncherActivity.this, NotificationsActivity.class);
 				break;
