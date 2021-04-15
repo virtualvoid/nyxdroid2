@@ -4,7 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Context {
-    protected class User {
+    public class User {
         private String name;
         private int unreadMail;
         private String lastMailFrom;
@@ -12,6 +12,10 @@ public class Context {
 
         private User() {
 
+        }
+
+        public int getUnreadMail() {
+            return unreadMail;
         }
     }
 

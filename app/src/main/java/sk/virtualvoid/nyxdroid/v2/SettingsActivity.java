@@ -12,8 +12,6 @@ import sk.virtualvoid.nyxdroid.v2.data.dac.CommonDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.dac.UserActivityDataAccess;
 import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -26,6 +24,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.gcm.GCMRegistrar;
 
 /**
@@ -47,7 +49,7 @@ public class SettingsActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		FragmentManager fm = getFragmentManager();
+		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		
 		settingsFragment = 	(SettingsFragment) fm.findFragmentByTag(SETTINGS_FRAGMENT_TAG);

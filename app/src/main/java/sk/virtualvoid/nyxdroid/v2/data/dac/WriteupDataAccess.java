@@ -21,7 +21,9 @@ import sk.virtualvoid.net.nyx.Connector;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.BaseResponse;
+import sk.virtualvoid.nyxdroid.v2.data.Context;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
+import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.UserActivity;
 import sk.virtualvoid.nyxdroid.v2.data.Writeup;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupBookmarkResponse;
@@ -42,8 +44,8 @@ import android.app.Activity;
 public class WriteupDataAccess {
     private final static Logger log = Logger.getLogger(WriteupDataAccess.class);
 
-    public static Task<WriteupQuery, WriteupResponse> getWriteups(Activity context, TaskListener<WriteupResponse> listener) {
-        return new Task<WriteupQuery, WriteupResponse>(context, new GetWriteupsTaskWorker(), listener);
+    public static Task<WriteupQuery, SuccessResponse<WriteupResponse>> getWriteups(Activity context, TaskListener<SuccessResponse<WriteupResponse>> listener) {
+        return new Task<WriteupQuery, SuccessResponse<WriteupResponse>>(context, new GetWriteupsTaskWorker(), listener);
     }
 
     public static Task<WriteupQuery, NullResponse> sendWriteup(Activity context, TaskListener<NullResponse> listener) {
@@ -74,10 +76,11 @@ public class WriteupDataAccess {
         return new Task<WriteupBookmarkQuery, WriteupBookmarkResponse>(context, new BookOrUnbookWriteupTaskWorker(), listener);
     }
 
-    public static class GetWriteupsTaskWorker extends TaskWorker<WriteupQuery, WriteupResponse> {
+    public static class GetWriteupsTaskWorker extends TaskWorker<WriteupQuery, SuccessResponse<WriteupResponse>> {
         @Override
-        public WriteupResponse doWork(WriteupQuery input) throws NyxException {
+        public SuccessResponse<WriteupResponse> doWork(WriteupQuery input) throws NyxException {
             WriteupResponse result = new WriteupResponse();
+            Context context = null;
 
             Connector connector = new Connector(getContext());
 
@@ -156,13 +159,15 @@ public class WriteupDataAccess {
                             result.Writeups.add(writeup);
                         }
                     }
+
+                    context = Context.fromJSONObject(root);
                 } catch (Throwable e) {
                     log.error("GetWriteupsTaskWorker", e);
                     throw new NyxException(e);
                 }
             }
 
-            return result;
+            return new SuccessResponse<>(result, context);
         }
     }
 

@@ -139,7 +139,7 @@ public class BookmarksActivity extends BaseActivity {
 			}
 		});
 
-		return true;
+		return onAfterCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -212,6 +212,7 @@ public class BookmarksActivity extends BaseActivity {
 			}
 			
 			activity.getPullToRefreshAttacher().setRefreshComplete();
+			activity.displayMailNotificationOnToolbar(output.getContext());
 		}
 	}
 }

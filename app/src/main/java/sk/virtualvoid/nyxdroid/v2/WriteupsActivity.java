@@ -90,7 +90,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
     private boolean useBackPressWriteupReturn = false;
     private boolean refreshAfterWriteupSend = true;
     private ArrayDeque<Integer> previousPositions = new ArrayDeque<Integer>();
-    private Task<WriteupQuery, WriteupResponse> tempDataTask = null;
+    private Task<WriteupQuery, SuccessResponse<WriteupResponse>> tempDataTask = null;
     private Task<WriteupQuery, VotingResponse> tempRatingTask = null;
     private WriteupTaskListener writeupTaskListener = new WriteupTaskListener();
     private RatingTaskListener ratingTaskListener = new RatingTaskListener();
@@ -776,9 +776,11 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
         return true;
     }
 
-    private class WriteupTaskListener extends TaskListener<WriteupResponse> {
+    private class WriteupTaskListener extends TaskListener<SuccessResponse<WriteupResponse>> {
         @Override
-        public void done(WriteupResponse output) {
+        public void done(SuccessResponse<WriteupResponse> response) {
+            WriteupResponse output = response.getData();
+
             WriteupQuery query = (WriteupQuery) getTag();
             WriteupsActivity context = (WriteupsActivity) getContext();
 
@@ -812,6 +814,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
             invalidateOptionsMenu();
 
             getPullToRefreshAttacher().setRefreshComplete();
+            displayMailNotificationOnToolbar(response.getContext());
         }
     }
 
@@ -917,13 +920,13 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
         }
     }
 
-    private class WriteupResponsesTaskListener extends TaskListener<WriteupResponse> {
+    private class WriteupResponsesTaskListener extends TaskListener<SuccessResponse<WriteupResponse>> {
         @Override
-        public void done(WriteupResponse output) {
+        public void done(SuccessResponse<WriteupResponse> output) {
             WriteupQuery query = (WriteupQuery) getTag();
             WriteupsActivity context = (WriteupsActivity) getContext();
 
-            ArrayList<Writeup> model = output.Writeups;
+            ArrayList<Writeup> model = output.getData().Writeups;
 
             if (model.size() == 0) {
                 Toast.makeText(getContext(), R.string.no_responses_for_this_writeup, Toast.LENGTH_SHORT).show();

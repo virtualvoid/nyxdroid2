@@ -25,7 +25,7 @@ public class InformationActivity extends BaseActivity {
 		String appNameAndVersion = getResources().getString(R.string.app_name_and_version);
 
 		TextView textView = (TextView)findViewById(R.id.information_appname_and_version);
-		textView.setText(Html.fromHtml(String.format("click for changelog: <u>%s</u>", appNameAndVersion)));
+		textView.setText(Html.fromHtml(String.format("<u>%s</u>", appNameAndVersion)));
 		textView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

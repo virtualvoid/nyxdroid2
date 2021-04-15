@@ -7,6 +7,7 @@ import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskManager;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.library.Constants.WriteupDirection;
+import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.Writeup;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupList;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupResponse;
@@ -27,7 +28,7 @@ import android.widget.GridView;
  */
 public class GalleryGridActivity extends BaseActivity {
 	private WriteupTaskListener writeupTaskListener = new WriteupTaskListener();
-	private Task<WriteupQuery, WriteupResponse> tempDataTask = null;
+	private Task<WriteupQuery, SuccessResponse<WriteupResponse>> tempDataTask = null;
 
 	private long discussionId;
 	private String discussionName;
@@ -163,9 +164,11 @@ public class GalleryGridActivity extends BaseActivity {
 		TaskManager.startTask(tempDataTask, query);
 	}
 
-	private class WriteupTaskListener extends TaskListener<WriteupResponse> {
+	private class WriteupTaskListener extends TaskListener<SuccessResponse<WriteupResponse>> {
 		@Override
-		public void done(WriteupResponse output) {
+		public void done(SuccessResponse<WriteupResponse> response) {
+			WriteupResponse output = response.getData();
+
 			WriteupQuery query = (WriteupQuery) getTag();
 			if (query.Direction == WriteupDirection.WRITEUP_DIRECTION_NEWEST) {
 				adapter.clearItems();

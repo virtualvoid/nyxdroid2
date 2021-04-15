@@ -3,6 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:visible="false"
+        android:id="@+id/notify"
+        android:icon="?attr/mail_icon"
+        app:showAsAction="always"
+        android:title=""
+        app:actionLayout="@layout/badge_mail"
+    />
+
+    <item
         android:id="@+id/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         android:icon="?attr/search_icon"

@@ -14,6 +14,7 @@ import sk.virtualvoid.net.nyx.Connector;
 import sk.virtualvoid.net.nyx.IConnectorReporter;
 import sk.virtualvoid.net.nyx.IConnectorReporterHandler;
 import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.nyxdroid.v2.data.Context;
 import sk.virtualvoid.nyxdroid.v2.internal.Appearance;
 import sk.virtualvoid.nyxdroid.v2.internal.GooglePlayRating;
 import sk.virtualvoid.nyxdroid.v2.internal.INavigationHandler;
@@ -25,9 +26,11 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -36,6 +39,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -53,6 +57,8 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 	private static volatile int ACTIVITY_COUNT = 0;
 
 	protected Appearance appearance;
+
+	private Menu toolbarMenu;
 
 	private BaseMenu baseMenu;
 	private ListView listView;
@@ -195,6 +201,11 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 	}
 
 	// ===================================================================================
+	protected boolean onAfterCreateOptionsMenu(Menu menu) {
+		this.toolbarMenu = menu;
+		return true;
+	}
+	// ===================================================================================
 
 	// TODO: zasa inokedy
 
@@ -269,11 +280,8 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 		// setup side navigation, and it's theme
 		initializeMenu();
 
-		// push notifications setup
+		// push notifications setup TODO:
 		//launchGcm();
-
-		// rating tracker
-		//GooglePlayRating.getGooglePlayRating(this).execute();
 
 		// restore ?
 		if (savedInstanceState == null) {
@@ -545,4 +553,49 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 	}
 
 	// ===================================================================================
+
+	protected void displayMailNotificationOnToolbar(Context context) {
+		if (context == null || context.getUser() == null) {
+			return;
+		}
+
+		if (toolbarMenu == null) {
+			return;
+		}
+
+		final BaseActivity activity = this;
+
+		MenuItem item = toolbarMenu.findItem(R.id.notify);
+		if (item == null) {
+			return;
+		}
+
+		View itemView = item.getActionView();
+		if (itemView == null) {
+			return;
+		}
+
+		int unreadMail = context.getUser().getUnreadMail();
+		if (unreadMail == 0) {
+			itemView.setOnClickListener(null);
+			item.setVisible(false);
+		} else {
+			TextView textView = itemView.findViewById(R.id.hotlist_hot);
+			textView.setText(String.format("%d", unreadMail));
+
+			itemView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent(activity, MailActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+					activity.startActivity(intent);
+					activity.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+					activity.finish();
+
+				}
+			});
+			item.setVisible(true);
+		}
+	}
 }
