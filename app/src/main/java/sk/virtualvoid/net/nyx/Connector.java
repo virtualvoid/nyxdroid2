@@ -96,6 +96,10 @@ public class Connector {
         return authNick;
     }
 
+    public String getAuthToken() {
+        return authToken;
+    }
+
     public static boolean authorizationRequired(Context context) {
         if (context == null) {
             log.fatal("Connector/authorizationRequired got empty context !!!");
