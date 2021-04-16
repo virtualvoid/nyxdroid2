@@ -24,8 +24,10 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -226,6 +228,63 @@ public class Connector {
             post.setEntity(new UrlEncodedFormEntity(form, HTTP.UTF_8));
 
             HttpResponse response = client.execute(post);
+            int statusCode = getStatusCode(response);
+            if (statusCode == 200) {
+                HttpEntity entity = response.getEntity();
+
+                jsonString = convertInputStreamToString(entity.getContent());
+
+                JSONObject obj = new JSONObject(jsonString);
+                return obj;
+            }
+        } catch (Throwable t) {
+            log.error(String.format("form=%s", url), t);
+        }
+        return null;
+    }
+
+    public JSONObject multipart(String method, String url, HashMap<String, Object> parameters) {
+        String jsonString = "";
+        try {
+            DefaultHttpClient client = getHttpClient(false);
+
+            HttpEntityEnclosingRequestBase request = null;
+
+            if (method.equalsIgnoreCase("put")) {
+                request = new HttpPut(Constants.getApiUrl() + url);
+            } else if (method.equalsIgnoreCase("post")) {
+                request = new HttpPost(Constants.getApiUrl() + url);
+            } else {
+                log.error(String.format("multipart: invalid method: %s", method));
+                return null;
+            }
+
+            request.addHeader("Authorization", "Bearer " + authToken);
+
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+
+            Set<Entry<String, Object>> set = parameters.entrySet();
+            Iterator<Entry<String, Object>> it = set.iterator();
+
+            while (it.hasNext()) {
+                Entry<String, Object> curr = it.next();
+
+                String key = curr.getKey();
+                Object value = curr.getValue();
+
+                if (value instanceof String || value instanceof Long) {
+                    String convertedValue = value.toString();
+                    builder.addPart(key, new StringBody(convertedValue, ContentType.create("text/plain", Constants.DEFAULT_CHARSET)));
+                } else if (value instanceof File) {
+                    builder.addPart(key, new FileBody((File) value));
+                } else {
+                    log.error(String.format("Unknown type for multipart with key: %s", key));
+                }
+            }
+
+            request.setEntity(builder.build());
+
+            HttpResponse response = client.execute(request);
             int statusCode = getStatusCode(response);
             if (statusCode == 200) {
                 HttpEntity entity = response.getEntity();

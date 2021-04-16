@@ -93,6 +93,8 @@ public class Constants {
 	public static final String REQUEST_WRITEUP_DISCUSSION_ID = "writeup_discussion_id";
 	public static final String REQUEST_WRITEUP_DISCUSSION_NAME = "writeup_discussion_name";
 
+	public static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 64;
+
 	public static final int REQUEST = 1;
 	public static final int REQUEST_RESPONSE_FAIL = -1;
 	public static final int REQUEST_RESPONSE_CANCEL = 0;

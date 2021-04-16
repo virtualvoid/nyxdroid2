@@ -25,6 +25,7 @@ import sk.virtualvoid.nyxdroid.v2.data.Mail;
 import sk.virtualvoid.nyxdroid.v2.data.MailNotification;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
 import sk.virtualvoid.nyxdroid.v2.data.UserActivity;
+import sk.virtualvoid.nyxdroid.v2.data.WaitingFile;
 import sk.virtualvoid.nyxdroid.v2.data.query.MailQuery;
 
 import android.app.Activity;
@@ -141,12 +142,26 @@ public class MailDataAccess {
         public NullResponse doWork(MailQuery input) throws NyxException {
             Connector connector = new Connector(getContext());
 
+            JSONObject json = null;
+            WaitingFile waitingFile = null;
+
+            if (input.AttachmentSource != null) {
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("file", input.AttachmentSource);
+                map.put("file_type", "discussion_attachment");
+                map.put("id_specific", input.Id);
+
+                json = connector.multipart("PUT", "/file/upload", map);
+                waitingFile = WaitingFile.fromJSONObject(json);
+            }
+
             List<NameValuePair> form = new ArrayList<NameValuePair>();
             form.add(new BasicNameValuePair("recipient", input.To));
             form.add(new BasicNameValuePair("message", input.Message));
             //form.add(new BasicNameValuePair("format", "text/plain"));
 
-            JSONObject json = connector.form("/mail/send", form);
+            json = connector.form("/mail/send", form);
+            // TODO: check if the call was successful
 
             return NullResponse.success();
         }

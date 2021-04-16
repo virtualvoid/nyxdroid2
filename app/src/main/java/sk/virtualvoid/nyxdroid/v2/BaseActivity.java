@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
@@ -255,6 +256,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 		} else {
 			setTheme(R.style.NyxdroidTheme_Light);
 		}
+
+		// mne sa vazne nechcelo srat so spravnym handlovanim zmeny P/L
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		// setup view
 		setContentView(getContentViewId());
