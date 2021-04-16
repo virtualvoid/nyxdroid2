@@ -2,7 +2,9 @@ package sk.virtualvoid.nyxdroid.v2;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
+import pub.devrel.easypermissions.EasyPermissions;
 import sk.virtualvoid.core.CoreUtility;
 import sk.virtualvoid.core.ImageDownloader;
 import sk.virtualvoid.core.ImageGetterAsync;
@@ -232,11 +234,22 @@ public class WriteupComposeActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
     private boolean attachment() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        intent.putExtra("return-data", false);
-        startActivityForResult(intent, Constants.REQUEST_ATTACHMENT);
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            intent.putExtra("return-data", false);
+            startActivityForResult(intent, Constants.REQUEST_ATTACHMENT);
+        } else {
+            // TODO: rationale
+            EasyPermissions.requestPermissions(this, "inak to nejde", Constants.REQUEST_PERMISSION_READ_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
         return true;
     }
 

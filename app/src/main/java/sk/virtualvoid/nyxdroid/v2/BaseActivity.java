@@ -2,9 +2,11 @@ package sk.virtualvoid.nyxdroid.v2;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import pub.devrel.easypermissions.EasyPermissions;
 import sk.virtualvoid.core.CoreUtility;
 import sk.virtualvoid.core.ITaskKey;
 import sk.virtualvoid.core.ImageGetterAsync;
@@ -43,6 +45,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -53,7 +56,7 @@ import com.google.android.gcm.GCMRegistrar;
  * @author juraj
  * 
  */
-public abstract class BaseActivity extends AppCompatActivity implements IConnectorReporterHandler, INavigationHandler, ITaskKey {
+public abstract class BaseActivity extends AppCompatActivity implements IConnectorReporterHandler, INavigationHandler, ITaskKey, EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
 	private final static Logger log = Logger.getLogger(BaseActivity.class);
 	private static volatile int ACTIVITY_COUNT = 0;
 
@@ -602,4 +605,27 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 			item.setVisible(true);
 		}
 	}
+
+	// ===================================================================================
+
+	@Override
+	public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+	}
+
+	@Override
+	public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
+	}
+
+	@Override
+	public void onRationaleAccepted(int requestCode) {
+
+	}
+
+	@Override
+	public void onRationaleDenied(int requestCode) {
+
+	}
+	// ===================================================================================
 }

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +36,7 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
@@ -92,7 +95,6 @@ public class Connector {
     public String getAuthNick() {
         return authNick;
     }
-
 
     public static boolean authorizationRequired(Context context) {
         if (context == null) {
@@ -276,23 +278,31 @@ public class Connector {
                     String convertedValue = value.toString();
                     builder.addPart(key, new StringBody(convertedValue, ContentType.create("text/plain", Constants.DEFAULT_CHARSET)));
                 } else if (value instanceof File) {
-                    builder.addPart(key, new FileBody((File) value));
+                    FileNameMap fileNameMap = URLConnection.getFileNameMap();
+                    String contentType = fileNameMap.getContentTypeFor(((File) value).getName());
+                    builder.addPart(key, new FileBody((File) value, contentType));
                 } else {
                     log.error(String.format("Unknown type for multipart with key: %s", key));
                 }
             }
 
+            builder.setMode(HttpMultipartMode.RFC6532);
+
             request.setEntity(builder.build());
 
             HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
+
             int statusCode = getStatusCode(response);
             if (statusCode == 200) {
-                HttpEntity entity = response.getEntity();
-
                 jsonString = convertInputStreamToString(entity.getContent());
 
                 JSONObject obj = new JSONObject(jsonString);
                 return obj;
+            } else {
+                jsonString = convertInputStreamToString(entity.getContent());
+                JSONObject obj = new JSONObject(jsonString);
+                // TODO: check errors
             }
         } catch (Throwable t) {
             log.error(String.format("form=%s", url), t);
@@ -354,6 +364,17 @@ public class Connector {
 
         CookieStore cookieStore = new BasicCookieStore();
         client.setCookieStore(cookieStore);
+
+        /*
+        java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
+        java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
+
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+        System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "debug");
+        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "debug");
+        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "debug");
+        */
 
         return client;
     }

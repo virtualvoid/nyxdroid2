@@ -3,6 +3,7 @@ package sk.virtualvoid.nyxdroid.v2.internal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import sk.virtualvoid.core.CoreUtility;
 import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.widgets.INavigationSpan;
 import sk.virtualvoid.nyxdroid.library.Constants;
@@ -13,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * @author Juraj
@@ -40,7 +42,13 @@ public class NavigationHandler {
                 boolean success = doNavigateTopic();
                 Log.d(Constants.TAG, "NavigationHandler - topic navigation succeeded: " + success);
             } else {
-                Log.e(Constants.TAG, "NavigationHandler - not implemented: " + navigationSpan.getUrl());
+                String url = navigationSpan.getUrl();
+
+                Log.w(Constants.TAG, "NavigationHandler - assuming external resource: " + url);
+
+                if (!CoreUtility.launchBrowser(context, url)) {
+                    Toast.makeText(context, R.string.cant_open_it, Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

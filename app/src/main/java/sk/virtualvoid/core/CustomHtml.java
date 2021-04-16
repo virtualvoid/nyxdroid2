@@ -30,6 +30,7 @@ public class CustomHtml {
     public static Spanned correctLinkPaths(Spanned input) {
         Pattern discussionPostPtr = Pattern.compile(".*/discussion/(\\d+)/id/(\\d+)", Pattern.CASE_INSENSITIVE);
         Pattern discussionPtr = Pattern.compile(".*/discussion/(\\d+)", Pattern.CASE_INSENSITIVE);
+        Pattern attachmentPtr = Pattern.compile(".*(original.bin\\?name)=(\\w+\\.\\w+)", Pattern.CASE_INSENSITIVE);
 
         URLSpan[] urlSpans = input.getSpans(0, input.length(), URLSpan.class);
         for (URLSpan span : urlSpans) {
@@ -38,9 +39,13 @@ public class CustomHtml {
             int flags = input.getSpanFlags(span);
 
             if (createCustomUrlSpan(input, span, start, end, flags, discussionPostPtr)) {
-                Log.i(Constants.TAG, String.format("correctLinkPaths: %s", span.getURL()));
+                Log.i(Constants.TAG, String.format("correctLinkPaths: ok: %s", span.getURL()));
             } else if (createCustomUrlSpan(input, span, start, end, flags, discussionPtr)) {
-                Log.i(Constants.TAG, String.format("correctLinkPaths: %s", span.getURL()));
+                Log.i(Constants.TAG, String.format("correctLinkPaths: ok: %s", span.getURL()));
+            } else if (createCustomAttachmentUrlSpan(input, span, start, end, flags, attachmentPtr)) {
+                Log.i(Constants.TAG, String.format("correctLinkPaths: ok: %s", span.getURL()));
+            } else {
+                Log.e(Constants.TAG, String.format("correctLinkPaths: failed: %s", span.getURL()));
             }
         }
 
@@ -85,4 +90,17 @@ public class CustomHtml {
         return false;
     }
 
+    private static boolean createCustomAttachmentUrlSpan(Spanned input, URLSpan span, int start, int end, int flags, Pattern ptr) {
+        Matcher matcher = ptr.matcher(span.getURL());
+        if (matcher.matches()) {
+            ((Spannable) input).removeSpan(span);
+
+            CustomUrlSpan replacement = new CustomUrlSpan(String.format("%s%s", Constants.INDEX, span.getURL()));
+
+            ((Spannable) input).setSpan(replacement, start, end, flags);
+
+            return true;
+        }
+        return false;
+    }
 }

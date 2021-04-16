@@ -148,8 +148,8 @@ public class MailDataAccess {
             if (input.AttachmentSource != null) {
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("file", input.AttachmentSource);
-                map.put("file_type", "discussion_attachment");
-                map.put("id_specific", input.Id);
+                map.put("file_type", "mail_attachment");
+                map.put("id_specific", 0L);
 
                 json = connector.multipart("PUT", "/file/upload", map);
                 waitingFile = WaitingFile.fromJSONObject(json);
