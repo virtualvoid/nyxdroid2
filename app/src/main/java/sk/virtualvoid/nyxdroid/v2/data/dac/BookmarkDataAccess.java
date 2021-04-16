@@ -133,7 +133,11 @@ public class BookmarkDataAccess {
                     JSONArray discussions = json.getJSONArray("discussions");
                     for (int discussionIndex = 0; discussionIndex < discussions.length(); discussionIndex++) {
                         JSONObject discussion = discussions.getJSONObject(discussionIndex);
-                        resultList.add(convert(discussion, null));
+                        Bookmark result = convert(discussion, null);
+                        if (!input.IncludeUnread && result.Unread == 0) {
+                            continue;
+                        }
+                        resultList.add(result);
                     }
 
                     context = Context.fromJSONObject(json);
