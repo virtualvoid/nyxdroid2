@@ -18,14 +18,11 @@ import sk.virtualvoid.net.nyx.IConnectorReporterHandler;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.Context;
 import sk.virtualvoid.nyxdroid.v2.internal.Appearance;
-import sk.virtualvoid.nyxdroid.v2.internal.GooglePlayRating;
 import sk.virtualvoid.nyxdroid.v2.internal.INavigationHandler;
 import sk.virtualvoid.nyxdroid.v2.internal.NavigationHandler;
 import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
-import sk.virtualvoid.nyxdroid.v2.internal.PushNotificationRegistrar;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -209,37 +206,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 		this.toolbarMenu = menu;
 		return true;
 	}
-	// ===================================================================================
-
-	private void launchGcm() {
-		try {
-			GCMRegistrar.checkDevice(this);
-			GCMRegistrar.checkManifest(this);
-
-			final String registrationId = GCMRegistrar.getRegistrationId(this);
-			if (registrationId.equals("")) {
-				GCMRegistrar.register(this, Constants.GCM_SENDER_ID);
-				Log.i(Constants.TAG, "GCM not yet registered");
-			} else {
-				if (!GCMRegistrar.isRegisteredOnServer(this)) {
-					PushNotificationRegistrar.register(this, registrationId);
-				}
-				Log.i(Constants.TAG, "GCM registered");
-			}
-		} catch (Throwable t) {
-			Log.e(Constants.TAG, "launchGcm error: " + t.getMessage());
-		}
-	}
-
-	private void stopGcm() {
-		try {
-			GCMRegistrar.onDestroy(this);
-
-			Log.i(Constants.TAG, "GCM registrar destroy.");
-		} catch (Throwable t) {
-			Log.e(Constants.TAG, "stopGcm error: " + t.getMessage());
-		}
-	}
 
 	// ===================================================================================
 
@@ -284,9 +250,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 
 		// setup side navigation, and it's theme
 		initializeMenu();
-
-		// push notifications setup
-		launchGcm();
 
 		// restore ?
 		if (savedInstanceState == null) {
@@ -342,8 +305,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 	protected void onDestroy() {
 		super.onDestroy();
 		ACTIVITY_COUNT--;
-
-		stopGcm();
 
 		// clear cache only on 'real' app-exit
 		if (ACTIVITY_COUNT <= 0) {

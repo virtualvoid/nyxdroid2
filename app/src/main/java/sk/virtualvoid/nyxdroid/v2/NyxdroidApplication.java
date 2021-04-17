@@ -1,11 +1,10 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.lang.Thread.UncaughtExceptionHandler;
+import android.os.Environment;
+import android.util.Log;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import androidx.annotation.NonNull;
+import androidx.multidex.MultiDexApplication;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -13,26 +12,22 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import de.mindpipe.android.logging.log4j.LogConfigurator;
 import sk.virtualvoid.core.ImageGetterAsync;
 import sk.virtualvoid.nyxdroid.library.Constants;
-import sk.virtualvoid.nyxdroid.v2.internal.PushNotificationRegistrar;
-
-import android.app.Application;
-import android.content.SharedPreferences;
-import android.graphics.BitmapFactory.Options;
-import android.os.Environment;
-import android.preference.PreferenceManager;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.multidex.MultiDexApplication;
 
 /**
  * 
@@ -67,23 +62,23 @@ public class NyxdroidApplication extends MultiDexApplication {
 			Log.e(Constants.TAG, "Unable to initialize TLS 1.2!");
 		}
 
-		FirebaseMessaging.getInstance().getToken()
+		FirebaseAnalytics.getInstance(getApplicationContext())
+				.setAnalyticsCollectionEnabled(true);
+
+		FirebaseMessaging.getInstance()
+				.getToken()
 				.addOnCompleteListener(new OnCompleteListener<String>() {
 					@Override
 					public void onComplete(@NonNull Task<String> task) {
 						if (!task.isSuccessful()) {
-							Log.w("TAGTAG", "Fetching FCM registration token failed", task.getException());
+							Log.w(Constants.TAG, "Fetching FCM registration token failed", task.getException());
 							return;
 						}
-						SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-						String token = prefs.getString("FIREBASE_TOKEN", null);
-						if(token == null){
-							prefs.edit().putString("FIREBASE_TOKEN", task.getResult()).apply();
-							Log.i("TAGTAG", task.getResult());
-							PushNotificationRegistrar.register(getBaseContext(), task.getResult());
-						}
 
-					}});
+						String token = task.getResult();
+						GCMIntentService.firePushNotificationRegister(getApplicationContext(), token, false);
+					}
+				});
 
 		DisplayImageOptions ilOptions = new DisplayImageOptions.Builder()
 				.cacheOnDisc(true)

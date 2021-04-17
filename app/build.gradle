@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 def androidHome = System.getenv("ANDROID_HOME")
 def pass = System.getenv("RELEASE_PASS")
@@ -72,20 +73,29 @@ dependencies {
     implementation project(':photoview')
     implementation project(':pulltorefreshactionbar')
     implementation project(':slidingmenujf')
+
+    implementation platform('com.google.firebase:firebase-bom:27.0.0')
+    implementation 'com.google.firebase:firebase-analytics'
+
     implementation "commons-logging:commons-logging-api:1.1"
+
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.legacy:legacy-preference-v14:1.0.0"
     implementation "androidx.preference:preference:1.1.1"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
     implementation 'com.google.android.gms:play-services-base:17.6.0'
-    implementation 'com.google.firebase:firebase-core:18.0.2'
-    implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.google.firebase:firebase-core:18.0.3'
+    implementation 'com.google.firebase:firebase-messaging:21.1.0'
+    implementation 'com.google.firebase:firebase-messaging-directboot:21.1.0'
+
 
     // Hack for universal image loader :)
     implementation 'com.github.nostra13:Android-Universal-Image-Loader:f6a9615868482672c3630cb7db6dcf43391e80de'
 
     implementation 'org.jsoup:jsoup:1.13.1'
     implementation 'pub.devrel:easypermissions:3.0.0'
+    implementation 'com.google.firebase:firebase-crashlytics:17.4.1'
 
     def multidex_version = "2.0.1"
     implementation "androidx.multidex:multidex:$multidex_version"

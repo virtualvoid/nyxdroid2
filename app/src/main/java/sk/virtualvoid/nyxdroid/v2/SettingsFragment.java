@@ -1,20 +1,8 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.messaging.FirebaseMessaging;
-
-import sk.virtualvoid.nyxdroid.v2.internal.PushNotificationRegistrar;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     public SettingsFragment() {

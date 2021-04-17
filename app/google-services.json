@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "855383046743",
-    "project_id": "nyxdroid-8124f",
-    "storage_bucket": "nyxdroid-8124f.appspot.com"
+    "project_number": "156568407181",
+    "project_id": "nyxdroidv2",
+    "storage_bucket": "nyxdroidv2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:855383046743:android:452fe7ead4cc2782e20112",
+        "mobilesdk_app_id": "1:156568407181:android:6e6ec48036e53de7c366c4",
         "android_client_info": {
           "package_name": "sk.virtualvoid.nyxdroid.v2"
         }
       },
       "oauth_client": [
         {
-          "client_id": "855383046743-m3ei7c6rfoe5mj2lfovigpmdnskfl2ct.apps.googleusercontent.com",
+          "client_id": "156568407181-hja58m5hjrcpiikf1c59krr7s64kele4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAwYy9qgLaKoUQSxaWjH5J_QDJqEBY61v8"
+          "current_key": "AIzaSyCUWog4ZBFTyBJCJHhNbNpZDQag2SgSOE0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "855383046743-m3ei7c6rfoe5mj2lfovigpmdnskfl2ct.apps.googleusercontent.com",
+              "client_id": "156568407181-hja58m5hjrcpiikf1c59krr7s64kele4.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

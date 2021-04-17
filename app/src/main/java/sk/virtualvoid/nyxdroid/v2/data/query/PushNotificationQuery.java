@@ -9,4 +9,8 @@ import sk.virtualvoid.core.ITaskQuery;
  */
 public class PushNotificationQuery implements ITaskQuery {	
 	public String RegistrationId;
+
+	public PushNotificationQuery(String registrationId) {
+		RegistrationId = registrationId;
+	}
 }
