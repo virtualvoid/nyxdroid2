@@ -119,6 +119,7 @@ public class MailDataAccess {
                             }
 
                             mail.IsUnread = post.has("unread") && post.getBoolean("unread");
+                            mail.IsReminded = post.has("reminder") && post.getBoolean("reminder");
 
                             mail.IsMine = connector.getAuthNick().equalsIgnoreCase(post.getString("username"));
 
@@ -170,7 +171,16 @@ public class MailDataAccess {
     public static class ReminderMailTaskWorker extends TaskWorker<MailQuery, NullResponse> {
         @Override
         public NullResponse doWork(MailQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            Connector connector = new Connector(getContext());
+
+            String baseUrl = "/mail/reminder/" + input.Id + "/" + input.NewState;
+
+            JSONObject root = connector.post(baseUrl);
+            if (root == null) {
+                throw new NyxException("Json result was null ?");
+            }
+
+            return NullResponse.success();
         }
     }
 

@@ -11,6 +11,7 @@ import android.os.Parcelable;
 public class Mail extends BaseComposePoco implements Parcelable {
 	public String Direction;
 	public boolean IsUnread;
+	public boolean IsReminded;
 	public UserActivity Location;
 	
 	public Mail() {
@@ -24,6 +25,7 @@ public class Mail extends BaseComposePoco implements Parcelable {
 		Content = source.readString();
 		Time = source.readLong();
 		IsUnread = source.readByte() == 1;
+		IsReminded = source.readByte() == 1;
 		Location = source.readParcelable(UserActivity.class.getClassLoader());
 	}
 
@@ -40,6 +42,7 @@ public class Mail extends BaseComposePoco implements Parcelable {
 		dest.writeString(Content);
 		dest.writeLong(Time);
 		dest.writeByte((byte) (IsUnread ? 1 : 0));
+		dest.writeByte((byte) (IsReminded ? 1 : 0));
 		dest.writeParcelable(Location, 0);
 	}
 

@@ -277,6 +277,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
                         WriteupQuery query = new WriteupQuery();
                         query.Id = WriteupsActivity.this.id;
                         query.TempId = wu.Id;
+                        query.NewState = !wu.IsReminded;
 
                         Task<WriteupQuery, NullResponse> task = WriteupDataAccess.reminder(WriteupsActivity.this, noopTaskListener);
                         TaskManager.startTask(task, query);

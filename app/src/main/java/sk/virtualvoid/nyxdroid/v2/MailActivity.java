@@ -141,6 +141,7 @@ public class MailActivity extends BaseActivity implements ISecondBaseMenu {
 
 						MailQuery query = new MailQuery();
 						query.Id = mail.Id;
+						query.NewState = !mail.IsReminded;
 
 						Task<MailQuery, NullResponse> task = MailDataAccess.reminderMail(MailActivity.this, noopTaskListener);
 						TaskManager.startTask(task, query);

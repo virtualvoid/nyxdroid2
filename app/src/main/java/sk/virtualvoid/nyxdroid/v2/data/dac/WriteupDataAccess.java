@@ -156,6 +156,7 @@ public class WriteupDataAccess {
                             writeup.Location = UserActivity.fromJson(post);
                             writeup.IsMine = connector.getAuthNick().equalsIgnoreCase(post.getString("username"));
                             writeup.CanDelete = post.has("can_be_deleted") && post.getBoolean("can_be_deleted");
+                            writeup.IsReminded = post.has("reminder") && post.getBoolean("reminder");
 
                             result.Writeups.add(writeup);
                         }
@@ -268,7 +269,16 @@ public class WriteupDataAccess {
     public static class ReminderTaskWorker extends TaskWorker<WriteupQuery, NullResponse> {
         @Override
         public NullResponse doWork(WriteupQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            Connector connector = new Connector(getContext());
+
+            String baseUrl = "/discussion/" + input.Id + "/reminder/" + input.TempId + "/" + input.NewState;
+
+            JSONObject root = connector.post(baseUrl);
+            if (root == null) {
+                throw new NyxException("Json result was null ?");
+            }
+
+            return NullResponse.success();
         }
     }
 

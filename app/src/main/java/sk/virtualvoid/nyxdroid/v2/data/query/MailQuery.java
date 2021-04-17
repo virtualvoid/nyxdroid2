@@ -21,6 +21,8 @@ public class MailQuery implements ITaskQuery {
 	public String Message;
 	public File AttachmentSource;
 
+	public boolean NewState;
+
 	public boolean isFilterUser() {
 		return FilterUser != null && FilterUser.length() > 0;
 	}

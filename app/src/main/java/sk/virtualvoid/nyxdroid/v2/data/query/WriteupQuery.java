@@ -33,7 +33,8 @@ public class WriteupQuery implements ITaskQuery {
 	public boolean LastSelected;
 	
 	public boolean IsDeleting;
-	
+	public boolean NewState;
+
 	public WriteupQuery() {
 		this.LastId = null;
 		this.FilterUser = null;
