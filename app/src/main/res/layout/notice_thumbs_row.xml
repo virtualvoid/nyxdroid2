@@ -13,6 +13,7 @@
 
     <TextView
         android:id="@+id/notice_row_thumb_count"
+        android:textColor="#FFFF00"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

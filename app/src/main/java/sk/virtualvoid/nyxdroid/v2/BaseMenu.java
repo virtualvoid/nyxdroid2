@@ -234,7 +234,7 @@ public class BaseMenu {
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_MAIL, R.drawable.light_action_mail, R.drawable.dark_action_mail, R.string.app_name_mail));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_BOOKMARKS, R.drawable.light_action_bookmark, R.drawable.dark_action_bookmark, R.string.app_name_bookmarks));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_HISTORY, R.drawable.light_action_clock, R.drawable.dark_action_clock, R.string.app_name_bookmarks_history));
-			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_NOTIFICATIONS, R.drawable.light_action_bulb, R.drawable.dark_action_bulb, R.string.app_name_notifications));
+			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_NOTIFICATIONS, R.drawable.light_action_bulb, R.drawable.dark_action_bulb, R.string.app_name_notifications));
 			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_SEARCH, R.drawable.light_action_search, R.drawable.dark_action_search, R.string.app_name_search));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_SETTINGS, R.drawable.light_action_gear, R.drawable.dark_action_gear, R.string.app_name_settings));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_ABOUT, R.drawable.light_action_info, R.drawable.dark_action_info, R.string.app_name_about));

@@ -87,6 +87,7 @@ public class WriteupDataAccess {
 
             // older posts (scrolling down)
             String baseUrl = "/discussion/" + input.Id;
+
             if (input.Direction == Constants.WriteupDirection.WRITEUP_DIRECTION_OLDER && input.LastId != null) {
                 baseUrl = baseUrl + "?order=older_than&from_id=" + input.LastId;
             }
