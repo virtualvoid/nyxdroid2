@@ -159,6 +159,10 @@ public class WriteupDataAccess {
                             writeup.CanDelete = post.has("can_be_deleted") && post.getBoolean("can_be_deleted");
                             writeup.IsReminded = post.has("reminder") && post.getBoolean("reminder");
 
+                            if (writeup.youtubeFix()) {
+                                log.warn(String.format("the writeup=%d from discussion=%d contains youtube, fixed.", writeup.Id, result.Id));
+                            }
+
                             result.Writeups.add(writeup);
                         }
                     }

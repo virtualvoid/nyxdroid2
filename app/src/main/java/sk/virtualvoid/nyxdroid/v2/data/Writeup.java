@@ -15,6 +15,7 @@ import android.util.Log;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 /**
@@ -24,11 +25,7 @@ public class Writeup extends BaseComposePoco implements Parcelable {
     public static final int TYPE_DEFAULT = 0;
     public static final int TYPE_MARKET = 97;
 
-    private static Pattern ptrImageSearch = Pattern.compile("<img[^>]*src=[\"']([^\"^']*)", Pattern.CASE_INSENSITIVE);
-    private static Pattern ptrImageUrl = Pattern.compile("src='(.*?)'", Pattern.CASE_INSENSITIVE);
-
-    private static Pattern ptrMarketSearch = Pattern.compile("l=market;l2=(\\d+);id=(\\d+)");
-    private static Pattern ptrSpoilerSearch = Pattern.compile("\"spoiler\"", Pattern.CASE_INSENSITIVE);
+    private static Pattern ptrSpoilerSearch = Pattern.compile(".*\"spoiler\"", Pattern.CASE_INSENSITIVE);
 
     public boolean Unread;
     public int Rating;
@@ -98,15 +95,66 @@ public class Writeup extends BaseComposePoco implements Parcelable {
         return results;
     }
 
-    public Long marketId() {
-        Matcher m = ptrMarketSearch.matcher(Content);
-
-        if (!m.find() || m.groupCount() == 0) {
-            return null;
+    public boolean youtubeFix() {
+        // fuck yo java regex
+        if (!Content.contains("youtube.com") && !Content.contains("youtu.be")) {
+            return false;
         }
 
-        long id = Long.parseLong(m.group(2));
-        return id;
+        // ideme parsovat vrateny obsah
+        // treba najst popis videa, link
+        // a obrazky (alebo obrazok)
+        // vsetko ostatne zahodit.
+
+        /*
+        <b>How to tune ms41 ECUs (BMW m52/s52 engines): Vanos tuning</b>
+        <br>
+        <a href='https://www.youtube.com/watch?v=LzfCsMxEnnM' class='extlink'>https://www.youtube.com/watch?v=LzfCsMxEnnM</a>
+        <br>
+        <div class='embed-wrapper' data-embed-type=youtube data-embed-value=LzfCsMxEnnM data-embed-hd=1>
+            <img src='https://img.youtube.com/vi/LzfCsMxEnnM/0.jpg' data-thumb='https://nyx.cz/thumbs/e7/63/e7638cb74ca9a8e367618eb4c12b4252.jpg?url=https%3A%2F%2Fimg.youtube.com%2Fvi%2FLzfCsMxEnnM%2F0.jpg'>
+            <img class="play sd" src="/images/play.png">
+            <img class="play hd" src="/images/play-hd.png">
+        </div>
+         */
+        Document doc = Jsoup.parse(Content);
+        Elements bodies = doc.getElementsByTag("body");
+        if (bodies.size() != 1) {
+            return false;
+        }
+
+        StringBuilder newContent = new StringBuilder();
+
+        Element body = bodies.get(0);
+        for (int nodeIndex = 0; nodeIndex < body.childNodeSize(); nodeIndex++) {
+            Node node = body.childNode(nodeIndex);
+            if (node.nodeName().equalsIgnoreCase("b") || node.nodeName().equalsIgnoreCase("br")) {
+                newContent.append(node.toString());
+                continue;
+            }
+            if (node.nodeName().equalsIgnoreCase("a") && (node.hasAttr("class") && node.attr("class").equalsIgnoreCase("extlink"))) {
+                newContent.append(node.toString());
+                continue;
+            }
+            if (node.nodeName().equalsIgnoreCase("div") && (node.hasAttr("class") && node.attr("class").equalsIgnoreCase("embed-wrapper"))) {
+                for (int wrapperNodeIndex = 0; wrapperNodeIndex < node.childNodeSize(); wrapperNodeIndex++) {
+                    Node wrapperNode = node.childNode(wrapperNodeIndex);
+                    if (!wrapperNode.nodeName().equalsIgnoreCase("img") || !wrapperNode.hasAttr("src") || !wrapperNode.hasAttr("data-thumb")) {
+                        continue;
+                    }
+                    newContent.append(wrapperNode.toString());
+                }
+                continue;
+            }
+        }
+
+        Content = newContent.toString();
+
+        return true;
+    }
+
+    public Long marketId() {
+        return null;
     }
 
     public boolean spoilerPresent() {
