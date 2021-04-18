@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * 
  * @author juraj
@@ -27,7 +29,7 @@ public class EnterNickDialog extends Dialog {
 	private Task<UserSearchQuery, ArrayList<UserSearch>> task;
 	private UserSearchTaskListener listener  = new UserSearchTaskListener();
 	
-	public EnterNickDialog(final Activity context, final OnNickEnteredListener onNickEnteredListener) {
+	public EnterNickDialog(final AppCompatActivity context, final OnNickEnteredListener onNickEnteredListener) {
 		super(context);
 
 		setContentView(R.layout.enter_nick);

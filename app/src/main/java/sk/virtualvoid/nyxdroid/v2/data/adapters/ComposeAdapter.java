@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import sk.virtualvoid.core.CustomHtml;
 import sk.virtualvoid.core.ImageDownloader;
 import sk.virtualvoid.core.ImageGetterAsync;
@@ -31,7 +34,7 @@ public class ComposeAdapter<TComposePoco extends BaseComposePoco> extends BasePo
 	private ImageDownloader imageDownloader;
 	private ImageGetterAsync imageGetterAsync;
 	
-	public ComposeAdapter(Activity context, ArrayList<TypedPoco<?>> model, ImageDownloader imageDownloader, ImageGetterAsync imageGetterAsync) {
+	public ComposeAdapter(AppCompatActivity context, ArrayList<TypedPoco<?>> model, ImageDownloader imageDownloader, ImageGetterAsync imageGetterAsync) {
 		super(context, model);
 		
 		this.imageDownloader = imageDownloader;

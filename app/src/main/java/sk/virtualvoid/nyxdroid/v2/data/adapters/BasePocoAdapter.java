@@ -7,7 +7,11 @@ import java.util.List;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.internal.Appearance;
 import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.widget.BaseAdapter;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * 
@@ -17,17 +21,18 @@ import android.widget.BaseAdapter;
  */
 public abstract class BasePocoAdapter<T extends BasePoco> extends BaseAdapter {
 
-	protected Activity context;
+	protected AppCompatActivity context;
+
 	protected ArrayList<T> model;
 	protected Appearance appearance;
 
-	public BasePocoAdapter(Activity context) {
+	public BasePocoAdapter(AppCompatActivity context) {
 		this.context = context;
 		this.model = new ArrayList<T>();
 		this.appearance = Appearance.getAppearance(context);
 	}
 	
-	public BasePocoAdapter(Activity context, ArrayList<T> model) {
+	public BasePocoAdapter(AppCompatActivity context, ArrayList<T> model) {
 		this.context = context;
 		this.model = model;
 		this.appearance = Appearance.getAppearance(context);

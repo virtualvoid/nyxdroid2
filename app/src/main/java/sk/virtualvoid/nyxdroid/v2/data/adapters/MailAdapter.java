@@ -19,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * 
  * @author juraj
@@ -29,7 +31,7 @@ public class MailAdapter extends BasePocoAdapter<Mail> {
 	private ImageGetterAsync imageGetterAsync;
 	private Date now;
 
-	public MailAdapter(Activity context, ArrayList<Mail> model) {
+	public MailAdapter(AppCompatActivity context, ArrayList<Mail> model) {
 		super(context, model);
 
 		now = new Date();

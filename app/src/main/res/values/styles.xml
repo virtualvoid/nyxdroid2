@@ -15,15 +15,20 @@
 
     <style name="NyxdroidTheme" parent="@android:style/Theme.Holo">
         <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
-        <item name="android:actionBarItemBackground">@drawable/selectable_background_nyxdroidtheme</item>
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_nyxdroidtheme
+        </item>
         <item name="android:popupMenuStyle">@style/PopupMenu.Nyxdroidtheme</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Nyxdroidtheme</item>
         <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Nyxdroidtheme</item>
         <item name="android:actionDropDownStyle">@style/DropDownNav.Nyxdroidtheme</item>
         <item name="android:actionBarStyle">@style/ActionBar.Solid.Nyxdroidtheme</item>
         <item name="android:actionModeBackground">@drawable/cab_background_top_nyxdroidtheme</item>
-        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_nyxdroidtheme</item>
-        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Nyxdroidtheme</item>
+        <item name="android:actionModeSplitBackground">
+            @drawable/cab_background_bottom_nyxdroidtheme
+        </item>
+        <item name="android:actionModeCloseButtonStyle">
+            @style/ActionButton.CloseMode.Nyxdroidtheme
+        </item>
         <item name="unread_icon">@drawable/unread_dark</item>
         <item name="add_icon">@drawable/dark_action_add</item>
         <item name="reload_icon">@drawable/dark_action_reload</item>

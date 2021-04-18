@@ -13,6 +13,8 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * 
  * @author suchan_j
@@ -21,7 +23,7 @@ import android.widget.TextView;
 public class UserSearchAdapter extends BasePocoAdapter<UserSearch> implements Filterable {
 	private ImageDownloader imageDownloader;
 
-	public UserSearchAdapter(Activity context) {
+	public UserSearchAdapter(AppCompatActivity context) {
 		super(context);
 
 		Drawable emptyAvatar = context.getResources().getDrawable(R.drawable.empty_avatar);

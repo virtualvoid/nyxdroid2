@@ -12,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import sk.virtualvoid.core.ImageDownloader;
 import sk.virtualvoid.nyxdroid.v2.R;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
@@ -23,12 +26,12 @@ import sk.virtualvoid.nyxdroid.v2.data.Conversation;
  * 
  */
 public class ConversationAdapter extends BaseAdapter {
-	private Context context;
+	private AppCompatActivity context;
 	private LayoutInflater layoutInflater;
 	private ArrayList<Conversation> model;
 	private ImageDownloader imageDownloader;
 
-	public ConversationAdapter(Activity context) {
+	public ConversationAdapter(AppCompatActivity context) {
 		this.context = context;
 		
 		model = new ArrayList<Conversation>();

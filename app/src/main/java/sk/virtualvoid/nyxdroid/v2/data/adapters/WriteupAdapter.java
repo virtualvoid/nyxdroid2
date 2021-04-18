@@ -28,6 +28,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * 
  * @author Juraj
@@ -41,7 +43,7 @@ public class WriteupAdapter extends BasePocoAdapter<Writeup> implements Responsi
 	private Date now;
 	private String spoilerAlert;
 
-	public WriteupAdapter(Activity context, ArrayList<Writeup> model) {
+	public WriteupAdapter(AppCompatActivity context, ArrayList<Writeup> model) {
 		super(context, model);
 
 		now = new Date();

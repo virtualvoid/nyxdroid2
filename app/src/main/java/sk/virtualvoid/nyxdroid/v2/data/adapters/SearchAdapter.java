@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * 
  * @author Juraj
@@ -24,7 +26,7 @@ public class SearchAdapter extends BasePocoAdapter<Search> {
 	private ImageDownloader imageDownloader;
 	private ImageGetterAsync imageGetterAsync;
 
-	public SearchAdapter(Activity context, ArrayList<Search> model) {
+	public SearchAdapter(AppCompatActivity context, ArrayList<Search> model) {
 		super(context, model);
 
 		Drawable emptyAvatar = context.getResources().getDrawable(R.drawable.empty_avatar);

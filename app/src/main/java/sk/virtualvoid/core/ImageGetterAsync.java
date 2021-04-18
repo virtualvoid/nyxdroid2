@@ -22,6 +22,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.collection.LruCache;
 
 import android.text.Html;
@@ -213,7 +214,7 @@ public class ImageGetterAsync {
      *
      * @param context
      */
-    public ImageGetterAsync(Activity context) {
+    public ImageGetterAsync(AppCompatActivity context) {
         active = true;
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);

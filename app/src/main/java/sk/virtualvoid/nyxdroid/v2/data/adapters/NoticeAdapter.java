@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * @author Juraj
  */
@@ -25,7 +27,7 @@ public class NoticeAdapter extends BasePocoAdapter<Notice> {
     private ImageDownloader imageDownloader;
     private ImageGetterAsync imageGetterAsync;
 
-    public NoticeAdapter(Activity context, ArrayList<Notice> model) {
+    public NoticeAdapter(AppCompatActivity context, ArrayList<Notice> model) {
         super(context, model);
 
         Drawable emptyAvatar = context.getResources().getDrawable(R.drawable.empty_avatar);

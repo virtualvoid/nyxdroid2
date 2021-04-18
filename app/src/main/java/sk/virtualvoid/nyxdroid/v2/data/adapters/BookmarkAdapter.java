@@ -7,9 +7,14 @@ import sk.virtualvoid.nyxdroid.v2.R;
 import sk.virtualvoid.nyxdroid.v2.data.Bookmark;
 import sk.virtualvoid.nyxdroid.v2.data.BookmarkCategory;
 import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.LayoutInflaterCompat;
 
 /**
  * 
@@ -18,7 +23,7 @@ import android.widget.TextView;
  */
 public class BookmarkAdapter extends BasePocoAdapter<Bookmark> {
 
-	public BookmarkAdapter(Activity context, ArrayList<Bookmark> model) {
+	public BookmarkAdapter(AppCompatActivity context, ArrayList<Bookmark> model) {
 		super(context, model);
 	}
 
@@ -91,7 +96,7 @@ public class BookmarkAdapter extends BasePocoAdapter<Bookmark> {
 			if (row == null) {
 				row = context.getLayoutInflater().inflate(R.layout.bookmark_row, parent, false);
 				row.setPadding(appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding());
-				
+
 				holder = new ViewHolder();
 				holder.UnreadCount = (TextView) row.findViewById(R.id.bookmark_row_unread_count);
 				holder.Title = (TextView) row.findViewById(R.id.bookmark_row_title);

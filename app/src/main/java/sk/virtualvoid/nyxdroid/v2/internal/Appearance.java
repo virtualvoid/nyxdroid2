@@ -7,6 +7,8 @@ import android.preference.PreferenceManager;
 import android.util.TypedValue;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * 
  * @author Juraj
@@ -41,7 +43,7 @@ public class Appearance {
 	private Appearance() {
 	}
 
-	public static Appearance getAppearance(Activity context) {
+	public static Appearance getAppearance(AppCompatActivity context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		return getAppearance(prefs);
 	}

@@ -25,6 +25,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * 
  * @author Juraj
@@ -37,7 +39,7 @@ public class GalleryGridAdapter extends BaseAdapter {
 	private ImageLoader imageLoader;
 	private DisplayImageOptions options;
 
-	public GalleryGridAdapter(Activity context) {
+	public GalleryGridAdapter(AppCompatActivity context) {
 		Appearance appearance = Appearance.getAppearance(context);
 		Resources resources = context.getResources();
 		if (appearance.getUseDarkTheme()) {

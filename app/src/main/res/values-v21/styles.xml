@@ -1,130 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-<style name="full_screen_dialog">
-    <item name="android:windowFrame">@null</item>
-    <item name="android:windowIsFloating">true</item>
-    <item name="android:windowContentOverlay">@null</item>
-    <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
-    <item name="android:windowSoftInputMode">adjustResize|stateHidden</item>
-</style>
+    <style name="full_screen_dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">adjustResize|stateHidden</item>
+    </style>
 
-<style name="MyActionBar" parent="Widget.AppCompat.ActionBar">
-    <item name="android:background">@drawable/ab_bottom_solid_dark</item>
-</style>
+    <style name="MyActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@drawable/ab_bottom_solid_dark</item>
+    </style>
 
-<style name="NyxdroidTheme" parent="Theme.AppCompat">
-    <item name="android:navigationBarColor">@android:color/background_dark</item>
-    <item name="android:windowBackground">#121212</item>
-    <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
-    <item name="android:actionBarItemBackground">@drawable/selectable_background_nyxdroidtheme</item>
-    <item name="android:popupMenuStyle">@style/PopupMenu.Nyxdroidtheme</item>
-    <item name="android:dropDownListViewStyle">@style/DropDownListView.Nyxdroidtheme</item>
-    <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Nyxdroidtheme</item>
-    <item name="android:actionDropDownStyle">@style/DropDownNav.Nyxdroidtheme</item>
-    <item name="android:actionBarStyle">@style/ActionBar.Solid.Nyxdroidtheme</item>
-    <item name="android:actionModeBackground">@drawable/cab_background_top_nyxdroidtheme</item>
-    <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_nyxdroidtheme</item>
-    <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Nyxdroidtheme</item>
-    <item name="unread_icon">@drawable/unread_dark</item>
-    <item name="add_icon">@drawable/dark_action_add</item>
-    <item name="reload_icon">@drawable/dark_action_reload</item>
-    <item name="search_icon">@drawable/dark_action_search</item>
-    <item name="mail_icon">@drawable/dark_action_mail</item>
-    <item name="arrow_right_icon">@drawable/dark_action_arrow_right</item>
-    <item name="send_icon">@drawable/dark_action_send</item>
-    <item name="alarm_icon">@drawable/dark_action_alarm</item>
-    <item name="copy_icon">@drawable/dark_action_copy</item>
-    <item name="reply_icon">@drawable/dark_action_sms</item>
-    <item name="trash_icon">@drawable/dark_action_trash</item>
-    <item name="dialog_icon">@drawable/dark_action_dialog</item>
-    <item name="picture_icon">@drawable/dark_action_picture</item>
-    <item name="half_star_icon">@drawable/dark_action_star_5</item>
-    <item name="attachment_icon">@drawable/dark_action_attachmentimg</item>
-    <item name="wu_voteup">@drawable/dark_wu_voteup</item>
-    <item name="wu_votedown">@drawable/dark_wu_votedown</item>
-    <item name="openbrowser">@drawable/dark_location_web_site</item>
-</style>
+    <style name="NyxdroidTheme" parent="Theme.AppCompat">
+        <item name="android:navigationBarColor">@android:color/background_dark</item>
+        <item name="android:windowBackground">#121212</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_nyxdroidtheme
+        </item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Nyxdroidtheme</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Nyxdroidtheme</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Nyxdroidtheme</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Nyxdroidtheme</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.Nyxdroidtheme</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_nyxdroidtheme</item>
+        <item name="android:actionModeSplitBackground">
+            @drawable/cab_background_bottom_nyxdroidtheme
+        </item>
+        <item name="android:actionModeCloseButtonStyle">
+            @style/ActionButton.CloseMode.Nyxdroidtheme
+        </item>
+        <item name="unread_icon">@drawable/unread_dark</item>
+        <item name="add_icon">@drawable/dark_action_add</item>
+        <item name="reload_icon">@drawable/dark_action_reload</item>
+        <item name="search_icon">@drawable/dark_action_search</item>
+        <item name="mail_icon">@drawable/dark_action_mail</item>
+        <item name="arrow_right_icon">@drawable/dark_action_arrow_right</item>
+        <item name="send_icon">@drawable/dark_action_send</item>
+        <item name="alarm_icon">@drawable/dark_action_alarm</item>
+        <item name="copy_icon">@drawable/dark_action_copy</item>
+        <item name="reply_icon">@drawable/dark_action_sms</item>
+        <item name="trash_icon">@drawable/dark_action_trash</item>
+        <item name="dialog_icon">@drawable/dark_action_dialog</item>
+        <item name="picture_icon">@drawable/dark_action_picture</item>
+        <item name="half_star_icon">@drawable/dark_action_star_5</item>
+        <item name="attachment_icon">@drawable/dark_action_attachmentimg</item>
+        <item name="wu_voteup">@drawable/dark_wu_voteup</item>
+        <item name="wu_votedown">@drawable/dark_wu_votedown</item>
+        <item name="openbrowser">@drawable/dark_location_web_site</item>
+    </style>
 
-<style name="NyxdroidTheme.Light" parent="Theme.AppCompat.Light">
-    <item name="android:navigationBarColor">@android:color/background_dark</item>
-    <item name="android:windowBackground">#fafafa</item>
-    <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
-    <item name="unread_icon">@drawable/unread_light</item>
-    <item name="add_icon">@drawable/light_action_add</item>
-    <item name="reload_icon">@drawable/light_action_reload</item>
-    <item name="search_icon">@drawable/light_action_search</item>
-    <item name="mail_icon">@drawable/light_action_mail</item>
-    <item name="arrow_right_icon">@drawable/light_action_arrow_right</item>
-    <item name="send_icon">@drawable/light_action_send</item>
-    <item name="alarm_icon">@drawable/light_action_alarm</item>
-    <item name="copy_icon">@drawable/light_action_copy</item>
-    <item name="reply_icon">@drawable/light_action_sms</item>
-    <item name="trash_icon">@drawable/light_action_trash</item>
-    <item name="dialog_icon">@drawable/light_action_dialog</item>
-    <item name="picture_icon">@drawable/light_action_picture</item>
-    <item name="half_star_icon">@drawable/light_action_star_5</item>
-    <item name="attachment_icon">@drawable/light_action_attachmentimg</item>
-    <item name="wu_voteup">@drawable/light_wu_voteup</item>
-    <item name="wu_votedown">@drawable/light_wu_votedown</item>
-    <item name="openbrowser">@drawable/light_location_web_site</item>
-</style>
+    <style name="NyxdroidTheme.Light" parent="Theme.AppCompat.Light">
+        <item name="android:navigationBarColor">@android:color/background_dark</item>
+        <item name="android:windowBackground">#fafafa</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
+        <item name="unread_icon">@drawable/unread_light</item>
+        <item name="add_icon">@drawable/light_action_add</item>
+        <item name="reload_icon">@drawable/light_action_reload</item>
+        <item name="search_icon">@drawable/light_action_search</item>
+        <item name="mail_icon">@drawable/light_action_mail</item>
+        <item name="arrow_right_icon">@drawable/light_action_arrow_right</item>
+        <item name="send_icon">@drawable/light_action_send</item>
+        <item name="alarm_icon">@drawable/light_action_alarm</item>
+        <item name="copy_icon">@drawable/light_action_copy</item>
+        <item name="reply_icon">@drawable/light_action_sms</item>
+        <item name="trash_icon">@drawable/light_action_trash</item>
+        <item name="dialog_icon">@drawable/light_action_dialog</item>
+        <item name="picture_icon">@drawable/light_action_picture</item>
+        <item name="half_star_icon">@drawable/light_action_star_5</item>
+        <item name="attachment_icon">@drawable/light_action_attachmentimg</item>
+        <item name="wu_voteup">@drawable/light_wu_voteup</item>
+        <item name="wu_votedown">@drawable/light_wu_votedown</item>
+        <item name="openbrowser">@drawable/light_location_web_site</item>
+    </style>
 
-<declare-styleable name="GifView">
-    <attr name="drawable" format="reference" />
-</declare-styleable>
+    <declare-styleable name="GifView">
+        <attr name="drawable" format="reference" />
+    </declare-styleable>
 
-<!-- @android:style/Widget.Holo.ActionBar.Solid -->
-<style name="ActionBar.Solid.Nyxdroidtheme" parent="Widget.AppCompat.ActionBar.Solid">
+    <!-- @android:style/Widget.Holo.ActionBar.Solid -->
+    <style name="ActionBar.Solid.Nyxdroidtheme" parent="Widget.AppCompat.ActionBar.Solid">
 
-    <item name="android:background">@drawable/ab_solid_nyxdroidtheme</item>
-    <item name="android:backgroundStacked">@drawable/ab_stacked_solid_nyxdroidtheme</item>
-    <item name="android:backgroundSplit">@drawable/ab_bottom_solid_nyxdroidtheme</item>
-    <item name="android:progressBarStyle">@style/ProgressBar.Nyxdroidtheme</item>
-</style>
+        <item name="android:background">@drawable/ab_solid_nyxdroidtheme</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_nyxdroidtheme</item>
+        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_nyxdroidtheme</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Nyxdroidtheme</item>
+    </style>
 
     <!-- @android:style/Widget.Holo.ActionBar -->
-<style name="ActionBar.Transparent.Nyxdroidtheme" parent="Widget.AppCompat.ActionBar">
+    <style name="ActionBar.Transparent.Nyxdroidtheme" parent="Widget.AppCompat.ActionBar">
 
         <item name="android:background">@drawable/ab_transparent_nyxdroidtheme</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Nyxdroidtheme</item>
-</style>
+    </style>
     <!-- @android:style/Widget.Holo.ListPopupWindow -->
-     <style name="PopupMenu.Nyxdroidtheme" parent="Widget.AppCompat.ListPopupWindow">
-         <item name="android:popupBackground">@drawable/menu_dropdown_panel_nyxdroidtheme</item>
-     </style>
+    <style name="PopupMenu.Nyxdroidtheme" parent="Widget.AppCompat.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_nyxdroidtheme</item>
+    </style>
 
     <!-- @android:style/Widget.Holo.ListView.DropDown -->
-     <style name="DropDownListView.Nyxdroidtheme" parent="Widget.AppCompat.ListView.DropDown">
-         <item name="android:listSelector">@drawable/selectable_background_nyxdroidtheme</item>
-     </style>
+    <style name="DropDownListView.Nyxdroidtheme" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:listSelector">@drawable/selectable_background_nyxdroidtheme</item>
+    </style>
 
     <!-- @android:style/Widget.Holo.ActionBar.TabView -->
-     <style name="ActionBarTabStyle.Nyxdroidtheme" parent="Widget.AppCompat.ActionBar.TabView">
-         <item name="android:background">@drawable/tab_indicator_ab_nyxdroidtheme</item>
-     </style>
+    <style name="ActionBarTabStyle.Nyxdroidtheme" parent="Widget.AppCompat.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_indicator_ab_nyxdroidtheme</item>
+    </style>
 
     <!-- @android:style/Widget.Holo.Spinner -->
-     <style name="DropDownNav.Nyxdroidtheme" parent="Widget.AppCompat.Spinner">
-         <item name="android:background">@drawable/spinner_background_ab_nyxdroidtheme</item>
-         <item name="android:popupBackground">@drawable/menu_dropdown_panel_nyxdroidtheme</item>
-         <item name="android:dropDownSelector">@drawable/selectable_background_nyxdroidtheme</item>
-     </style>
+    <style name="DropDownNav.Nyxdroidtheme" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@drawable/spinner_background_ab_nyxdroidtheme</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_nyxdroidtheme</item>
+        <item name="android:dropDownSelector">@drawable/selectable_background_nyxdroidtheme</item>
+    </style>
 
     <!-- @android:style/Widget.Holo.ProgressBar.Horizontal -->
-     <style name="ProgressBar.Nyxdroidtheme" parent="Widget.AppCompat.ProgressBar.Horizontal">
-         <item name="android:progressDrawable">@drawable/progress_horizontal_nyxdroidtheme</item>
-     </style>
+    <style name="ProgressBar.Nyxdroidtheme" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_nyxdroidtheme</item>
+    </style>
 
     <!-- @android:style/Widget.Holo.ActionButton.CloseMode -->
-     <style name="ActionButton.CloseMode.Nyxdroidtheme" parent="Widget.AppCompat.ActionButton.CloseMode">
-         <item name="android:background">@drawable/btn_cab_done_nyxdroidtheme</item>
-     </style>
+    <style name="ActionButton.CloseMode.Nyxdroidtheme" parent="Widget.AppCompat.ActionButton.CloseMode">
+        <item name="android:background">@drawable/btn_cab_done_nyxdroidtheme</item>
+    </style>
 
-     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-<style name="Theme.Nyxdroidtheme.Widget" parent="Theme.AppCompat">
-    <item name="android:popupMenuStyle">@style/PopupMenu.Nyxdroidtheme</item>
-    <item name="android:dropDownListViewStyle">@style/DropDownListView.Nyxdroidtheme</item>
-</style>
+    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
+    <style name="Theme.Nyxdroidtheme.Widget" parent="Theme.AppCompat">
+        <item name="android:popupMenuStyle">@style/PopupMenu.Nyxdroidtheme</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Nyxdroidtheme</item>
+    </style>
 
 </resources>
