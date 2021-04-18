@@ -16,7 +16,7 @@
     <style name="NyxdroidTheme" parent="Theme.AppCompat">
         <item name="android:navigationBarColor">@android:color/background_dark</item>
         <item name="android:windowBackground">#121212</item>
-
+        <item name="android:textColor">#FFFFFF</item>
         <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
         <item name="android:actionBarItemBackground">@drawable/selectable_background_nyxdroidtheme
         </item>
@@ -55,6 +55,7 @@
     <style name="NyxdroidTheme.Light" parent="Theme.AppCompat.Light">
         <item name="android:navigationBarColor">@android:color/background_dark</item>
         <item name="android:windowBackground">#fafafa</item>
+        <item name="android:textColor">#000000</item>
         <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
         <item name="unread_icon">@drawable/unread_light</item>
         <item name="add_icon">@drawable/light_action_add</item>
