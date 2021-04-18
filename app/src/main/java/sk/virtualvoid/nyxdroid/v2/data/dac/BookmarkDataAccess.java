@@ -154,7 +154,46 @@ public class BookmarkDataAccess {
     public static class SearchBookmarksTaskWorker extends TaskWorker<BookmarkQuery, SuccessResponse<ArrayList<Bookmark>>> {
         @Override
         public SuccessResponse<ArrayList<Bookmark>> doWork(BookmarkQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
+            Context context = null;
+
+            final int limit = 20;
+
+            Connector connector = new Connector(getContext());
+            JSONObject json = connector.get("/search/unified?search=" + input.SearchTerm + "&limit=" + limit);
+            if (json == null) {
+                throw new NyxException("Json result was null ?");
+            } else {
+                try {
+                    if (json.has("discussion") && !json.isNull("discussion")) {
+                        JSONObject discussion = json.getJSONObject("discussion");
+                        if (discussion.has("discussions") && !discussion.isNull("discussions")) {
+                            JSONArray discussions = discussion.getJSONArray("discussions");
+                            for (int discussionIndex = 0; discussionIndex < discussions.length(); discussionIndex++) {
+                                JSONObject obj = discussions.getJSONObject(discussionIndex);
+
+                                String type = obj.getString("discussion_type");
+                                if (!type.equalsIgnoreCase("discussion")) {
+                                    continue;
+                                }
+
+                                Bookmark result = new Bookmark();
+                                result.Id = obj.getLong("id");
+                                result.Name = obj.getString("discussion_name");
+
+                                resultList.add(result);
+                            }
+                        }
+                    }
+
+                    context = Context.fromJSONObject(json);
+                } catch (Throwable e) {
+                    log.error("GetBookmarksTaskWorker", e);
+                    throw new NyxException(e);
+                }
+            }
+
+            return new SuccessResponse<>(resultList, context);
         }
     }
 
