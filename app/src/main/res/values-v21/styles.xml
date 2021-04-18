@@ -9,12 +9,13 @@
     <item name="android:windowSoftInputMode">adjustResize|stateHidden</item>
 </style>
 
-<style name="MyActionBar" parent="android:Widget.Holo.ActionBar">
+<style name="MyActionBar" parent="Widget.AppCompat.ActionBar">
     <item name="android:background">@drawable/ab_bottom_solid_dark</item>
 </style>
 
 <style name="NyxdroidTheme" parent="Theme.AppCompat">
     <item name="android:navigationBarColor">@android:color/background_dark</item>
+    <item name="android:windowBackground">#121212</item>
     <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
     <item name="android:actionBarItemBackground">@drawable/selectable_background_nyxdroidtheme</item>
     <item name="android:popupMenuStyle">@style/PopupMenu.Nyxdroidtheme</item>
@@ -46,7 +47,8 @@
 </style>
 
 <style name="NyxdroidTheme.Light" parent="Theme.AppCompat.Light">
-    <item name="android:navigationBarColor">@android:color/darker_gray</item>
+    <item name="android:navigationBarColor">@android:color/background_dark</item>
+    <item name="android:windowBackground">#fafafa</item>
     <item name="android:homeAsUpIndicator">@drawable/ic_drawer</item>
     <item name="unread_icon">@drawable/unread_light</item>
     <item name="add_icon">@drawable/light_action_add</item>
@@ -72,46 +74,55 @@
     <attr name="drawable" format="reference" />
 </declare-styleable>
 
-<style name="ActionBar.Solid.Nyxdroidtheme" parent="@android:style/Widget.Holo.ActionBar.Solid">
+<!-- @android:style/Widget.Holo.ActionBar.Solid -->
+<style name="ActionBar.Solid.Nyxdroidtheme" parent="Widget.AppCompat.ActionBar.Solid">
+
     <item name="android:background">@drawable/ab_solid_nyxdroidtheme</item>
     <item name="android:backgroundStacked">@drawable/ab_stacked_solid_nyxdroidtheme</item>
     <item name="android:backgroundSplit">@drawable/ab_bottom_solid_nyxdroidtheme</item>
     <item name="android:progressBarStyle">@style/ProgressBar.Nyxdroidtheme</item>
 </style>
 
-<style name="ActionBar.Transparent.Nyxdroidtheme" parent="@android:style/Widget.Holo.ActionBar">
-    <item name="android:background">@drawable/ab_transparent_nyxdroidtheme</item>
-    <item name="android:progressBarStyle">@style/ProgressBar.Nyxdroidtheme</item>
-</style>
+    <!-- @android:style/Widget.Holo.ActionBar -->
+<style name="ActionBar.Transparent.Nyxdroidtheme" parent="Widget.AppCompat.ActionBar">
 
-<style name="PopupMenu.Nyxdroidtheme" parent="@android:style/Widget.Holo.ListPopupWindow">
-    <item name="android:popupBackground">@drawable/menu_dropdown_panel_nyxdroidtheme</item>
+        <item name="android:background">@drawable/ab_transparent_nyxdroidtheme</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Nyxdroidtheme</item>
 </style>
+    <!-- @android:style/Widget.Holo.ListPopupWindow -->
+     <style name="PopupMenu.Nyxdroidtheme" parent="Widget.AppCompat.ListPopupWindow">
+         <item name="android:popupBackground">@drawable/menu_dropdown_panel_nyxdroidtheme</item>
+     </style>
 
-<style name="DropDownListView.Nyxdroidtheme" parent="@android:style/Widget.Holo.ListView.DropDown">
-    <item name="android:listSelector">@drawable/selectable_background_nyxdroidtheme</item>
-</style>
+    <!-- @android:style/Widget.Holo.ListView.DropDown -->
+     <style name="DropDownListView.Nyxdroidtheme" parent="Widget.AppCompat.ListView.DropDown">
+         <item name="android:listSelector">@drawable/selectable_background_nyxdroidtheme</item>
+     </style>
 
-<style name="ActionBarTabStyle.Nyxdroidtheme" parent="@android:style/Widget.Holo.ActionBar.TabView">
-    <item name="android:background">@drawable/tab_indicator_ab_nyxdroidtheme</item>
-</style>
+    <!-- @android:style/Widget.Holo.ActionBar.TabView -->
+     <style name="ActionBarTabStyle.Nyxdroidtheme" parent="Widget.AppCompat.ActionBar.TabView">
+         <item name="android:background">@drawable/tab_indicator_ab_nyxdroidtheme</item>
+     </style>
 
-<style name="DropDownNav.Nyxdroidtheme" parent="@android:style/Widget.Holo.Spinner">
-    <item name="android:background">@drawable/spinner_background_ab_nyxdroidtheme</item>
-    <item name="android:popupBackground">@drawable/menu_dropdown_panel_nyxdroidtheme</item>
-    <item name="android:dropDownSelector">@drawable/selectable_background_nyxdroidtheme</item>
-</style>
+    <!-- @android:style/Widget.Holo.Spinner -->
+     <style name="DropDownNav.Nyxdroidtheme" parent="Widget.AppCompat.Spinner">
+         <item name="android:background">@drawable/spinner_background_ab_nyxdroidtheme</item>
+         <item name="android:popupBackground">@drawable/menu_dropdown_panel_nyxdroidtheme</item>
+         <item name="android:dropDownSelector">@drawable/selectable_background_nyxdroidtheme</item>
+     </style>
 
-<style name="ProgressBar.Nyxdroidtheme" parent="@android:style/Widget.Holo.ProgressBar.Horizontal">
-    <item name="android:progressDrawable">@drawable/progress_horizontal_nyxdroidtheme</item>
-</style>
+    <!-- @android:style/Widget.Holo.ProgressBar.Horizontal -->
+     <style name="ProgressBar.Nyxdroidtheme" parent="Widget.AppCompat.ProgressBar.Horizontal">
+         <item name="android:progressDrawable">@drawable/progress_horizontal_nyxdroidtheme</item>
+     </style>
 
-<style name="ActionButton.CloseMode.Nyxdroidtheme" parent="@android:style/Widget.Holo.ActionButton.CloseMode">
-    <item name="android:background">@drawable/btn_cab_done_nyxdroidtheme</item>
-</style>
+    <!-- @android:style/Widget.Holo.ActionButton.CloseMode -->
+     <style name="ActionButton.CloseMode.Nyxdroidtheme" parent="Widget.AppCompat.ActionButton.CloseMode">
+         <item name="android:background">@drawable/btn_cab_done_nyxdroidtheme</item>
+     </style>
 
-<!-- this style is only referenced in a Light.DarkActionBar based theme -->
-<style name="Theme.Nyxdroidtheme.Widget" parent="@android:style/Theme.Holo">
+     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
+<style name="Theme.Nyxdroidtheme.Widget" parent="Theme.AppCompat">
     <item name="android:popupMenuStyle">@style/PopupMenu.Nyxdroidtheme</item>
     <item name="android:dropDownListViewStyle">@style/DropDownListView.Nyxdroidtheme</item>
 </style>
