@@ -9,6 +9,7 @@ import java.util.WeakHashMap;
 import org.apache.log4j.Logger;
 
 import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.nyxdroid.v2.NyxdroidApplication;
 import sk.virtualvoid.nyxdroid.v2.R;
 import sk.virtualvoid.nyxdroid.v2.internal.Appearance;
 
@@ -16,6 +17,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
@@ -153,11 +155,13 @@ public class ImageGetterAsync {
 
     private static class ExtendedImageLoadingListener implements ImageLoadingListener {
         private Resources resources;
+        private DisplayMetrics metrics;
         private int density;
         private ImageGetterData imageDownloadData;
 
         public ExtendedImageLoadingListener(Resources resources, int density, ImageGetterData imageDownloadData) {
             this.resources = resources;
+            this.metrics = resources.getDisplayMetrics();
             this.density = density;
             this.imageDownloadData = imageDownloadData;
         }
@@ -171,14 +175,21 @@ public class ImageGetterAsync {
         public void onLoadingComplete(String url, View view, Bitmap bitmap) {
             Drawable drawable = new BitmapDrawable(resources, bitmap);
 
-            int newWidth = drawable.getIntrinsicWidth() * density;
-            int newHeight = drawable.getIntrinsicHeight() * density;
+            Rect drawableBounds = drawable.getBounds();
 
-            float wh = ((float) newWidth / (float) newHeight) * density;
-            newWidth = (int) (newWidth / wh);
-            newHeight = (int) (newHeight / wh);
+            float left = drawableBounds.left;
+            float top = drawableBounds.top;
+            float right = drawableBounds.right == 0 ? drawable.getIntrinsicWidth() * density : drawableBounds.right;
+            float bottom = drawableBounds.bottom == 0 ? drawable.getIntrinsicHeight() * density : drawableBounds.bottom;
 
-            drawable.setBounds(0, 0, newWidth, newHeight);
+            if (right - left > (float)metrics.widthPixels / 2) {
+                float ratio = (right / (float) metrics.widthPixels) * 2;
+
+                right = right / ratio;
+                bottom = bottom / ratio;
+            }
+
+            drawable.setBounds((int)left, (int)top, (int)right, (int)bottom);
 
             imageGetterTaskHandling.onDone(imageDownloadData, drawable);
             mPendingSources.remove(url);

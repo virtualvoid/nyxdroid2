@@ -62,16 +62,6 @@ public class CustomHtml {
             for (ClickableSpan tempSpan : tempSpans) {
                 ((Spannable) input).removeSpan(tempSpan);
             }
-            DisplayMetrics metrics = NyxdroidApplication.getAppContext().getResources().getDisplayMetrics();
-            Rect aaa = span.getDrawable().getBounds();
-            if(aaa.right - aaa.left > metrics.widthPixels/2){
-                Float coef = (aaa.right / (float)metrics.widthPixels)*2;
-                Float right = (aaa.right/coef);
-                Float bottom = (aaa.bottom/coef);
-                aaa.right=right.intValue();
-                aaa.bottom=bottom.intValue();
-            }
-
 
             CustomUrlSpan replacement = new CustomUrlSpan(span.getSource(), true);
 

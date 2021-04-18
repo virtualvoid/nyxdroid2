@@ -40,19 +40,14 @@ public class NyxdroidApplication extends MultiDexApplication {
 
 	private static final Logger log = Logger.getLogger(NyxdroidApplication.class);
 	private static final UncaughtExceptionHandler defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-	private static Context context;
 
 	public NyxdroidApplication() {
-	}
-
-	public static Context getAppContext() {
-		return NyxdroidApplication.context;
 	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		NyxdroidApplication.context = getApplicationContext();
+
 		try {
 			Class.forName("android.os.AsyncTask");
 		} catch (ClassNotFoundException e) {
