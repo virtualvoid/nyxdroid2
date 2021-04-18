@@ -2,13 +2,16 @@ package sk.virtualvoid.core;
 
 import sk.virtualvoid.core.widgets.CustomUrlSpan;
 import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.nyxdroid.v2.NyxdroidApplication;
 
+import android.graphics.Rect;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import java.util.regex.Matcher;
@@ -59,6 +62,16 @@ public class CustomHtml {
             for (ClickableSpan tempSpan : tempSpans) {
                 ((Spannable) input).removeSpan(tempSpan);
             }
+            DisplayMetrics metrics = NyxdroidApplication.getAppContext().getResources().getDisplayMetrics();
+            Rect aaa = span.getDrawable().getBounds();
+            if(aaa.right - aaa.left > metrics.widthPixels/2){
+                Float coef = (aaa.right / (float)metrics.widthPixels)*2;
+                Float right = (aaa.right/coef);
+                Float bottom = (aaa.bottom/coef);
+                aaa.right=right.intValue();
+                aaa.bottom=bottom.intValue();
+            }
+
 
             CustomUrlSpan replacement = new CustomUrlSpan(span.getSource(), true);
 
