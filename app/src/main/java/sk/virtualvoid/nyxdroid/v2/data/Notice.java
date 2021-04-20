@@ -19,15 +19,20 @@ public class Notice extends BasePoco {
 	public String Section;
 	
 	public String Content;
-	public boolean IsNew;
 	public int Thumbs;
 	public long Time;
-	
+
+	public boolean IsNew;
+
 	public Notice(NoticeType type) {
 		this.Type = type;
 	}
 	
 	public Notice() {
 		this.Type = NoticeType.NONE;
+	}
+
+	public void setIsNew(long lastVisitTime) {
+		IsNew = lastVisitTime < Time;
 	}
 }

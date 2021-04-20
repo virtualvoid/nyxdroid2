@@ -13,6 +13,7 @@ import sk.virtualvoid.nyxdroid.v2.data.NoticeType;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -103,6 +104,7 @@ public class NoticeAdapter extends BasePocoAdapter<Notice> {
 
                 holder = new ReplyViewHolder();
                 holder.Indent = row.findViewById(R.id.notice_row_reply_indent);
+                holder.UnreadMarker = (ImageView)row.findViewById(R.id.notice_row_unread_mark);
                 holder.Thumbnail = (ImageView) row.findViewById(R.id.notice_row_reply_entry_image);
                 holder.Content = (TextView) row.findViewById(R.id.notice_row_reply_entry_content);
                 holder.Content.setLinkTextColor(appearance.getLinkColor());
@@ -116,11 +118,13 @@ public class NoticeAdapter extends BasePocoAdapter<Notice> {
 
             imageDownloader.download(BasePoco.nickToUrl(notice.Nick, context), holder.Thumbnail);
 
-            holder.Indent.setBackgroundColor(Color.parseColor("#cacaca"));
+            holder.Indent.setBackgroundColor(Color.parseColor("#333333"));
             holder.Indent.setVisibility(View.VISIBLE);
 
             holder.Content.setTag(position);
             holder.Content.setText(CustomHtml.fromHtml(notice.Content, imageGetterAsync.spawn(position, notice.Content, holder.Content)));
+
+            holder.UnreadMarker.setVisibility(notice.IsNew ? View.VISIBLE : View.INVISIBLE);
         }
 
         if (notice.Type == NoticeType.THUMBS) {
@@ -167,5 +171,6 @@ public class NoticeAdapter extends BasePocoAdapter<Notice> {
         public View Indent;
         public ImageView Thumbnail;
         public TextView Content;
+        public ImageView UnreadMarker;
     }
 }

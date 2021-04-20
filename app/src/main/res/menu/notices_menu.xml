@@ -3,6 +3,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:visible="false"
+        android:id="@+id/notify_reply"
+        android:icon="?attr/bulb_icon"
+        app:showAsAction="always"
+        android:title=""
+        app:actionLayout="@layout/badge_reply"
+        />
+
+    <item
+        android:visible="false"
+        android:id="@+id/notify_mail"
+        android:icon="?attr/mail_icon"
+        app:showAsAction="always"
+        android:title=""
+        app:actionLayout="@layout/badge_mail"
+        />
+
+    <item
         android:id="@+id/refresh"
         android:icon="?attr/reload_icon"
         android:title="@string/mail_refresh"

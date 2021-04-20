@@ -8,6 +8,7 @@ import sk.virtualvoid.core.TaskManager;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.Notice;
 import sk.virtualvoid.nyxdroid.v2.data.NoticeType;
+import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.adapters.NoticeAdapter;
 import sk.virtualvoid.nyxdroid.v2.data.dac.NoticeDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.query.NoticeQuery;
@@ -34,7 +35,7 @@ import android.widget.Toast;
  */
 public class NotificationsActivity extends BaseActivity {
 	private GetNoticesTaskListener listener = new GetNoticesTaskListener();
-	private Task<NoticeQuery, ArrayList<Notice>> tempTask;
+	private Task<NoticeQuery, SuccessResponse<ArrayList<Notice>>> tempTask;
 
 	private boolean refreshReceiverEnabled;
 
@@ -138,15 +139,18 @@ public class NotificationsActivity extends BaseActivity {
 	 * @author Juraj
 	 * 
 	 */
-	private static class GetNoticesTaskListener extends TaskListener<ArrayList<Notice>> {
+	private static class GetNoticesTaskListener extends TaskListener<SuccessResponse<ArrayList<Notice>>> {
 		@Override
-		public void done(ArrayList<Notice> output) {
+		public void done(SuccessResponse<ArrayList<Notice>> output) {
 			NotificationsActivity context = (NotificationsActivity) getContext();
 
-			NoticeAdapter adapter = new NoticeAdapter(context, output);
+			NoticeAdapter adapter = new NoticeAdapter(context, output.getData());
 			context.setListAdapter(adapter);
 			
 			context.getPullToRefreshAttacher().setRefreshComplete();
+
+			context.displayMailNotificationOnToolbar(output.getContext());
+			//context.displayReplyNotificationOnToolbar(); akshually, this is not needed here
 		}
 	}
 

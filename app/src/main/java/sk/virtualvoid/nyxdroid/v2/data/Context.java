@@ -9,6 +9,7 @@ public class Context {
         private int unreadMail;
         private String lastMailFrom;
         private int unreadNotifications;
+        private long notificationsLastVisit;
 
         private User() {
 
@@ -16,6 +17,14 @@ public class Context {
 
         public int getUnreadMail() {
             return unreadMail;
+        }
+
+        public int getUnreadNotifications() {
+            return unreadNotifications;
+        }
+
+        public long getNotificationsLastVisit() {
+            return notificationsLastVisit;
         }
     }
 
@@ -46,6 +55,7 @@ public class Context {
         result.user.unreadMail = user.getInt("mail_unread");
         result.user.lastMailFrom = user.getString("mail_last_from");
         result.user.unreadNotifications = user.getInt("notifications_unread");
+        result.user.notificationsLastVisit = BasePoco.timeFromString(user.getString("notifications_last_visit"));
 
         return result;
     }
