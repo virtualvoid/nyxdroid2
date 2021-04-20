@@ -187,6 +187,7 @@
     <string name="add_discussion_to_category_title">Add discussion to category</string>
     <string name="add_discussion_to_category_no_categories">You don\'t have any bookmark categories !</string>
     <string name="app_name_license">Licensing</string>
+    <string name="app_name_last">last</string>
     <string name="invalid_license">We\'re sorry, but your license seems to be invalid. It may be temporary, and you should try again later, or you may have been victim of software counterfeiting.</string>
     <string name="use_beta_api">Use beta API</string>
     <string name="default_non_developer_settings">Default, non-developer settings</string>

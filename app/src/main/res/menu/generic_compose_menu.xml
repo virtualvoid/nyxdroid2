@@ -3,15 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/send"
-        android:icon="?attr/send_icon"
-        android:title="@string/send"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/attachment"
         android:icon="?attr/attachment_icon"
         android:title="@string/attachment"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/send"
+        android:icon="?attr/send_icon"
+        android:title="@string/send"
         app:showAsAction="always" />
 
 </menu>

@@ -39,6 +39,8 @@ public class Constants {
 	public static final String REFRESH_MAIL_INTENT_FILTER = "sk.virtualvoid.nyxdroid.v2.REFRESH_MAIL";
 	public static final String REFRESH_MAIL_COUNT = "refreshMailCount";
 
+	public static final String REFRESH_NOTICES_INTENT_FILTER = "sk.virtualvoid.nyxdroid.v2.REFRESH_NOTICES";
+
 	public static final String GCM_SENDER_ID = "745190859348";
 
 	public static final Charset DEFAULT_CHARSET = Charset.forName("utf-8");

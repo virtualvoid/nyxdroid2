@@ -379,5 +379,4 @@ public class MailActivity extends BaseActivity implements ISecondBaseMenu {
 			load(true, null, null, null);
 		}
 	};
-
 }

@@ -13,8 +13,13 @@ import sk.virtualvoid.nyxdroid.v2.data.dac.NoticeDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.query.NoticeQuery;
 import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +35,8 @@ import android.widget.Toast;
 public class NotificationsActivity extends BaseActivity {
 	private GetNoticesTaskListener listener = new GetNoticesTaskListener();
 	private Task<NoticeQuery, ArrayList<Notice>> tempTask;
+
+	private boolean refreshReceiverEnabled;
 
 	@Override
 	protected int getContentViewId() {
@@ -69,8 +76,29 @@ public class NotificationsActivity extends BaseActivity {
 				refresh();
 			}
 		});
-		
+
+		refreshReceiverEnabled = true;
+		registerReceiver(refreshReceiver, new IntentFilter(Constants.REFRESH_NOTICES_INTENT_FILTER));
+
 		refresh();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(refreshReceiver);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		refreshReceiverEnabled = false;
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		refreshReceiverEnabled = true;
 	}
 
 	@Override
@@ -121,4 +149,16 @@ public class NotificationsActivity extends BaseActivity {
 			context.getPullToRefreshAttacher().setRefreshComplete();
 		}
 	}
+
+	private BroadcastReceiver refreshReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (!refreshReceiverEnabled) {
+				Log.w(Constants.TAG, "refreshReceiver not enabled.");
+				return;
+			}
+
+			refresh();
+		}
+	};
 }

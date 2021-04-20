@@ -213,6 +213,7 @@ public class BookmarksActivity extends BaseActivity {
 			
 			activity.getPullToRefreshAttacher().setRefreshComplete();
 			activity.displayMailNotificationOnToolbar(output.getContext());
+			activity.displayReplyNotificationOnToolbar(output.getContext());
 		}
 	}
 }

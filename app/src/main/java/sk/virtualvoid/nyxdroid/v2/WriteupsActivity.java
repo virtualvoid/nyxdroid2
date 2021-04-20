@@ -816,6 +816,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
 
             getPullToRefreshAttacher().setRefreshComplete();
             displayMailNotificationOnToolbar(response.getContext());
+            displayReplyNotificationOnToolbar(response.getContext());
         }
     }
 

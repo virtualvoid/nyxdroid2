@@ -29,5 +29,7 @@
 	<attr name="main_settings" format="reference" />
 	<attr name="main_about" format="reference" />
 	<attr name="main_exit" format="reference" />
+
+    <attr name="bulb_icon" format="reference" />
     
 </resources>

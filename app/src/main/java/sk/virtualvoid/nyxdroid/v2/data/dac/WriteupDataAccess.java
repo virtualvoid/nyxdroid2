@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import sk.virtualvoid.core.ITaskQuery;
 import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
@@ -22,6 +23,7 @@ import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.BaseResponse;
 import sk.virtualvoid.nyxdroid.v2.data.Context;
+import sk.virtualvoid.nyxdroid.v2.data.Last;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
 import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.UserActivity;
@@ -77,6 +79,11 @@ public class WriteupDataAccess {
         return new Task<WriteupBookmarkQuery, WriteupBookmarkResponse>(context, new BookOrUnbookWriteupTaskWorker(), listener);
     }
 
+    public static Task<ITaskQuery, SuccessResponse<ArrayList<Last>>> getLastWriteups(Activity context, TaskListener<SuccessResponse<ArrayList<Last>>> listener) {
+        return new Task<ITaskQuery, SuccessResponse<ArrayList<Last>>>(context, new GetLastWriteupsTaskWorker(), listener);
+    }
+
+
     public static class GetWriteupsTaskWorker extends TaskWorker<WriteupQuery, SuccessResponse<WriteupResponse>> {
         @Override
         public SuccessResponse<WriteupResponse> doWork(WriteupQuery input) throws NyxException {
@@ -89,12 +96,12 @@ public class WriteupDataAccess {
             String baseUrl = "/discussion/" + input.Id;
 
             if (input.Direction == Constants.WriteupDirection.WRITEUP_DIRECTION_OLDER && input.LastId != null) {
-                baseUrl = baseUrl + "?order=older_than&from_id=" + input.LastId;
+                baseUrl = baseUrl + "?order=older_than&from_id=" + (input.LastId + 1);
             }
 
             // replies to particular post
             if (input.Direction == Constants.WriteupDirection.WRITEUP_DIRECTION_NEWER && input.TempId != null) {
-                baseUrl = baseUrl + "?order=newer_than&from_id=" + input.LastId;
+                baseUrl = baseUrl + "?order=newer_than&from_id=" + (input.LastId - 1);
             }
 
             if (input.isFilterUser()) {
@@ -356,8 +363,62 @@ public class WriteupDataAccess {
             JSONObject root = connector.get(baseUrl);
 
             result.Booked = book;
+            result.Success = true;
 
             return result;
+        }
+    }
+
+    public static class GetLastWriteupsTaskWorker extends TaskWorker<ITaskQuery, SuccessResponse<ArrayList<Last>>> {
+        @Override
+        public SuccessResponse<ArrayList<Last>> doWork(ITaskQuery iTaskQuery) throws NyxException {
+            ArrayList<Last> result = new ArrayList<>();
+            Context context = null;
+
+            Connector connector = new Connector(getContext());
+
+            JSONObject root = connector.get("/last");
+            if (root == null) {
+                throw new NyxException("Json result was null ?");
+            } else {
+                try {
+                    if (root.has("posts") && !root.isNull("posts")) {
+                        JSONArray posts = root.getJSONArray("posts");
+
+                        for (int postIndex = 0; postIndex < posts.length(); postIndex++) {
+                            JSONObject post = posts.getJSONObject(postIndex);
+
+                            Last writeup = new Last();
+                            writeup.Id = post.getLong("id");
+                            writeup.DiscussionId = post.getLong("discussion_id");
+
+                            writeup.Nick = post.getString("username");
+                            writeup.Time = BasePoco.timeFromString(post.getString("inserted_at"));
+                            writeup.Content = post.getString("content");
+                            writeup.Unread = post.has("new") && post.getBoolean("new");
+                            writeup.Rating = post.has("rating") ? post.getInt("rating") : 0;
+                            writeup.Type = Writeup.TYPE_DEFAULT;
+                            writeup.Location = UserActivity.fromJson(post);
+                            writeup.IsMine = connector.getAuthNick().equalsIgnoreCase(post.getString("username"));
+                            writeup.CanDelete = post.has("can_be_deleted") && post.getBoolean("can_be_deleted");
+                            writeup.IsReminded = post.has("reminder") && post.getBoolean("reminder");
+
+                            if (writeup.youtubeFix()) {
+                                log.warn(String.format("the writeup=%d from discussion=%d contains youtube, fixed.", writeup.Id, writeup.DiscussionId));
+                            }
+
+                            result.add(writeup);
+                        }
+                    }
+
+                    context = Context.fromJSONObject(root);
+                } catch (Throwable t) {
+                    log.error("GetLastWriteupsTaskWorker", t);
+                    throw new NyxException(t);
+                }
+            }
+
+            return new SuccessResponse<>(result, context);
         }
     }
 }

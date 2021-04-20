@@ -521,6 +521,14 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 
 	// ===================================================================================
 
+	protected void displayReplyNotificationOnToolbar(Context context) {
+		if (context == null || context.getUser() == null) {
+			return;
+		}
+
+		// TODO:
+	}
+
 	protected void displayMailNotificationOnToolbar(Context context) {
 		if (context == null || context.getUser() == null) {
 			return;
@@ -532,7 +540,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 
 		final BaseActivity activity = this;
 
-		MenuItem item = toolbarMenu.findItem(R.id.notify);
+		MenuItem item = toolbarMenu.findItem(R.id.notify_mail);
 		if (item == null) {
 			return;
 		}

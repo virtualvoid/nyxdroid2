@@ -187,6 +187,7 @@
     <string name="add_discussion_to_category_title">Přidat do kategorie</string>
     <string name="add_discussion_to_category_no_categories">Nemáte žádné kategorie !</string>
     <string name="app_name_license">Licencování</string>
+    <string name="app_name_last">poslední</string>
     <string name="invalid_license">Je nám to líto, ale zdá se, že vaše licence je neplatná. Může jít o dočasnou chybu, nebo jste se stali obětí podvodu.</string>
     <string name="use_beta_api">Používat beta API</string>
     <string name="default_non_developer_settings">Standartní, uživatelské nastavení</string>

@@ -180,6 +180,10 @@ public class BaseMenu {
 			intent = new Intent(activity, InformationActivity.class);
 		}
 
+		if (itemId == BaseMenuItem.ID_LAST && !(activity instanceof LastActivity)) {
+			intent = new Intent(activity, LastActivity.class);
+		}
+
 		if (itemId == BaseMenuItem.ID_EXIT) {
 			Task<ITaskQuery, NullResponse> logoutTask = UserActivityDataAccess.inactivate(activity, new TaskListener<NullResponse>() {
 				@Override
@@ -224,6 +228,8 @@ public class BaseMenu {
 		public static final long ID_SETTINGS = 7;
 		public static final long ID_ABOUT = 8;
 		public static final long ID_EXIT = 9;
+
+		public static final long ID_LAST = 10;
 	}
 
 	private class BaseMenuItemAdapter extends BaseAdapter {
@@ -235,6 +241,7 @@ public class BaseMenu {
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_BOOKMARKS, R.drawable.light_action_bookmark, R.drawable.dark_action_bookmark, R.string.app_name_bookmarks));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_HISTORY, R.drawable.light_action_clock, R.drawable.dark_action_clock, R.string.app_name_bookmarks_history));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_NOTIFICATIONS, R.drawable.light_action_bulb, R.drawable.dark_action_bulb, R.string.app_name_notifications));
+			model.add(new BaseMenuItem(BaseMenuItem.ID_LAST, R.drawable.light_action_feed, R.drawable.dark_action_feed, R.string.app_name_last));
 			//model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_SEARCH, R.drawable.light_action_search, R.drawable.dark_action_search, R.string.app_name_search));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_SETTINGS, R.drawable.light_action_gear, R.drawable.dark_action_gear, R.string.app_name_settings));
 			model.add(new BaseMenuItem(BaseMenu.BaseMenuItem.ID_ABOUT, R.drawable.light_action_info, R.drawable.dark_action_info, R.string.app_name_about));
