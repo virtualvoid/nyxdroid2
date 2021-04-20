@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
@@ -83,6 +84,8 @@ public class GCMIntentService extends FirebaseMessagingService {
                     @Override
                     public void done(PushNotificationResponse response) {
                         rememberPushNotificationToken(context, token, overwrite);
+
+                        Toast.makeText(context, R.string.got_new_fcm_token, Toast.LENGTH_SHORT).show();
                     }
                 }
         );

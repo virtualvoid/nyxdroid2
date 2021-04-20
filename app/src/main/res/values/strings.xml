@@ -203,6 +203,7 @@
     <string name="choose_position_for_plus_button">Choose position for plus button</string>
     <string name="plus_button_position">Plus button position</string>
     <string name="recipient">Recipient</string>
-    
+    <string name="got_new_fcm_token">Got new FCM token.</string>
+
 
 </resources>

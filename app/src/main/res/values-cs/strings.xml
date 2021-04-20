@@ -203,5 +203,6 @@
     <string name="choose_position_for_plus_button">Vyberte pozici tlačítka pro nové příspěvky</string>
     <string name="plus_button_position">Pozice + tlačítka</string>
     <string name="recipient">Příjemce</string>
+    <string name="got_new_fcm_token">Získal jsem nový FCM token.</string>
 
 </resources>
