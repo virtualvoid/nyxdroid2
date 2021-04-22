@@ -3,8 +3,13 @@ package sk.virtualvoid.core.widgets;
 import sk.virtualvoid.nyxdroid.v2.internal.NavigationHandler;
 //import android.os.Parcel;
 //import android.text.ParcelableSpan;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 //import android.view.ViewParent;
 
 /**
@@ -33,6 +38,16 @@ public class CustomUrlSpan extends ClickableSpan implements INavigationSpan {
     public CustomUrlSpan(String url, boolean isImage) {
         this.url = url;
         this.isImage = isImage;
+    }
+
+    @Override
+    public void updateDrawState(@NonNull TextPaint ds) {
+        super.updateDrawState(ds);
+
+        // zvyraznenie odpovede na prispevok, lepsi hack ma uz nenapadol, sorry, -vv-
+        if (discussionId != null && postId != null) {
+            ds.setTypeface(Typeface.DEFAULT_BOLD);
+        }
     }
 
     @Override
