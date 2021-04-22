@@ -291,6 +291,8 @@ public class MailActivity extends BaseActivity implements ISecondBaseMenu {
 
 		Log.d(Constants.TAG, "MailActivity load requested, last id = " + id);
 
+		getPullToRefreshAttacher().setRefreshing(true);
+
 		return true;
 	}
 

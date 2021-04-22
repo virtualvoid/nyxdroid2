@@ -125,6 +125,8 @@ public class NotificationsActivity extends BaseActivity {
 		tempTask = NoticeDataAccess.getNotifications(this, listener);
 		TaskManager.startTask(tempTask, query);
 
+		getPullToRefreshAttacher().setRefreshing(true);
+
 		return true;
 	}
 	
@@ -148,7 +150,6 @@ public class NotificationsActivity extends BaseActivity {
 			context.setListAdapter(adapter);
 			
 			context.getPullToRefreshAttacher().setRefreshComplete();
-
 			context.displayMailNotificationOnToolbar(output.getContext());
 			//context.displayReplyNotificationOnToolbar(); akshually, this is not needed here
 		}

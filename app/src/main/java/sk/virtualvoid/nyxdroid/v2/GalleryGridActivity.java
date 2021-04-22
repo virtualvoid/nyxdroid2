@@ -162,6 +162,8 @@ public class GalleryGridActivity extends BaseActivity {
 
 		tempDataTask = WriteupDataAccess.getWriteups(this, writeupTaskListener);
 		TaskManager.startTask(tempDataTask, query);
+
+		getPullToRefreshAttacher().setRefreshing(true);
 	}
 
 	private class WriteupTaskListener extends TaskListener<SuccessResponse<WriteupResponse>> {
@@ -192,6 +194,8 @@ public class GalleryGridActivity extends BaseActivity {
 				adapter.addItems(bundles);
 				adapter.notifyDataSetChanged();
 			}
+
+			getPullToRefreshAttacher().setRefreshComplete();
 		}
 	}
 }

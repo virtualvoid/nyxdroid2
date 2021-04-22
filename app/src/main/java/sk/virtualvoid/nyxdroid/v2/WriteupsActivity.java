@@ -576,6 +576,8 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
         tempDataTask = WriteupDataAccess.getWriteups(this, writeupTaskListener);
         TaskManager.startTask(tempDataTask, query);
 
+        getPullToRefreshAttacher().setRefreshing(true);
+
         return true;
     }
 
@@ -591,6 +593,9 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
 
         tempDataTask = WriteupDataAccess.getWriteups(WriteupsActivity.this, writeupTaskListener);
         TaskManager.startTask(tempDataTask, query);
+
+        getPullToRefreshAttacher().setRefreshing(true);
+
         return true;
     }
 

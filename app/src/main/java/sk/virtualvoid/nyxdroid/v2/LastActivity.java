@@ -80,6 +80,8 @@ public class LastActivity extends BaseActivity {
         tempTask = WriteupDataAccess.getLastWriteups(this, listener);
         TaskManager.startTask(tempTask, ITaskQuery.empty);
 
+        getPullToRefreshAttacher().setRefreshing(true);
+
         return true;
     }
 
@@ -89,6 +91,8 @@ public class LastActivity extends BaseActivity {
         public void done(SuccessResponse<ArrayList<Last>> response) {
             LastActivity activity = (LastActivity)getContext();
             activity.setListAdapter(new LastAdapter(activity, response.getData()));
+
+            getPullToRefreshAttacher().setRefreshComplete();
 
             displayMailNotificationOnToolbar(response.getContext());
             displayReplyNotificationOnToolbar(response.getContext());

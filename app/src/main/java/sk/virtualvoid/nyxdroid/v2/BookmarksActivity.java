@@ -184,6 +184,8 @@ public class BookmarksActivity extends BaseActivity {
 			TaskManager.startTask(tempTask, query);
 		}
 
+		getPullToRefreshAttacher().setRefreshing(true);
+
 		return true;
 	}
 
@@ -212,6 +214,7 @@ public class BookmarksActivity extends BaseActivity {
 			}
 			
 			activity.getPullToRefreshAttacher().setRefreshComplete();
+
 			activity.displayMailNotificationOnToolbar(output.getContext());
 			activity.displayReplyNotificationOnToolbar(output.getContext());
 		}
