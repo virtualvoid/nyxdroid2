@@ -25,6 +25,7 @@ import sk.virtualvoid.nyxdroid.v2.data.BaseResponse;
 import sk.virtualvoid.nyxdroid.v2.data.Context;
 import sk.virtualvoid.nyxdroid.v2.data.Last;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
+import sk.virtualvoid.nyxdroid.v2.data.Poll;
 import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.UserActivity;
 import sk.virtualvoid.nyxdroid.v2.data.WaitingFile;
@@ -151,16 +152,30 @@ public class WriteupDataAccess {
                         for (int postIndex = 0; postIndex < posts.length(); postIndex++) {
                             JSONObject post = posts.getJSONObject(postIndex);
 
-                            Writeup writeup = new Writeup();
+                            Writeup writeup = null;
+                            if (post.has("post_type") && !post.isNull("post_type")) {
+                                String typeStr = post.getString("post_type");
+                                if (typeStr.equalsIgnoreCase("poll") && post.has("content_raw") && !post.isNull("content_raw")) {
+                                    JSONObject contentRaw = post.getJSONObject("content_raw");
+
+                                    if (!contentRaw.getString("type").equalsIgnoreCase("poll") || (!contentRaw.has("data") || contentRaw.isNull("data"))) {
+                                        continue;
+                                    }
+
+                                    writeup = Poll.fromJSONObject(contentRaw.getJSONObject("data"));
+                                }
+                            }
+
+                            if (writeup == null) {
+                                writeup = new Writeup(Writeup.TYPE_DEFAULT);
+                            }
+
                             writeup.Id = post.getLong("id");
                             writeup.Nick = post.getString("username");
-
                             writeup.Time = BasePoco.timeFromString(post.getString("inserted_at"));
-
                             writeup.Content = post.getString("content");
                             writeup.Unread = post.has("new") && post.getBoolean("new");
                             writeup.Rating = post.has("rating") ? post.getInt("rating") : 0;
-                            writeup.Type = Writeup.TYPE_DEFAULT; // TODO: ked sa dorobi market tak checknut o co ide
                             writeup.Location = UserActivity.fromJson(post);
                             writeup.IsMine = connector.getAuthNick().equalsIgnoreCase(post.getString("username"));
                             writeup.CanDelete = post.has("can_be_deleted") && post.getBoolean("can_be_deleted");

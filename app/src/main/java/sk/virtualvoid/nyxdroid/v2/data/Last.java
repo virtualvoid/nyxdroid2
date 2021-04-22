@@ -7,6 +7,7 @@ public class Last extends Writeup {
     public Long DiscussionId;
 
     public Last() {
+        super(Writeup.TYPE_LAST);
     }
 
     public Last(Parcel source) {

@@ -23,7 +23,8 @@ import org.jsoup.select.Elements;
  */
 public class Writeup extends BaseComposePoco implements Parcelable {
     public static final int TYPE_DEFAULT = 0;
-    public static final int TYPE_MARKET = 97;
+    public static final int TYPE_POLL = 97;
+    public static final int TYPE_LAST = 98;
 
     private static Pattern ptrSpoilerSearch = Pattern.compile(".*\"spoiler\"", Pattern.CASE_INSENSITIVE);
 
@@ -36,8 +37,8 @@ public class Writeup extends BaseComposePoco implements Parcelable {
     public boolean CanDelete;
     public boolean IsReminded;
 
-    public Writeup() {
-
+    public Writeup(int type) {
+        Type = type;
     }
 
     public Writeup(Parcel source) {
