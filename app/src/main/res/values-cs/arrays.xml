@@ -24,15 +24,23 @@
         <item>nepojedu</item>
     </string-array>
     <string-array name="font_size_names">
-        <item>Standartní (14sp)</item>
-        <item>Větší (18sp)</item>
-        <item>Velké (22sp)</item>
-        <item>Obrovské (27sp)</item>
+        <item>12 sp</item>
+        <item>14 sp</item>
+        <item>16 sp</item>
+        <item>18 sp</item>
+        <item>20 sp</item>
+        <item>22 sp</item>
+        <item>24 sp</item>
+        <item>26 sp</item>
     </string-array>
     <string-array name="font_size_values">
+        <item>12</item>
         <item>14</item>
+        <item>16</item>
         <item>18</item>
+        <item>20</item>
         <item>22</item>
+        <item>24</item>
         <item>26</item>
     </string-array>
     <string-array name="bookmark_padding_names">
