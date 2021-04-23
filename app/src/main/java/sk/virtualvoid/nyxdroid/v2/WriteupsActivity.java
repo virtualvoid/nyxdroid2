@@ -28,6 +28,7 @@ import sk.virtualvoid.nyxdroid.v2.data.dac.BookmarkDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.dac.WriteupDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.query.WriteupBookmarkQuery;
 import sk.virtualvoid.nyxdroid.v2.data.query.WriteupQuery;
+import sk.virtualvoid.nyxdroid.v2.internal.IPollVotingHandler;
 import sk.virtualvoid.nyxdroid.v2.internal.IVotingHandler;
 import sk.virtualvoid.nyxdroid.v2.internal.IWriteupSelectionHandler;
 import sk.virtualvoid.nyxdroid.v2.internal.NavigationHandler;
@@ -70,7 +71,7 @@ import android.widget.Toast;
 /**
  * @author Juraj
  */
-public class WriteupsActivity extends BaseActivity implements IVotingHandler, IWriteupSelectionHandler, BaseFragment.Callbacks, TabListener {
+public class WriteupsActivity extends BaseActivity implements IVotingHandler, IPollVotingHandler, IWriteupSelectionHandler, BaseFragment.Callbacks, TabListener {
     private long id;
     private Long requestedLastWuId;
     private String name;
@@ -549,6 +550,11 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IW
         query.VotingPosition = position;
 
         vote(query);
+    }
+
+    @Override
+    public void onVote(int position, String key) {
+        Toast.makeText(this, "zvolil si:" + key, Toast.LENGTH_SHORT).show();
     }
 
     private boolean load(final Long discussionId, final Long lastId, final boolean lastSelected) {

@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class Poll extends Writeup {
 
@@ -17,7 +16,7 @@ public class Poll extends Writeup {
     public String Instructions;
     public boolean PublicResults;
     public int AllowedVotes;
-    public List<PollQuestion> Questions;
+    public List<PollAnswer> Answers;
     public boolean CanModify;
     public boolean UserDidVote;
     public int TotalVotes;
@@ -27,7 +26,7 @@ public class Poll extends Writeup {
     public Poll() {
         super(Writeup.TYPE_POLL);
 
-        Questions = new ArrayList<>();
+        Answers = new ArrayList<>();
     }
 
     public Poll(Parcel source) {
@@ -43,7 +42,7 @@ public class Poll extends Writeup {
         TotalRespondents = source.readInt();
         MaximumAnswerVotes = source.readInt();
 
-        Questions = source.readArrayList(PollQuestion.class.getClassLoader());
+        Answers = source.readArrayList(PollAnswer.class.getClassLoader());
     }
 
     @Override
@@ -64,7 +63,7 @@ public class Poll extends Writeup {
         dest.writeInt(TotalVotes);
         dest.writeInt(TotalRespondents);
         dest.writeInt(MaximumAnswerVotes);
-        dest.writeList(Questions);
+        dest.writeList(Answers);
     }
 
     public static Poll fromJSONObject(JSONObject post) throws JSONException {
@@ -81,9 +80,7 @@ public class Poll extends Writeup {
         while(it.hasNext()) {
             String key = it.next();
             JSONObject answer = answers.getJSONObject(key);
-
-            PollQuestion question = PollQuestion.fromJSONObject(key, answer);
-            poll.Questions.add(question);
+            poll.Answers.add(PollAnswer.fromJSONObject(key, answer));
         }
 
         if (post.has("computed_values") && !post.isNull("computed_values")) {

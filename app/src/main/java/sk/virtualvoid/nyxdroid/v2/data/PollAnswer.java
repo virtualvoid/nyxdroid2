@@ -6,18 +6,18 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class PollQuestion implements Parcelable {
+public class PollAnswer implements Parcelable {
 
     public String Key;
     public String Answer;
     public int RespondentsCount;
     public boolean IsMyVote;
 
-    public PollQuestion(String key) {
+    public PollAnswer(String key) {
         Key = key;
     }
 
-    protected PollQuestion(Parcel source) {
+    protected PollAnswer(Parcel source) {
         Key = source.readString();
         Answer = source.readString();
         RespondentsCount = source.readInt();
@@ -37,8 +37,8 @@ public class PollQuestion implements Parcelable {
         dest.writeByte((byte) (IsMyVote ? 1 : 0));
     }
 
-    public static PollQuestion fromJSONObject(String key, JSONObject obj) throws JSONException {
-        PollQuestion question = new PollQuestion(key);
+    public static PollAnswer fromJSONObject(String key, JSONObject obj) throws JSONException {
+        PollAnswer question = new PollAnswer(key);
 
         question.Answer = obj.getString("answer");
 
@@ -52,15 +52,15 @@ public class PollQuestion implements Parcelable {
         return question;
     }
 
-    public static final Creator<PollQuestion> CREATOR = new Creator<PollQuestion>() {
+    public static final Creator<PollAnswer> CREATOR = new Creator<PollAnswer>() {
         @Override
-        public PollQuestion createFromParcel(Parcel in) {
-            return new PollQuestion(in);
+        public PollAnswer createFromParcel(Parcel in) {
+            return new PollAnswer(in);
         }
 
         @Override
-        public PollQuestion[] newArray(int size) {
-            return new PollQuestion[size];
+        public PollAnswer[] newArray(int size) {
+            return new PollAnswer[size];
         }
     };
 }

@@ -81,7 +81,7 @@ public class Appearance {
 
 	public void setFontSize(TextView... textViews) {
 		for (TextView textView : textViews) {
-			textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+			textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, fontSize);
 		}
 	}
 
