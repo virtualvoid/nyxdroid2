@@ -226,30 +226,40 @@ public class WriteupAdapter extends BasePocoAdapter<Writeup> implements Responsi
                 TableRow tableRow = (TableRow) context.getLayoutInflater().inflate(R.layout.writeup_poll_row_answer, holder.AnswersContainer, false);
 
                 Button answerButton = (Button) tableRow.findViewById(R.id.poll_answer_button);
-                answerButton.setEnabled(!poll.UserDidVote);
                 answerButton.setText(answer.Key);
 
-                if (context instanceof IPollVotingHandler) {
-                    answerButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ((IPollVotingHandler) context).onVote(position, answer.Key);
-                        }
-                    });
+                if (poll.UserDidVote && !answer.IsMyVote) {
+                    answerButton.setVisibility(View.INVISIBLE);
+                } else if (poll.UserDidVote && answer.IsMyVote) {
+                    answerButton.setEnabled(false);
+                } else if (!poll.UserDidVote) {
+                    if (context instanceof IPollVotingHandler) {
+                        answerButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                ((IPollVotingHandler) context).onVote(position, answer.Key);
+                            }
+                        });
+                    }
                 }
 
-                final double percentage =  (((double) answer.RespondentsCount / (double) poll.TotalVotes) * 100.0);
+                TextView answerTextView = (TextView) tableRow.findViewById(R.id.poll_answer_text);
 
-                final ProgressBar progressBar = (ProgressBar) tableRow.findViewById(R.id.poll_answer_progressbar);
-                progressBar.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setProgress((int)percentage);
-                    }
-                });
+                if (poll.UserDidVote) {
+                    final double percentage = (((double) answer.RespondentsCount / (double) poll.TotalVotes) * 100.0);
 
-                TextView textView = (TextView) tableRow.findViewById(R.id.poll_answer_text);
-                textView.setText(String.format("%s %.1f%% (%d)", answer.Answer, percentage, answer.RespondentsCount));
+                    final ProgressBar answerPercentage = (ProgressBar) tableRow.findViewById(R.id.poll_answer_progressbar);
+                    answerPercentage.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            answerPercentage.setProgress((int) percentage);
+                        }
+                    });
+
+                    answerTextView.setText(String.format("%s %.1f%% (%d)", answer.Answer, percentage, answer.RespondentsCount));
+                } else {
+                    answerTextView.setText(String.format("%s", answer.Answer));
+                }
 
                 holder.AnswersContainer.addView(tableRow, new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
             }

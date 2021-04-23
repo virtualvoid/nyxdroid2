@@ -33,6 +33,7 @@ import sk.virtualvoid.nyxdroid.v2.data.Writeup;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupBookmarkResponse;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupHomeResponse;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupResponse;
+import sk.virtualvoid.nyxdroid.v2.data.query.PollVoteQuery;
 import sk.virtualvoid.nyxdroid.v2.data.query.WriteupBookmarkQuery;
 import sk.virtualvoid.nyxdroid.v2.data.query.WriteupQuery;
 import sk.virtualvoid.nyxdroid.v2.internal.VotingInfoResult;
@@ -49,41 +50,44 @@ public class WriteupDataAccess {
     private final static Logger log = Logger.getLogger(WriteupDataAccess.class);
 
     public static Task<WriteupQuery, SuccessResponse<WriteupResponse>> getWriteups(Activity context, TaskListener<SuccessResponse<WriteupResponse>> listener) {
-        return new Task<WriteupQuery, SuccessResponse<WriteupResponse>>(context, new GetWriteupsTaskWorker(), listener);
+        return new Task<>(context, new GetWriteupsTaskWorker(), listener);
     }
 
     public static Task<WriteupQuery, NullResponse> sendWriteup(Activity context, TaskListener<NullResponse> listener) {
-        return new Task<WriteupQuery, NullResponse>(context, new SendWriteupTaskWorker(), listener);
+        return new Task<>(context, new SendWriteupTaskWorker(), listener);
     }
 
     public static Task<WriteupQuery, VotingResponse> giveRating(Activity context, TaskListener<VotingResponse> listener) {
-        return new Task<WriteupQuery, VotingResponse>(context, new RateWriteupTaskWorker(), listener);
+        return new Task<>(context, new RateWriteupTaskWorker(), listener);
     }
 
     public static Task<WriteupQuery, VotingInfoResult> getRatingInfo(Activity context, TaskListener<VotingInfoResult> listener) {
-        return new Task<WriteupQuery, VotingInfoResult>(context, new RatingOverviewTaskWorker(), listener);
+        return new Task<>(context, new RatingOverviewTaskWorker(), listener);
     }
 
     public static Task<WriteupQuery, NullResponse> reminder(Activity context, TaskListener<NullResponse> listener) {
-        return new Task<WriteupQuery, NullResponse>(context, new ReminderTaskWorker(), listener);
+        return new Task<>(context, new ReminderTaskWorker(), listener);
     }
 
     public static Task<WriteupQuery, NullResponse> delete(Activity context, TaskListener<NullResponse> listener) {
-        return new Task<WriteupQuery, NullResponse>(context, new DeleteTaskWorker(), listener);
+        return new Task<>(context, new DeleteTaskWorker(), listener);
     }
 
     public static Task<WriteupQuery, WriteupHomeResponse> getHome(Activity context, TaskListener<WriteupHomeResponse> listener) {
-        return new Task<WriteupQuery, WriteupHomeResponse>(context, new GetHomeTaskWorker(), listener);
+        return new Task<>(context, new GetHomeTaskWorker(), listener);
     }
 
     public static Task<WriteupBookmarkQuery, WriteupBookmarkResponse> bookOrUnbookWriteup(Activity context, TaskListener<WriteupBookmarkResponse> listener) {
-        return new Task<WriteupBookmarkQuery, WriteupBookmarkResponse>(context, new BookOrUnbookWriteupTaskWorker(), listener);
+        return new Task<>(context, new BookOrUnbookWriteupTaskWorker(), listener);
     }
 
     public static Task<ITaskQuery, SuccessResponse<ArrayList<Last>>> getLastWriteups(Activity context, TaskListener<SuccessResponse<ArrayList<Last>>> listener) {
-        return new Task<ITaskQuery, SuccessResponse<ArrayList<Last>>>(context, new GetLastWriteupsTaskWorker(), listener);
+        return new Task<>(context, new GetLastWriteupsTaskWorker(), listener);
     }
 
+    public static Task<PollVoteQuery, Poll> pollVote(Activity context, TaskListener<Poll> listener) {
+        return new Task<>(context, new PollVoteTaskWorker(), listener);
+    }
 
     public static class GetWriteupsTaskWorker extends TaskWorker<WriteupQuery, SuccessResponse<WriteupResponse>> {
         @Override
@@ -152,35 +156,13 @@ public class WriteupDataAccess {
                         for (int postIndex = 0; postIndex < posts.length(); postIndex++) {
                             JSONObject post = posts.getJSONObject(postIndex);
 
-                            Writeup writeup = null;
-                            if (post.has("post_type") && !post.isNull("post_type")) {
-                                String typeStr = post.getString("post_type");
-                                if (typeStr.equalsIgnoreCase("poll") && post.has("content_raw") && !post.isNull("content_raw")) {
-                                    JSONObject contentRaw = post.getJSONObject("content_raw");
-
-                                    if (!contentRaw.getString("type").equalsIgnoreCase("poll") || (!contentRaw.has("data") || contentRaw.isNull("data"))) {
-                                        continue;
-                                    }
-
-                                    writeup = Poll.fromJSONObject(contentRaw.getJSONObject("data"));
-                                }
-                            }
-
+                            Writeup writeup = Writeup.fromJSONObject(post);
                             if (writeup == null) {
-                                writeup = new Writeup(Writeup.TYPE_DEFAULT);
+                                log.warn("unable to construct writeup, what ?: " + post.toString());
+                                continue;
                             }
 
-                            writeup.Id = post.getLong("id");
-                            writeup.Nick = post.getString("username");
-                            writeup.Time = BasePoco.timeFromString(post.getString("inserted_at"));
-                            writeup.Content = post.getString("content");
-                            writeup.Unread = post.has("new") && post.getBoolean("new");
-                            writeup.Rating = post.has("rating") ? post.getInt("rating") : 0;
-                            writeup.Location = UserActivity.fromJson(post);
                             writeup.IsMine = connector.getAuthNick().equalsIgnoreCase(post.getString("username"));
-                            writeup.CanDelete = post.has("can_be_deleted") && post.getBoolean("can_be_deleted");
-                            writeup.IsReminded = post.has("reminder") && post.getBoolean("reminder");
-
                             if (writeup.youtubeFix()) {
                                 log.warn(String.format("the writeup=%d from discussion=%d contains youtube, fixed.", writeup.Id, result.Id));
                             }
@@ -285,6 +267,30 @@ public class WriteupDataAccess {
                     }
                 } catch (Throwable t) {
                     log.error("RatingOverviewTaskWorker", t);
+                    throw new NyxException(t);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public static class PollVoteTaskWorker extends TaskWorker<PollVoteQuery, Poll> {
+        @Override
+        public Poll doWork(PollVoteQuery query) throws NyxException {
+            Poll result = null;
+
+            Connector connector = new Connector(getContext());
+            String baseUrl = "/discussion/" + query.DiscussionId + "/poll/" + query.WriteupId + "/vote/" + query.Answer;
+            JSONObject root = connector.post(baseUrl);
+            if (root == null) {
+                throw new NyxException("Json result was null ?");
+            } else {
+                try {
+                    result = (Poll)Writeup.fromJSONObject(root);
+                    result.IsMine = connector.getAuthNick().equalsIgnoreCase(result.Nick);
+                } catch (Throwable t) {
+                    log.error("PollVoteTaskWorker", t);
                     throw new NyxException(t);
                 }
             }

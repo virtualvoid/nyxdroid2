@@ -78,20 +78,6 @@ public abstract class BasePocoAdapter<T extends BasePoco> extends BaseAdapter {
 	public void clearAll() {
 		model.clear();
 	}
-	
-	public void addItem(T item) {
-		model.add(item);
-	}
-
-	public void addItem(int index, T item) {
-		model.add(index, item);
-	}
-
-	public void addItems(T[] items) {
-		for (T item : items) {
-			model.add(item);
-		}
-	}
 
 	public void addItems(Collection<? extends T> items) {
 		model.addAll(items);
@@ -101,8 +87,9 @@ public abstract class BasePocoAdapter<T extends BasePoco> extends BaseAdapter {
 		model.remove(item);
 	}
 
-	public T getFirstItem() {
-		return model.get(0);
+	public void replaceItem(int position, T newItem) {
+		model.remove(position);
+		model.add(position, newItem);
 	}
 
 	public T getLastItem() {

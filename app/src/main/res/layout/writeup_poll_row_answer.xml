@@ -36,7 +36,7 @@
             android:maxWidth="248dp"
             android:minWidth="200dp"
             android:max="100"
-            android:progress="50" />
+            android:progress="0" />
     </LinearLayout>
 
 </TableRow>

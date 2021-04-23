@@ -19,6 +19,7 @@ import sk.virtualvoid.nyxdroid.v2.am.WriteupsActionMode;
 import sk.virtualvoid.nyxdroid.v2.am.WriteupsReplyMoreActionMode;
 import sk.virtualvoid.nyxdroid.v2.data.BookmarkCategory;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
+import sk.virtualvoid.nyxdroid.v2.data.Poll;
 import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.Writeup;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupBookmarkResponse;
@@ -26,6 +27,7 @@ import sk.virtualvoid.nyxdroid.v2.data.WriteupResponse;
 import sk.virtualvoid.nyxdroid.v2.data.adapters.WriteupAdapter;
 import sk.virtualvoid.nyxdroid.v2.data.dac.BookmarkDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.dac.WriteupDataAccess;
+import sk.virtualvoid.nyxdroid.v2.data.query.PollVoteQuery;
 import sk.virtualvoid.nyxdroid.v2.data.query.WriteupBookmarkQuery;
 import sk.virtualvoid.nyxdroid.v2.data.query.WriteupQuery;
 import sk.virtualvoid.nyxdroid.v2.internal.IPollVotingHandler;
@@ -93,8 +95,10 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
     private ArrayDeque<Integer> previousPositions = new ArrayDeque<Integer>();
     private Task<WriteupQuery, SuccessResponse<WriteupResponse>> tempDataTask = null;
     private Task<WriteupQuery, VotingResponse> tempRatingTask = null;
+    private Task<PollVoteQuery, Poll> tempPollVoteTask = null;
     private WriteupTaskListener writeupTaskListener = new WriteupTaskListener();
     private RatingTaskListener ratingTaskListener = new RatingTaskListener();
+    private PollVoteTaskListener pollVoteTaskListener = new PollVoteTaskListener();
     private NoopTaskListener noopTaskListener = new NoopTaskListener();
     private WriteupResponsesTaskListener responsesTaskListener = new WriteupResponsesTaskListener();
     private BookOrUnbookTaskListener bookOrUnbookTaskListener = new BookOrUnbookTaskListener();
@@ -554,7 +558,15 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
 
     @Override
     public void onVote(int position, String key) {
-        Toast.makeText(this, "zvolil si:" + key, Toast.LENGTH_SHORT).show();
+        Writeup wu = (Writeup) adapter.getItem(position);
+
+        PollVoteQuery query = new PollVoteQuery();
+        query.AdapterPosition = position;
+        query.DiscussionId = id;
+        query.WriteupId = wu.Id;
+        query.Answer = key;
+
+        vote(query);
     }
 
     private boolean load(final Long discussionId, final Long lastId, final boolean lastSelected) {
@@ -718,6 +730,13 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
         TaskManager.startTask(tempRatingTask, query);
     }
 
+    private void vote(PollVoteQuery query) {
+        TaskManager.killIfNeeded(tempPollVoteTask);
+
+        tempPollVoteTask = WriteupDataAccess.pollVote(WriteupsActivity.this, pollVoteTaskListener);
+        TaskManager.startTask(tempPollVoteTask, query);
+    }
+
     private boolean replyToMoreWriteups() {
         if (mapReplyToMoreWriteups == null) {
             mapReplyToMoreWriteups = new HashMap<Long, Writeup>();
@@ -872,6 +891,16 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
                     dialog.show();
                     break;
             }
+        }
+    }
+
+    private class PollVoteTaskListener extends TaskListener<Poll> {
+        @Override
+        public void done(Poll output) {
+            PollVoteQuery query = (PollVoteQuery)getTag();
+
+            adapter.replaceItem(query.AdapterPosition, output);
+            adapter.notifyDataSetChanged();
         }
     }
 

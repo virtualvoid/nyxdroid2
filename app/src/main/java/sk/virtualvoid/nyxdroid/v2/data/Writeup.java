@@ -12,6 +12,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -64,6 +66,39 @@ public class Writeup extends BaseComposePoco implements Parcelable {
         Writeup other = (Writeup) obj;
         return this.Id == other.Id;
     }
+
+    public static Writeup fromJSONObject(JSONObject post) throws JSONException {
+        Writeup writeup = null;
+        if (post.has("post_type") && !post.isNull("post_type")) {
+            String typeStr = post.getString("post_type");
+            if (typeStr.equalsIgnoreCase("poll") && post.has("content_raw") && !post.isNull("content_raw")) {
+                JSONObject contentRaw = post.getJSONObject("content_raw");
+
+                if (!contentRaw.getString("type").equalsIgnoreCase("poll") || (!contentRaw.has("data") || contentRaw.isNull("data"))) {
+                    return null;
+                }
+
+                writeup = Poll.fromJSONObject(contentRaw.getJSONObject("data"));
+            }
+        }
+
+        if (writeup == null) {
+            writeup = new Writeup(Writeup.TYPE_DEFAULT);
+        }
+
+        writeup.Id = post.getLong("id");
+        writeup.Nick = post.getString("username");
+        writeup.Time = BasePoco.timeFromString(post.getString("inserted_at"));
+        writeup.Content = post.getString("content");
+        writeup.Unread = post.has("new") && post.getBoolean("new");
+        writeup.Rating = post.has("rating") ? post.getInt("rating") : 0;
+        writeup.Location = UserActivity.fromJson(post);
+        writeup.CanDelete = post.has("can_be_deleted") && post.getBoolean("can_be_deleted");
+        writeup.IsReminded = post.has("reminder") && post.getBoolean("reminder");
+
+        return writeup;
+    }
+
 
     public ArrayList<Bundle> allImages() {
         Document doc = Jsoup.parse(Content);
