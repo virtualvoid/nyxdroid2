@@ -28,9 +28,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +49,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gcm.GCMRegistrar;
 
@@ -316,11 +320,21 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 	}
 
 	// ===================================================================================
-
+	public boolean hasNavigationBar() {
+		int id = getResources().getIdentifier("config_showNavigationBar", "bool", "android");
+		return id > 0 && getResources().getBoolean(id);
+	}
 	protected void setupListViewInstance(final ListView listViewInstance) {
 		View emptyView = findViewById(R.id.list_empty);
 		if (emptyView != null) {
 			listViewInstance.setEmptyView(emptyView);
+		}
+
+
+		if (!hasNavigationBar()) {
+			// 99% sure there's not a navigation bar so padding are set to 0 because of rid off a empty space
+			ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) listViewInstance.getLayoutParams();
+			params.bottomMargin = 0;
 		}
 
 		listViewInstance.setOnScrollListener(new AbsListView.OnScrollListener() {
