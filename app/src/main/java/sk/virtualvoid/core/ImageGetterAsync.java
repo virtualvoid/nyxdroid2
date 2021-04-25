@@ -103,7 +103,8 @@ public class ImageGetterAsync {
      * Get's cached image for html display
      */
     private static final Html.ImageGetter mImageGetterCached = new Html.ImageGetter() {
-        public Drawable getDrawable(String source) {
+        public Drawable getDrawable(String url) {
+            String source = Constants.fixAttachmentUrl(url);
             synchronized (mDrawableLruCache) {
                 Drawable drawable = mDrawableLruCache.get(source);
                 if (drawable == null) {
@@ -251,11 +252,13 @@ public class ImageGetterAsync {
         final TextView _textView = textView;
 
         return new Html.ImageGetter() {
-            public Drawable getDrawable(String source) {
-                if (source == null || source.isEmpty()) {
-                    log.info(String.format("ImageGetterAsync spawn: got weird source as url: %s in message: %s", source, _message));
+            public Drawable getDrawable(String url) {
+                if (url == null || url.isEmpty()) {
+                    log.info(String.format("ImageGetterAsync spawn: got weird source as url: %s in message: %s", url, _message));
                     return defaultDrawable;
                 }
+
+                String source = Constants.fixAttachmentUrl(url);
 
                 Drawable drawable = mDrawableLruCache.get(source);
                 if (drawable != null) {

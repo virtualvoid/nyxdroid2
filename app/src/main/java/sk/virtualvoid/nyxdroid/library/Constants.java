@@ -49,6 +49,12 @@ public class Constants {
 	public static final String HTTPS = "https://";
 	public static final String INDEX = "https://www.nyx.cz";
 
+	public static String fixAttachmentUrl(String url) {
+		if (!url.startsWith(Constants.HTTP) && !url.startsWith(Constants.HTTPS)) {
+			url = String.format("%s%s", Constants.INDEX, url);
+		}
+		return url;
+	}
 
 	public static final String AUTH_NICK = "AuthNick";
 	public static final String AUTH_TOKEN = "AuthToken";

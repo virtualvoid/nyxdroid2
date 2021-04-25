@@ -64,7 +64,7 @@ public class CustomHtml {
                 ((Spannable) input).removeSpan(tempSpan);
             }
 
-            CustomUrlSpan replacement = new CustomUrlSpan(span.getSource(), true);
+            CustomUrlSpan replacement = new CustomUrlSpan(Constants.fixAttachmentUrl(span.getSource()), true);
 
             ((Spannable) input).setSpan(replacement, start, end, flags);
         }
@@ -99,7 +99,7 @@ public class CustomHtml {
         if (matcher.matches()) {
             ((Spannable) input).removeSpan(span);
 
-            CustomUrlSpan replacement = new CustomUrlSpan(String.format("%s%s", Constants.INDEX, span.getURL()));
+            CustomUrlSpan replacement = new CustomUrlSpan(Constants.fixAttachmentUrl(span.getURL()));
 
             ((Spannable) input).setSpan(replacement, start, end, flags);
 
@@ -109,11 +109,7 @@ public class CustomHtml {
     }
 
     private static String createGenericUrlSpan(Spanned input, URLSpan span, int start, int end, int flags) {
-        String url = span.getURL();
-
-        if (!url.startsWith(Constants.HTTP) && !url.startsWith(Constants.HTTPS)) {
-            url = String.format("%s%s", Constants.INDEX, url);
-        }
+        String url = Constants.fixAttachmentUrl(span.getURL());
 
         ((Spannable) input).removeSpan(span);
 
