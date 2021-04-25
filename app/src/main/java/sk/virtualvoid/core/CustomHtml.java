@@ -48,7 +48,8 @@ public class CustomHtml {
             } else if (createCustomAttachmentUrlSpan(input, span, start, end, flags, attachmentPtr)) {
                 Log.i(Constants.TAG, String.format("correctLinkPaths: ok: %s", span.getURL()));
             } else {
-                Log.e(Constants.TAG, String.format("correctLinkPaths: failed: %s", span.getURL()));
+                String resolvedUrl = createGenericUrlSpan(input, span, start, end, flags);
+                Log.e(Constants.TAG, String.format("correctLinkPaths failed, assuming external link: %s", resolvedUrl));
             }
         }
 
@@ -105,5 +106,21 @@ public class CustomHtml {
             return true;
         }
         return false;
+    }
+
+    private static String createGenericUrlSpan(Spanned input, URLSpan span, int start, int end, int flags) {
+        String url = span.getURL();
+
+        if (!url.startsWith(Constants.HTTP) && !url.startsWith(Constants.HTTPS)) {
+            url = String.format("%s%s", Constants.INDEX, url);
+        }
+
+        ((Spannable) input).removeSpan(span);
+
+        CustomUrlSpan replacement = new CustomUrlSpan(url);
+
+        ((Spannable) input).setSpan(replacement, start, end, flags);
+
+        return url;
     }
 }
