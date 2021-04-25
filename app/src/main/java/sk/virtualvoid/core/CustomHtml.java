@@ -33,7 +33,7 @@ public class CustomHtml {
     public static Spanned correctLinkPaths(Spanned input) {
         Pattern discussionPostPtr = Pattern.compile(".*/discussion/(\\d+)/id/(\\d+)", Pattern.CASE_INSENSITIVE);
         Pattern discussionPtr = Pattern.compile(".*/discussion/(\\d+)", Pattern.CASE_INSENSITIVE);
-        Pattern attachmentPtr = Pattern.compile(".*(original.bin\\?name)=(\\w+\\.\\w+)", Pattern.CASE_INSENSITIVE);
+        Pattern attachmentPtr = Pattern.compile(".*(original).(\\w{3})(\\?name=).*", Pattern.CASE_INSENSITIVE);
 
         URLSpan[] urlSpans = input.getSpans(0, input.length(), URLSpan.class);
         for (URLSpan span : urlSpans) {

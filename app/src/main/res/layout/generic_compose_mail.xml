@@ -1,47 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout2"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
     android:background="?android:attr/windowBackground">
 
-    <LinearLayout
-        android:id="@+id/generic_compose_recipient_wrap"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" >
 
-        <sk.virtualvoid.core.widgets.CustomAutocompleteTextView
-            android:id="@+id/generic_compose_recipient"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/enter_recipient_apos_s_nick" >
-        </sk.virtualvoid.core.widgets.CustomAutocompleteTextView>
-    </LinearLayout>
+    <sk.virtualvoid.core.widgets.CustomAutocompleteTextView
+        android:id="@+id/generic_compose_recipient"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_recipient_apos_s_nick"
+        app:layout_constraintBottom_toTopOf="@+id/list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"></sk.virtualvoid.core.widgets.CustomAutocompleteTextView>
+
 
     <ListView
         android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/generic_compose_message_wrap"
-        android:layout_below="@+id/generic_compose_recipient_wrap" >
-    </ListView>
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginBottom="44dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/generic_compose_recipient"
+        app:layout_constraintTop_toTopOf="parent"></ListView>
 
-    <LinearLayout
-        android:id="@+id/generic_compose_message_wrap"
-        android:layout_width="match_parent"
+
+    <EditText
+        android:id="@+id/generic_compose_message"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" >
+        android:hint="@string/enter_your_message_"
+        android:inputType="textMultiLine"
+        android:singleLine="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <EditText
-            android:id="@+id/generic_compose_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/enter_your_message_"
-            android:inputType="textMultiLine"
-            android:singleLine="false" />
-    </LinearLayout>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

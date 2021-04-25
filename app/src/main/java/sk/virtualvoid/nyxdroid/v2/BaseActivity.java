@@ -330,7 +330,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IConnect
 			listViewInstance.setEmptyView(emptyView);
 		}
 
-
 		if (!hasNavigationBar()) {
 			// 99% sure there's not a navigation bar so padding are set to 0 because of rid off a empty space
 			ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) listViewInstance.getLayoutParams();
