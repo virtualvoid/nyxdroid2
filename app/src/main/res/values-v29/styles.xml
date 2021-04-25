@@ -1,6 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="NyxdroidTheme" parent="Theme.AppCompat">
-        <item name="android:forceDarkAllowed">false</item>
-    </style>
 </resources>
