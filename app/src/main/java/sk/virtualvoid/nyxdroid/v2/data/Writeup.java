@@ -18,6 +18,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 /**
@@ -164,23 +165,27 @@ public class Writeup extends BaseComposePoco implements Parcelable {
         Element body = bodies.get(0);
         for (int nodeIndex = 0; nodeIndex < body.childNodeSize(); nodeIndex++) {
             Node node = body.childNode(nodeIndex);
-            if (node.nodeName().equalsIgnoreCase("b") || node.nodeName().equalsIgnoreCase("br")) {
-                newContent.append(node.toString());
-                continue;
-            }
-            if (node.nodeName().equalsIgnoreCase("a") && (node.hasAttr("class") && node.attr("class").equalsIgnoreCase("extlink"))) {
-                newContent.append(node.toString());
-                continue;
-            }
-            if (node.nodeName().equalsIgnoreCase("div") && (node.hasAttr("class") && node.attr("class").equalsIgnoreCase("embed-wrapper"))) {
-                for (int wrapperNodeIndex = 0; wrapperNodeIndex < node.childNodeSize(); wrapperNodeIndex++) {
-                    Node wrapperNode = node.childNode(wrapperNodeIndex);
-                    if (!wrapperNode.nodeName().equalsIgnoreCase("img") || !wrapperNode.hasAttr("src") || !wrapperNode.hasAttr("data-thumb")) {
-                        continue;
-                    }
-                    newContent.append(wrapperNode.toString());
+            if (node instanceof Element) {
+                if (node.nodeName().equalsIgnoreCase("b") || node.nodeName().equalsIgnoreCase("br")) {
+                    newContent.append(node.toString());
+                    continue;
                 }
-                continue;
+                if (node.nodeName().equalsIgnoreCase("a") && (node.hasAttr("class") && node.attr("class").equalsIgnoreCase("extlink"))) {
+                    newContent.append(node.toString());
+                    continue;
+                }
+                if (node.nodeName().equalsIgnoreCase("div") && (node.hasAttr("class") && node.attr("class").equalsIgnoreCase("embed-wrapper"))) {
+                    for (int wrapperNodeIndex = 0; wrapperNodeIndex < node.childNodeSize(); wrapperNodeIndex++) {
+                        Node wrapperNode = node.childNode(wrapperNodeIndex);
+                        if (!wrapperNode.nodeName().equalsIgnoreCase("img") || !wrapperNode.hasAttr("src") || !wrapperNode.hasAttr("data-thumb")) {
+                            continue;
+                        }
+                        newContent.append(wrapperNode.toString());
+                    }
+                    continue;
+                }
+            } else if (node instanceof TextNode) {
+                newContent.append(node.toString());
             }
         }
 
