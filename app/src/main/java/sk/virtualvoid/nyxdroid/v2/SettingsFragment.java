@@ -1,12 +1,14 @@
 package sk.virtualvoid.nyxdroid.v2;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SeekBarPreference;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -49,6 +51,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                 GCMIntentService.firePushNotificationRegister(context, token, true);
                             }
                         });
+
+                return true;
+            }
+        });
+        SeekBarPreference pref = findPreference("font_size_seekbar");
+        pref.setMin(12);
+        pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                final String progress = String.valueOf(newValue);
+                SharedPreferences prefs = getPreferenceManager().getSharedPreferences();
+                prefs.edit().putString("font_size",progress).apply();
 
                 return true;
             }
