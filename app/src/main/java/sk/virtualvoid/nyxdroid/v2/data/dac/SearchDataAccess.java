@@ -56,17 +56,9 @@ public class SearchDataAccess {
 				throw new NyxException("Json result was null ?");
 			} else {
 				try {
-					if (root.has("others") && !root.isNull("others")) {
-						JSONArray others = root.getJSONArray("others");
-
-						for (int userIndex = 0; userIndex < others.length(); userIndex++) {
-							JSONObject user = others.getJSONObject(userIndex);
-
-							String nick = user.getString("username");
-
-							result.add(new UserSearch(nick));
-						}
-					}
+					result.addAll(getUsers(root, "exact"));
+					result.addAll(getUsers(root, "friends"));
+					result.addAll(getUsers(root, "others"));
 				} catch(Throwable t) {
 					log.error("UserSearchTaskWorker", t);
 					throw new NyxException(t);
@@ -75,5 +67,21 @@ public class SearchDataAccess {
 
 			return result;
 		}
+	}
+
+	public static ArrayList<UserSearch> getUsers(JSONObject root, String category) throws Throwable{
+		ArrayList<UserSearch> result = new ArrayList<>();
+		if (root.has(category) && !root.isNull(category)) {
+			JSONArray others = root.getJSONArray(category);
+
+			for (int userIndex = 0; userIndex < others.length(); userIndex++) {
+				JSONObject user = others.getJSONObject(userIndex);
+
+				String nick = user.getString("username");
+
+				result.add(new UserSearch(nick));
+			}
+		}
+		return result;
 	}
 }
