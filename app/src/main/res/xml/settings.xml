@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory android:title="@string/connectivity" >
         <CheckBoxPreference
@@ -37,13 +38,13 @@
             android:key="unread_appearance"
             android:summary="@string/choose_color_or_standard_settings"
             android:title="@string/unread_appearance" />
-        <ListPreference
+        <SeekBarPreference
+            android:id="@+id/preference_fontsize_seek_bar"
+            android:title="Fontsize"
+            android:key="font_size_seekbar"
+            app:showSeekBarValue="true"
             android:defaultValue="14"
-            android:entries="@array/font_size_names"
-            android:entryValues="@array/font_size_values"
-            android:key="font_size"
-            android:summary="@string/choose_font_size"
-            android:title="@string/font_size" />
+            android:max="30"/>
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/bookmark_padding_names"
