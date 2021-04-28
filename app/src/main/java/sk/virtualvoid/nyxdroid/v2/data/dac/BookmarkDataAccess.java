@@ -89,6 +89,9 @@ public class BookmarkDataAccess {
                 throw new NyxException("Json result was null ?");
             } else {
                 try {
+                    if (json.has("reminder_count") && !json.isNull("reminder_count") && json.getInt("reminder_count") > 0) {
+                    }
+
                     JSONArray rootmarks = json.getJSONArray("bookmarks");
                     for (int rootMarkIndex = 0; rootMarkIndex < rootmarks.length(); rootMarkIndex++) {
                         JSONObject rootmark = rootmarks.getJSONObject(rootMarkIndex);
