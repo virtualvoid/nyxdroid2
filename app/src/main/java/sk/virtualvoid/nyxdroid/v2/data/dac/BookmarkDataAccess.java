@@ -1,6 +1,10 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -13,9 +17,11 @@ import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
 import sk.virtualvoid.net.nyx.Connector;
-import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.nyxdroid.v2.R;
+import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.Bookmark;
 import sk.virtualvoid.nyxdroid.v2.data.BookmarkCategory;
+import sk.virtualvoid.nyxdroid.v2.data.BookmarkReminder;
 import sk.virtualvoid.nyxdroid.v2.data.Context;
 import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.query.BookmarkQuery;
@@ -48,7 +54,7 @@ public class BookmarkDataAccess {
         return new Task<ITaskQuery, SuccessResponse<ArrayList<BookmarkCategory>>>(context, new GetBookmarkCategoriesTaskWorker(), listener);
     }
 
-    private static Bookmark convert(JSONObject bookmark, JSONObject category) throws JSONException {
+    private static Bookmark bookmark(JSONObject bookmark, JSONObject category) throws JSONException {
         Bookmark result = new Bookmark();
         result.Id = bookmark.getLong("discussion_id");
         if (category != null) {
@@ -70,10 +76,21 @@ public class BookmarkDataAccess {
         return result;
     }
 
-    private static BookmarkCategory convert(JSONObject category) throws JSONException {
+    private static BookmarkCategory category(JSONObject obj) throws JSONException {
         BookmarkCategory result = new BookmarkCategory();
-        result.Id = category.getLong("id");
-        result.Name = category.getString("category_name");
+        result.Id = obj.getLong("id");
+        result.Name = obj.getString("category_name");
+        return result;
+    }
+
+    private static BookmarkReminder reminder(JSONObject obj) throws JSONException {
+        BookmarkReminder result = new BookmarkReminder();
+        result.Id = obj.getLong("id");
+        result.DiscussionId = obj.getLong("discussion_id");
+        result.Name = obj.getString("discussion_name");
+        result.Nick = obj.getString("username");
+        result.Replies = obj.has("replies") && !obj.isNull("replies") ? obj.getJSONArray("replies").length() : 0;
+        result.Time = BasePoco.timeFromString(obj.getString("inserted_at"));
         return result;
     }
 
@@ -84,25 +101,63 @@ public class BookmarkDataAccess {
             Context context = null;
 
             Connector connector = new Connector(getContext());
-            JSONObject json = connector.get("/bookmarks" + (input.IncludeUnread ? "/all" : ""));
-            if (json == null) {
+            JSONObject bookmarks = connector.get("/bookmarks" + (input.IncludeUnread ? "/all" : ""));
+            if (bookmarks == null) {
                 throw new NyxException("Json result was null ?");
             } else {
                 try {
-                    if (json.has("reminder_count") && !json.isNull("reminder_count") && json.getInt("reminder_count") > 0) {
+                    // toto je taka hovadina az ma z toho boli brucho
+                    if (bookmarks.has("reminder_count") && !bookmarks.isNull("reminder_count") && bookmarks.getInt("reminder_count") > 0) {
+                        JSONObject reminders = connector.get("/bookmarks/reminders");
+
+                        if (reminders.has("posts") && !reminders.isNull("posts")) {
+                            JSONArray posts = reminders.getJSONArray("posts");
+
+                            ArrayList<Bookmark> temp;
+                            HashMap<Long, ArrayList<Bookmark>> grouping = new HashMap<>();
+                            for (int postIndex = 0; postIndex < posts.length(); postIndex++) {
+                                JSONObject post = posts.getJSONObject(postIndex);
+                                BookmarkReminder reminder = reminder(post);
+                                if (grouping.containsKey(reminder.DiscussionId)) {
+                                    temp = grouping.get(reminder.DiscussionId);
+                                } else {
+                                    temp = new ArrayList<>();
+                                    grouping.put(reminder.DiscussionId, temp);
+                                }
+                                temp.add(reminder);
+                            }
+
+                            Set<Long> keys = grouping.keySet();
+                            Iterator<Long> iterator = keys.iterator();
+                            while (iterator.hasNext()) {
+                                Long key = iterator.next();
+                                temp = grouping.get(key);
+
+                                boolean categoryAdded = false;
+                                for (int reminderIndex = 0; reminderIndex < temp.size(); reminderIndex++) {
+                                    BookmarkReminder reminder = (BookmarkReminder) temp.get(reminderIndex);
+                                    if (!categoryAdded) {
+                                        resultList.add(new BookmarkCategory(-reminder.Id, reminder.Name));
+                                        categoryAdded = true;
+                                    }
+                                    resultList.add(reminder);
+                                }
+                            }
+                        }
                     }
 
-                    JSONArray rootmarks = json.getJSONArray("bookmarks");
+                    // regulerne bookmarky
+                    JSONArray rootmarks = bookmarks.getJSONArray("bookmarks");
                     for (int rootMarkIndex = 0; rootMarkIndex < rootmarks.length(); rootMarkIndex++) {
                         JSONObject rootmark = rootmarks.getJSONObject(rootMarkIndex);
 
                         JSONObject category = rootmark.getJSONObject("category");
-                        resultList.add(convert(category));
+                        resultList.add(category(category));
 
                         JSONArray bookmarksInCategory = rootmark.getJSONArray("bookmarks");
                         for (int bookmarkInCategoryIndex = 0; bookmarkInCategoryIndex < bookmarksInCategory.length(); bookmarkInCategoryIndex++) {
                             JSONObject bookmark = bookmarksInCategory.getJSONObject(bookmarkInCategoryIndex);
-                            Bookmark result = convert(bookmark, category);
+                            Bookmark result = bookmark(bookmark, category);
                             if (!input.IncludeUnread && result.Unread == 0) {
                                 continue;
                             }
@@ -110,7 +165,7 @@ public class BookmarkDataAccess {
                         }
                     }
 
-                    context = Context.fromJSONObject(json);
+                    context = Context.fromJSONObject(bookmarks);
                 } catch (Throwable e) {
                     log.error("GetBookmarksTaskWorker", e);
                     throw new NyxException(e);
@@ -136,7 +191,7 @@ public class BookmarkDataAccess {
                     JSONArray discussions = json.getJSONArray("discussions");
                     for (int discussionIndex = 0; discussionIndex < discussions.length(); discussionIndex++) {
                         JSONObject discussion = discussions.getJSONObject(discussionIndex);
-                        Bookmark result = convert(discussion, null);
+                        Bookmark result = bookmark(discussion, null);
                         if (!input.IncludeUnread && result.Unread == 0) {
                             continue;
                         }
@@ -218,7 +273,7 @@ public class BookmarkDataAccess {
                         JSONObject bookmark = bookmarks.getJSONObject(bokmarkIndex);
 
                         JSONObject category = bookmark.getJSONObject("category");
-                        resultList.add(convert(category));
+                        resultList.add(category(category));
                     }
 
                     context = Context.fromJSONObject(json);
@@ -252,11 +307,11 @@ public class BookmarkDataAccess {
 
                         // skokotena skurvena vyjebana java do pice, nie == ako normalni ludia, ale EQUALS !!!
                         // skoro hodinu som tu stravil. boha krista jebem !!!
-                        if (convert(category).Id.equals(input.CategoryId)) {
+                        if (category(category).Id.equals(input.CategoryId)) {
                             JSONArray bookmarksInCategory = bookmark.getJSONArray("bookmarks");
                             for (int bookmarkInCategoryIndex = 0; bookmarkInCategoryIndex < bookmarksInCategory.length(); bookmarkInCategoryIndex++) {
                                 JSONObject bookmarkInCategory = bookmarksInCategory.getJSONObject(bookmarkInCategoryIndex);
-                                resultList.add(convert(bookmarkInCategory, category));
+                                resultList.add(bookmark(bookmarkInCategory, category));
                             }
                             break;
                         }

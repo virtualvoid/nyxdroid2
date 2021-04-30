@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 public class Last extends Writeup {
     public Long DiscussionId;
+    public String DiscussionName;
 
     public Last() {
         super(Writeup.TYPE_LAST);
@@ -14,6 +15,7 @@ public class Last extends Writeup {
         super(source);
 
         DiscussionId = source.readLong();
+        DiscussionName = source.readString();
     }
 
     @Override
@@ -26,6 +28,7 @@ public class Last extends Writeup {
         super.writeToParcel(dest, flags);
 
         dest.writeLong(DiscussionId);
+        dest.writeString(DiscussionName);
     }
 
     /**

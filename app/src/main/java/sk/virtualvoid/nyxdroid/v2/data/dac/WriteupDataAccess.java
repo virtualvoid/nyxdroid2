@@ -412,6 +412,7 @@ public class WriteupDataAccess {
                             Last writeup = new Last();
                             writeup.Id = post.getLong("id");
                             writeup.DiscussionId = post.getLong("discussion_id");
+                            writeup.DiscussionName = post.getString("discussion_name");
 
                             writeup.Nick = post.getString("username");
                             writeup.Time = BasePoco.timeFromString(post.getString("inserted_at"));

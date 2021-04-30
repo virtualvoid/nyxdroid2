@@ -9,6 +9,7 @@ import sk.virtualvoid.core.TaskManager;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.Bookmark;
 import sk.virtualvoid.nyxdroid.v2.data.BookmarkCategory;
+import sk.virtualvoid.nyxdroid.v2.data.BookmarkReminder;
 import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.adapters.BookmarkAdapter;
 import sk.virtualvoid.nyxdroid.v2.data.dac.BookmarkDataAccess;
@@ -82,8 +83,14 @@ public class BookmarksActivity extends BaseActivity {
 					notifyDatasetChanged();
 
 					Intent intent = new Intent(BookmarksActivity.this, WriteupsActivity.class);
-					intent.putExtra(Constants.KEY_ID, id);
+					if (bookmark instanceof BookmarkReminder) {
+						intent.putExtra(Constants.KEY_ID, ((BookmarkReminder)bookmark).DiscussionId);
+						intent.putExtra(Constants.KEY_WU_ID, ((BookmarkReminder)bookmark).Id);
+					} else {
+						intent.putExtra(Constants.KEY_ID, id);
+					}
 					intent.putExtra(Constants.KEY_TITLE, bookmark.Name);
+
 					startActivity(intent);
 					overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
 				}

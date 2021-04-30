@@ -4,8 +4,11 @@ import java.util.ArrayList;
 
 import sk.virtualvoid.core.CustomHtml;
 import sk.virtualvoid.nyxdroid.v2.R;
+import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.Bookmark;
 import sk.virtualvoid.nyxdroid.v2.data.BookmarkCategory;
+import sk.virtualvoid.nyxdroid.v2.data.BookmarkReminder;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -17,133 +20,168 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.LayoutInflaterCompat;
 
 /**
- * 
  * @author Juraj
- * 
  */
 public class BookmarkAdapter extends BasePocoAdapter<Bookmark> {
 
-	public BookmarkAdapter(AppCompatActivity context, ArrayList<Bookmark> model) {
-		super(context, model);
-	}
+    public BookmarkAdapter(AppCompatActivity context, ArrayList<Bookmark> model) {
+        super(context, model);
+    }
 
-	public void clearCategory(long categoryId) {
-		ArrayList<Bookmark> temp = new ArrayList<Bookmark>(model);
-		for (Bookmark bookmark : temp) {
-			if (!(bookmark instanceof BookmarkCategory) && bookmark.CategoryId == categoryId) {
-				model.remove(bookmark);
-			}
-		}
-	}
+    public void clearCategory(long categoryId) {
+        ArrayList<Bookmark> temp = new ArrayList<Bookmark>(model);
+        for (Bookmark bookmark : temp) {
+            if (!(bookmark instanceof BookmarkCategory) && bookmark.CategoryId == categoryId) {
+                model.remove(bookmark);
+            }
+        }
+    }
 
-	public void replaceCategory(long categoryId, ArrayList<Bookmark> output) {
-		clearCategory(categoryId);
+    public void replaceCategory(long categoryId, ArrayList<Bookmark> output) {
+        clearCategory(categoryId);
 
-		for (int i = 0; i < model.size(); i++) {
-			Bookmark bookmark = model.get(i);
+        for (int i = 0; i < model.size(); i++) {
+            Bookmark bookmark = model.get(i);
 
-			if (bookmark instanceof BookmarkCategory && bookmark.Id == categoryId) {
-				for (int j = 0; j < output.size(); j++) {
-					Bookmark newBookmark = output.get(j);
+            if (bookmark instanceof BookmarkCategory && bookmark.Id == categoryId) {
+                for (int j = 0; j < output.size(); j++) {
+                    Bookmark newBookmark = output.get(j);
 
-					model.add(i + 1 + j, newBookmark);
-				}
-			}
-		}
-	}
+                    model.add(i + 1 + j, newBookmark);
+                }
+            }
+        }
+    }
 
-	@Override
-	public int getViewTypeCount() {
-		return 2;
-	}
+    @Override
+    public int getViewTypeCount() {
+        return 3;
+    }
 
-	@Override
-	public int getItemViewType(int position) {
-		if (getItem(position) instanceof BookmarkCategory) {
-			return 0;
-		}
-		return 1;
-	}
+    @Override
+    public int getItemViewType(int position) {
+        if (getItem(position) instanceof BookmarkCategory) {
+            return 0;
+        }
+        if (getItem(position) instanceof BookmarkReminder) {
+            return 2;
+        }
+        // bookmark reminder
+        return 1;
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View row = convertView;
 
-		if (getItem(position) instanceof BookmarkCategory) {
-			ViewHolderCategory holder = null;
+        Object item = getItem(position);
+        int itemType = getItemViewType(position);
 
-			if (row == null) {
-				row = context.getLayoutInflater().inflate(R.layout.bookmark_category_row, parent, false);
-				row.setPadding(appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding());
-				row.setBackgroundColor(appearance.getCategoryBackgroundColor());
+        if (itemType == 0) {
+            row = getCategoryView(parent, row, (BookmarkCategory) item);
+        } else if (itemType == 1) {
+            row = getBookmarkView(parent, row, (Bookmark) item);
+        } else if (itemType == 2) {
+            row = getReminderView(parent, row, (BookmarkReminder) item);
+        }
+        return row;
+    }
 
-				holder = new ViewHolderCategory();
-				holder.Title = (TextView) row.findViewById(R.id.bookmark_category_row_title);
-				
-				appearance.setFontSize(holder.Title);
-				
-				row.setTag(holder);
-			} else {
-				holder = (ViewHolderCategory) row.getTag();
-			}
+    private View getBookmarkView(ViewGroup parent, View row, Bookmark item) {
+        ViewHolder holder = null;
 
-			BookmarkCategory obj = (BookmarkCategory) getItem(position);
+        if (row == null) {
+            row = context.getLayoutInflater().inflate(R.layout.bookmark_row, parent, false);
+            row.setPadding(appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding());
 
-			holder.Title.setText(obj.Name);
-		} else {
-			ViewHolder holder = null;
+            holder = new ViewHolder();
+            holder.UnreadCount = (TextView) row.findViewById(R.id.bookmark_row_unread_count);
+            holder.Title = (TextView) row.findViewById(R.id.bookmark_row_title);
 
-			if (row == null) {
-				row = context.getLayoutInflater().inflate(R.layout.bookmark_row, parent, false);
-				row.setPadding(appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding());
+            appearance.setFontSize(holder.UnreadCount, holder.Title);
 
-				holder = new ViewHolder();
-				holder.UnreadCount = (TextView) row.findViewById(R.id.bookmark_row_unread_count);
-				holder.Title = (TextView) row.findViewById(R.id.bookmark_row_title);
+            row.setTag(holder);
+        } else {
+            holder = (ViewHolder) row.getTag();
+        }
 
-				appearance.setFontSize(holder.UnreadCount, holder.Title);
-				
-				row.setTag(holder);
-			} else {
-				holder = (ViewHolder) row.getTag();
-			}
+        if (item.Unread > 0) {
+            holder.UnreadCount.setText(Integer.toString(item.Unread));
+            holder.Title.setTextColor(appearance.getBookmarkUnreadColor());
+        } else {
+            holder.UnreadCount.setText("");
+            holder.Title.setTextColor(appearance.getBookmarkReadColor());
+        }
 
-			Bookmark obj = (Bookmark) getItem(position);
+        if (item.Replies > 0) {
+            holder.Title.setText(CustomHtml.fromHtml(String.format("%s <small><b>%d repl%s</b></small>", item.Name, item.Replies, item.Replies == 1 ? "y" : "ies")));
+        } else {
+            holder.Title.setText(item.Name);
+        }
+        return row;
+    }
 
-			if (obj.Unread > 0) {
-				holder.UnreadCount.setText(Integer.toString(obj.Unread));
-				holder.Title.setTextColor(appearance.getBookmarkUnreadColor());
-			} else {
-				holder.UnreadCount.setText("");
-				holder.Title.setTextColor(appearance.getBookmarkReadColor());
-			}
+    private View getReminderView(ViewGroup parent, View row, BookmarkReminder item) {
+        ViewHolderReminder holder = null;
 
-			if (obj.Replies > 0) {
-				holder.Title.setText(CustomHtml.fromHtml(String.format("%s <small><b>%d repl%s</b></small>", obj.Name, obj.Replies, obj.Replies == 1 ? "y" : "ies")));
-			} else {
-				holder.Title.setText(obj.Name);
-			}
-		}
+        if (row == null) {
+            row = context.getLayoutInflater().inflate(R.layout.bookmark_reminder_row, parent, false);
+            row.setPadding(appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding());
 
-		return row;
-	}
+            holder = new ViewHolderReminder();
+            holder.Title = (TextView) row.findViewById(R.id.bookmark_reminder_row_title);
+            holder.RepliesCount = (TextView) row.findViewById(R.id.bookmark_reminder_row_reply_count);
 
-	/**
-	 * 
-	 * @author Juraj
-	 * 
-	 */
-	static class ViewHolder {
-		public TextView UnreadCount;
-		public TextView Title;
-	}
+            appearance.setFontSize(holder.Title);
 
-	/**
-	 * 
-	 * @author Juraj
-	 * 
-	 */
-	static class ViewHolderCategory {
-		public TextView Title;
-	}
+            row.setTag(holder);
+        } else {
+            holder = (ViewHolderReminder) row.getTag();
+        }
+
+        holder.Title.setText(CustomHtml.fromHtml(String.format("<b>%s</b> <small>%s</small>", item.Nick, BasePoco.timeToString(context, item.Time))));
+//        if (item.Replies > 0) {
+//            holder.RepliesCount.setText(Integer.toString(item.Replies));
+//        } else {
+            holder.RepliesCount.setText("");
+//        }
+
+        holder.Title.setTextColor(appearance.getBookmarkReadColor());
+        return row;
+    }
+
+    private View getCategoryView(ViewGroup parent, View row, BookmarkCategory item) {
+        ViewHolderCategory holder = null;
+        if (row == null) {
+            row = context.getLayoutInflater().inflate(R.layout.bookmark_category_row, parent, false);
+            row.setPadding(appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding(), appearance.getBookmarksPadding());
+            row.setBackgroundColor(appearance.getCategoryBackgroundColor());
+
+            holder = new ViewHolderCategory();
+            holder.Title = (TextView) row.findViewById(R.id.bookmark_category_row_title);
+
+            appearance.setFontSize(holder.Title);
+
+            row.setTag(holder);
+        } else {
+            holder = (ViewHolderCategory) row.getTag();
+        }
+
+        holder.Title.setText(item.Name);
+        return row;
+    }
+
+    static class ViewHolder {
+        public TextView UnreadCount;
+        public TextView Title;
+    }
+
+    static class ViewHolderCategory {
+        public TextView Title;
+    }
+
+    static class ViewHolderReminder {
+        public TextView Title;
+        public TextView RepliesCount;
+    }
 }

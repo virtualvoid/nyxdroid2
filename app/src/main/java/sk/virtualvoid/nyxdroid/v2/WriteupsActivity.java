@@ -306,7 +306,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
                         amhWriteups.finish();
 
                         Item item = new Item(wu.Content.replaceAll("\\<.*?>", ""));
-                        ClipData data = new ClipData(new ClipDescription("WU Text Copied", new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}), item);
+                        ClipData data = new ClipData(new ClipDescription("Text copied", new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}), item);
                         ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                         clipboardManager.setPrimaryClip(data);
                     }
@@ -317,7 +317,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
                         amhWriteups.finish();
 
                         Item item = new Item(String.format("%s/discussion/%d/id/%d", Constants.INDEX, WriteupsActivity.this.id, wu.Id));
-                        ClipData data = new ClipData(new ClipDescription("WU Link Copied", new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}), item);
+                        ClipData data = new ClipData(new ClipDescription("Link copied", new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}), item);
                         ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                         clipboardManager.setPrimaryClip(data);
                     }

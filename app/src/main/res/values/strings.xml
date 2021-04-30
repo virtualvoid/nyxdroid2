@@ -204,6 +204,5 @@
     <string name="plus_button_position">Plus button position</string>
     <string name="recipient">Recipient</string>
     <string name="got_new_fcm_token">Got new FCM token.</string>
-
-
+    <string name="reminders">reminders</string>
 </resources>

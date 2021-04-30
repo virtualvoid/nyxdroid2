@@ -117,11 +117,16 @@ public class LastAdapter extends BasePocoAdapter<Last> implements ResponsibleBas
 
         holder.Time.setText(BasePoco.timeToString(context, wu.Time));
 
-        if (wu.Location != null && wu.Location.valid()) {
+        if (wu instanceof Last) {
             holder.Location.setVisibility(View.VISIBLE);
-            holder.Location.setText(wu.Location.toString(now));
+            holder.Location.setText(((Last)wu).DiscussionName);
         } else {
-            holder.Location.setVisibility(View.INVISIBLE);
+            if (wu.Location != null && wu.Location.valid()) {
+                holder.Location.setVisibility(View.VISIBLE);
+                holder.Location.setText(wu.Location.toString(now));
+            } else {
+                holder.Location.setVisibility(View.INVISIBLE);
+            }
         }
 
         if (wu.Rating != 0) {

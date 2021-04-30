@@ -47,11 +47,12 @@ public class Constants {
 
 	public static final String HTTP = "http://";
 	public static final String HTTPS = "https://";
+	public static final String INDEX_WWW = "https://www.nyx.cz";
 	public static final String INDEX = "https://www.nyx.cz";
 
 	public static String fixAttachmentUrl(String url) {
 		if (!url.startsWith(Constants.HTTP) && !url.startsWith(Constants.HTTPS)) {
-			url = String.format("%s%s", Constants.INDEX, url);
+			url = String.format("%s%s", Constants.INDEX_WWW, url);
 		}
 		return url;
 	}
