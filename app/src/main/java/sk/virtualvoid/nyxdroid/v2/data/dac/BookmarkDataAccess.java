@@ -127,22 +127,33 @@ public class BookmarkDataAccess {
                                 temp.add(reminder);
                             }
 
+                            ArrayList<Bookmark> tempList = new ArrayList<Bookmark>();
+                            tempList.add(new BookmarkCategory(-1000, getContext().getResources().getString(R.string.reminders)));
+
                             Set<Long> keys = grouping.keySet();
                             Iterator<Long> iterator = keys.iterator();
                             while (iterator.hasNext()) {
                                 Long key = iterator.next();
                                 temp = grouping.get(key);
 
-                                boolean categoryAdded = false;
-                                for (int reminderIndex = 0; reminderIndex < temp.size(); reminderIndex++) {
-                                    BookmarkReminder reminder = (BookmarkReminder) temp.get(reminderIndex);
-                                    if (!categoryAdded) {
-                                        resultList.add(new BookmarkCategory(-reminder.Id, reminder.Name));
-                                        categoryAdded = true;
+                                if (temp.size() == 1) {
+                                    BookmarkReminder reminder = (BookmarkReminder) temp.get(0);
+                                    reminder.IsSingle = true;
+                                    tempList.add(reminder);
+                                } else {
+                                    boolean categoryAdded = false;
+                                    for (int reminderIndex = 0; reminderIndex < temp.size(); reminderIndex++) {
+                                        BookmarkReminder reminder = (BookmarkReminder) temp.get(reminderIndex);
+                                        if (!categoryAdded) {
+                                            resultList.add(new BookmarkCategory(-reminder.Id, reminder.Name));
+                                            categoryAdded = true;
+                                        }
+                                        resultList.add(reminder);
                                     }
-                                    resultList.add(reminder);
                                 }
                             }
+
+                            resultList.addAll(tempList);
                         }
                     }
 

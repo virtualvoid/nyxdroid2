@@ -4,4 +4,5 @@ public class BookmarkReminder extends Bookmark {
     public long DiscussionId;
     public int Replies;
     public long Time;
+    public boolean IsSingle;
 }

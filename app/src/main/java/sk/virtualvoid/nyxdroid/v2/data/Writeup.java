@@ -170,7 +170,7 @@ public class Writeup extends BaseComposePoco implements Parcelable {
                     newContent.append(node.toString());
                     continue;
                 }
-                if (node.nodeName().equalsIgnoreCase("a") && (node.hasAttr("class") && node.attr("class").equalsIgnoreCase("extlink"))) {
+                if (node.nodeName().equalsIgnoreCase("a") && (node.hasAttr("class") && (node.attr("class").equalsIgnoreCase("extlink") || node.attr("class").equalsIgnoreCase("r")))) {
                     newContent.append(node.toString());
                     continue;
                 }

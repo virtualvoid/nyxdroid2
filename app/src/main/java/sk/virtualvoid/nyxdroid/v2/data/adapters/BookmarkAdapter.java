@@ -139,7 +139,11 @@ public class BookmarkAdapter extends BasePocoAdapter<Bookmark> {
             holder = (ViewHolderReminder) row.getTag();
         }
 
-        holder.Title.setText(CustomHtml.fromHtml(String.format("<b>%s</b> <small>%s</small>", item.Nick, BasePoco.timeToString(context, item.Time))));
+        if (item.IsSingle) {
+            holder.Title.setText(CustomHtml.fromHtml(String.format("%s <small>%s</small>", item.Name, (item.Replies > 0 ? String.format("<small><b>%d repl%s</b></small>", item.Replies, item.Replies == 1 ? "y" : "ies") : ""))));
+        } else {
+            holder.Title.setText(CustomHtml.fromHtml(String.format("<b>%s</b> <small>%s</small>", item.Nick, BasePoco.timeToString(context, item.Time))));
+        }
 //        if (item.Replies > 0) {
 //            holder.RepliesCount.setText(Integer.toString(item.Replies));
 //        } else {
