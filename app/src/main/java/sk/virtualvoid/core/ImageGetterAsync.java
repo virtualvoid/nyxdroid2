@@ -1,19 +1,5 @@
 package sk.virtualvoid.core;
 
-import java.lang.ref.WeakReference;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import org.apache.log4j.Logger;
-
-import sk.virtualvoid.nyxdroid.library.Constants;
-import sk.virtualvoid.nyxdroid.v2.NyxdroidApplication;
-import sk.virtualvoid.nyxdroid.v2.R;
-import sk.virtualvoid.nyxdroid.v2.internal.Appearance;
-
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -21,10 +7,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.collection.LruCache;
-
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
@@ -32,10 +14,24 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.collection.LruCache;
+
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.squareup.picasso.Picasso;
+
+import org.apache.log4j.Logger;
+
+import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.nyxdroid.v2.R;
+import sk.virtualvoid.nyxdroid.v2.internal.Appearance;
 
 
 /**
