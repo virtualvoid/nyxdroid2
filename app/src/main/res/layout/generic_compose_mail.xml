@@ -13,20 +13,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/enter_recipient_apos_s_nick"
-        app:layout_constraintBottom_toTopOf="@+id/list"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"></sk.virtualvoid.core.widgets.CustomAutocompleteTextView>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></sk.virtualvoid.core.widgets.CustomAutocompleteTextView>
 
 
     <ListView
         android:id="@+id/list"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginTop="44dp"
-        android:layout_marginBottom="44dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/generic_compose_message"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></ListView>
+        app:layout_constraintTop_toBottomOf="@+id/generic_compose_recipient"></ListView>
 
 
     <EditText
