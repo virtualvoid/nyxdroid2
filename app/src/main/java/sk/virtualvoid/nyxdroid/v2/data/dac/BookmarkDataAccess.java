@@ -27,6 +27,9 @@ import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.query.BookmarkQuery;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
 
 /**
  * @author Juraj
@@ -100,6 +103,9 @@ public class BookmarkDataAccess {
             ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
             Context context = null;
 
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            boolean remindersEnabled = prefs.getBoolean("display_reminders", true);
+
             Connector connector = new Connector(getContext());
             JSONObject bookmarks = connector.get("/bookmarks" + (input.IncludeUnread ? "/all" : ""));
             if (bookmarks == null) {
@@ -107,74 +113,12 @@ public class BookmarkDataAccess {
             } else {
                 try {
                     // toto je taka hovadina az ma z toho boli brucho
-                    if (bookmarks.has("reminder_count") && !bookmarks.isNull("reminder_count") && bookmarks.getInt("reminder_count") > 0) {
-                        JSONObject reminders = connector.get("/bookmarks/reminders");
-
-                        if (reminders.has("posts") && !reminders.isNull("posts")) {
-                            JSONArray posts = reminders.getJSONArray("posts");
-
-                            ArrayList<Bookmark> temp;
-                            HashMap<Long, ArrayList<Bookmark>> grouping = new HashMap<>();
-                            for (int postIndex = 0; postIndex < posts.length(); postIndex++) {
-                                JSONObject post = posts.getJSONObject(postIndex);
-                                BookmarkReminder reminder = reminder(post);
-                                if (grouping.containsKey(reminder.DiscussionId)) {
-                                    temp = grouping.get(reminder.DiscussionId);
-                                } else {
-                                    temp = new ArrayList<>();
-                                    grouping.put(reminder.DiscussionId, temp);
-                                }
-                                temp.add(reminder);
-                            }
-
-                            ArrayList<Bookmark> tempList = new ArrayList<Bookmark>();
-                            tempList.add(new BookmarkCategory(-1000, getContext().getResources().getString(R.string.reminders)));
-
-                            Set<Long> keys = grouping.keySet();
-                            Iterator<Long> iterator = keys.iterator();
-                            while (iterator.hasNext()) {
-                                Long key = iterator.next();
-                                temp = grouping.get(key);
-
-                                if (temp.size() == 1) {
-                                    BookmarkReminder reminder = (BookmarkReminder) temp.get(0);
-                                    reminder.IsSingle = true;
-                                    tempList.add(reminder);
-                                } else {
-                                    boolean categoryAdded = false;
-                                    for (int reminderIndex = 0; reminderIndex < temp.size(); reminderIndex++) {
-                                        BookmarkReminder reminder = (BookmarkReminder) temp.get(reminderIndex);
-                                        if (!categoryAdded) {
-                                            resultList.add(new BookmarkCategory(-reminder.Id, reminder.Name));
-                                            categoryAdded = true;
-                                        }
-                                        resultList.add(reminder);
-                                    }
-                                }
-                            }
-
-                            resultList.addAll(tempList);
-                        }
+                    if (remindersEnabled && (bookmarks.has("reminder_count") && !bookmarks.isNull("reminder_count") && bookmarks.getInt("reminder_count") > 0)) {
+                        processReminders(resultList, connector);
                     }
 
                     // regulerne bookmarky
-                    JSONArray rootmarks = bookmarks.getJSONArray("bookmarks");
-                    for (int rootMarkIndex = 0; rootMarkIndex < rootmarks.length(); rootMarkIndex++) {
-                        JSONObject rootmark = rootmarks.getJSONObject(rootMarkIndex);
-
-                        JSONObject category = rootmark.getJSONObject("category");
-                        resultList.add(category(category));
-
-                        JSONArray bookmarksInCategory = rootmark.getJSONArray("bookmarks");
-                        for (int bookmarkInCategoryIndex = 0; bookmarkInCategoryIndex < bookmarksInCategory.length(); bookmarkInCategoryIndex++) {
-                            JSONObject bookmark = bookmarksInCategory.getJSONObject(bookmarkInCategoryIndex);
-                            Bookmark result = bookmark(bookmark, category);
-                            if (!input.IncludeUnread && result.Unread == 0) {
-                                continue;
-                            }
-                            resultList.add(result);
-                        }
-                    }
+                    processBookmarks(input, resultList, bookmarks);
 
                     context = Context.fromJSONObject(bookmarks);
                 } catch (Throwable e) {
@@ -184,6 +128,76 @@ public class BookmarkDataAccess {
             }
 
             return new SuccessResponse<>(resultList, context);
+        }
+
+        private void processBookmarks(BookmarkQuery input, ArrayList<Bookmark> resultList, JSONObject bookmarks) throws JSONException {
+            JSONArray rootmarks = bookmarks.getJSONArray("bookmarks");
+            for (int rootMarkIndex = 0; rootMarkIndex < rootmarks.length(); rootMarkIndex++) {
+                JSONObject rootmark = rootmarks.getJSONObject(rootMarkIndex);
+
+                JSONObject category = rootmark.getJSONObject("category");
+                resultList.add(category(category));
+
+                JSONArray bookmarksInCategory = rootmark.getJSONArray("bookmarks");
+                for (int bookmarkInCategoryIndex = 0; bookmarkInCategoryIndex < bookmarksInCategory.length(); bookmarkInCategoryIndex++) {
+                    JSONObject bookmark = bookmarksInCategory.getJSONObject(bookmarkInCategoryIndex);
+                    Bookmark result = bookmark(bookmark, category);
+                    if (!input.IncludeUnread && result.Unread == 0) {
+                        continue;
+                    }
+                    resultList.add(result);
+                }
+            }
+        }
+
+        private void processReminders(ArrayList<Bookmark> resultList, Connector connector) throws JSONException {
+            JSONObject reminders = connector.get("/bookmarks/reminders");
+
+            if (reminders.has("posts") && !reminders.isNull("posts")) {
+                JSONArray posts = reminders.getJSONArray("posts");
+
+                ArrayList<Bookmark> temp;
+                HashMap<Long, ArrayList<Bookmark>> grouping = new HashMap<>();
+                for (int postIndex = 0; postIndex < posts.length(); postIndex++) {
+                    JSONObject post = posts.getJSONObject(postIndex);
+                    BookmarkReminder reminder = reminder(post);
+                    if (grouping.containsKey(reminder.DiscussionId)) {
+                        temp = grouping.get(reminder.DiscussionId);
+                    } else {
+                        temp = new ArrayList<>();
+                        grouping.put(reminder.DiscussionId, temp);
+                    }
+                    temp.add(reminder);
+                }
+
+                ArrayList<Bookmark> tempList = new ArrayList<Bookmark>();
+                tempList.add(new BookmarkCategory(-1000, getContext().getResources().getString(R.string.reminders)));
+
+                Set<Long> keys = grouping.keySet();
+                Iterator<Long> iterator = keys.iterator();
+                while (iterator.hasNext()) {
+                    Long key = iterator.next();
+                    temp = grouping.get(key);
+
+                    if (temp.size() == 1) {
+                        BookmarkReminder reminder = (BookmarkReminder) temp.get(0);
+                        reminder.IsSingle = true;
+                        tempList.add(reminder);
+                    } else {
+                        boolean categoryAdded = false;
+                        for (int reminderIndex = 0; reminderIndex < temp.size(); reminderIndex++) {
+                            BookmarkReminder reminder = (BookmarkReminder) temp.get(reminderIndex);
+                            if (!categoryAdded) {
+                                resultList.add(new BookmarkCategory(-reminder.Id, reminder.Name));
+                                categoryAdded = true;
+                            }
+                            resultList.add(reminder);
+                        }
+                    }
+                }
+
+                resultList.addAll(tempList);
+            }
         }
     }
 

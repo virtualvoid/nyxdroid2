@@ -1,7 +1,9 @@
 package sk.virtualvoid.nyxdroid.v2;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import com.google.android.gms.security.ProviderInstaller;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -31,111 +34,145 @@ import sk.virtualvoid.core.ImageGetterAsync;
 import sk.virtualvoid.nyxdroid.library.Constants;
 
 /**
- * 
  * @author Juraj
- * 
  */
 public class NyxdroidApplication extends MultiDexApplication {
-	public static final String logPath = Environment.getExternalStorageDirectory() + File.separator + "nyxdroid.log";
+    public static final String logPath = Environment.getExternalStorageDirectory() + File.separator + "nyxdroid.log";
 
-	private static final Logger log = Logger.getLogger(NyxdroidApplication.class);
-	private static final UncaughtExceptionHandler defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+    private static final Logger log = Logger.getLogger(NyxdroidApplication.class);
+    private static final UncaughtExceptionHandler defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
 
-	public NyxdroidApplication() {
-	}
+    public NyxdroidApplication() {
+    }
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-		try {
-			Class.forName("android.os.AsyncTask");
-		} catch (ClassNotFoundException e) {
-			Log.e(Constants.TAG, "Unable to initialize android.os.AsyncTask !");
-		}
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final String authNick = prefs.getString(Constants.AUTH_NICK, null);
+        final boolean notificationsEnabled = prefs.getBoolean(Constants.NOTIFICATIONS_ENABLED, true);
 
-		try {
-			ProviderInstaller.installIfNeeded(this);
-		} catch (GooglePlayServicesRepairableException e) {
-			GoogleApiAvailability.getInstance()
-					.showErrorNotification(this, e.getConnectionStatusCode());
-		} catch (GooglePlayServicesNotAvailableException e) {
-			Log.e(Constants.TAG, "Unable to initialize TLS 1.2!");
-		}
+        asyncTaskFix();
+        providerInstallerFix();
 
-		FirebaseAnalytics.getInstance(getApplicationContext())
-				.setAnalyticsCollectionEnabled(true);
+        initializeCrashlytics(authNick);
+        initializeAnalytics(authNick);
+        initializeMessaging(notificationsEnabled);
+        initializeImageLoader();
+        initializeLogger();
+    }
 
-		FirebaseMessaging.getInstance()
-				.getToken()
-				.addOnCompleteListener(new OnCompleteListener<String>() {
-					@Override
-					public void onComplete(@NonNull Task<String> task) {
-						if (!task.isSuccessful()) {
-							Log.w(Constants.TAG, "Fetching FCM registration token failed", task.getException());
-							return;
-						}
+    @Override
+    public void onTrimMemory(int level) {
+        if (level >= Constants.MEMORY_TRIM_LEVEL) {
+            ImageGetterAsync.clearDrawableCache();
+        }
+        super.onTrimMemory(level);
+    }
 
-						String token = task.getResult();
-						GCMIntentService.firePushNotificationRegister(getApplicationContext(), token, false);
-					}
-				});
+    @Override
+    public void onLowMemory() {
+        log.warn("onLowMemory!");
+        ImageGetterAsync.clearDrawableCache();
+        super.onLowMemory();
+    }
 
-		DisplayImageOptions ilOptions = new DisplayImageOptions.Builder()
-				.cacheOnDisc(true)
-				.cacheInMemory(true)
-				.build();
+    private void asyncTaskFix() {
+        try {
+            Class.forName("android.os.AsyncTask");
+        } catch (ClassNotFoundException e) {
+            Log.e(Constants.TAG, "Unable to initialize android.os.AsyncTask !");
+        }
+    }
 
-		ImageLoaderConfiguration ilConfig = new ImageLoaderConfiguration.Builder(getApplicationContext())
-				.defaultDisplayImageOptions(ilOptions)
-				.discCacheFileCount(Constants.ImageLoader.DiscCacheFileCount)
-				.memoryCacheExtraOptions(Constants.ImageLoader.MemoryCacheMaxWidth, Constants.ImageLoader.MemoryCacheMaxHeight)
-				.denyCacheImageMultipleSizesInMemory()
-				.build();
+    private void providerInstallerFix() {
+        try {
+            ProviderInstaller.installIfNeeded(this);
+        } catch (GooglePlayServicesRepairableException e) {
+            GoogleApiAvailability.getInstance()
+                    .showErrorNotification(this, e.getConnectionStatusCode());
+        } catch (GooglePlayServicesNotAvailableException e) {
+            Log.e(Constants.TAG, "Unable to initialize TLS 1.2!");
+        }
+    }
 
-		ImageLoader.getInstance().init(ilConfig);
+    private void initializeAnalytics(String authNick) {
+        FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(getApplicationContext());
+        analytics.setAnalyticsCollectionEnabled(true);
+        analytics.setUserId(authNick);
+    }
 
-		try {
-			final LogConfigurator logConfigurator = new LogConfigurator();
-			logConfigurator.setFileName(logPath);
-			logConfigurator.setRootLevel(Level.ALL);
-			logConfigurator.setUseLogCatAppender(true);
-			logConfigurator.configure();
-		} catch (Throwable e/* gotta catch'em all */) {
-			Log.e(Constants.TAG, String.format("UNABLE TO CONFIGURE LOG4J: %s", e.getMessage()));
-		}
-		
-		Thread.setDefaultUncaughtExceptionHandler(new CustomUncaughtExceptionHandler());
-	}
+    private void initializeCrashlytics(String authNick) {
+        final FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+        crashlytics.setCrashlyticsCollectionEnabled(true);
+        crashlytics.setUserId(authNick);
+        Task<Boolean> checkTask = crashlytics.checkForUnsentReports();
+        checkTask.addOnCompleteListener(new OnCompleteListener<Boolean>() {
+            @Override
+            public void onComplete(@NonNull Task<Boolean> task) {
+                boolean unsentReports = task.getResult();
+                if (unsentReports) {
+                    crashlytics.sendUnsentReports();
+                    crashlytics.deleteUnsentReports();
+                }
+            }
+        });
 
-	@Override
-	public void onTrimMemory(int level) {
-		if (level >= Constants.MEMORY_TRIM_LEVEL) {
-			ImageGetterAsync.clearDrawableCache();
-		}
-		super.onTrimMemory(level);
-	}
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
+                crashlytics.log(String.format("ERROR: %s, STACKTRACE: %s", e.getMessage(), e.toString()));
+            }
+        });
+    }
 
-	@Override
-	public void onLowMemory() {
-		log.warn("onLowMemory!");
-		ImageGetterAsync.clearDrawableCache();
-		super.onLowMemory();
-	}
+    private void initializeMessaging(final boolean notificationsEnabled) {
+        FirebaseMessaging messaging = FirebaseMessaging.getInstance();
+        Task<String> tokenTask = messaging.getToken();
+        tokenTask.addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                if (!task.isSuccessful()) {
+                    Log.w(Constants.TAG, "Fetching FCM registration token failed", task.getException());
+                    return;
+                }
 
-	/**
-	 * 
-	 * @author Juraj
-	 * 
-	 */
-	public static class CustomUncaughtExceptionHandler implements UncaughtExceptionHandler {
-		@Override
-		public void uncaughtException(Thread thread, Throwable ex) {
-			log.fatal("Uncaught exception !", ex);
+                if (notificationsEnabled) {
+                    String token = task.getResult();
+                    GCMIntentService.firePushNotificationRegister(getApplicationContext(), token, false);
+                } else {
+                    GCMIntentService.firePushNotificationUnregister(getApplicationContext());
+                }
+            }
+        });
+    }
 
-			if (defaultExceptionHandler != null) {
-				defaultExceptionHandler.uncaughtException(thread, ex);
-			}
-		}
-	}
+    private void initializeImageLoader() {
+        DisplayImageOptions ilOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisc(true)
+                .cacheInMemory(true)
+                .build();
+
+        ImageLoaderConfiguration ilConfig = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                .defaultDisplayImageOptions(ilOptions)
+                .discCacheFileCount(Constants.ImageLoader.DiscCacheFileCount)
+                .memoryCacheExtraOptions(Constants.ImageLoader.MemoryCacheMaxWidth, Constants.ImageLoader.MemoryCacheMaxHeight)
+                .denyCacheImageMultipleSizesInMemory()
+                .build();
+
+        ImageLoader.getInstance().init(ilConfig);
+    }
+
+    private void initializeLogger() {
+        try {
+            final LogConfigurator logConfigurator = new LogConfigurator();
+            logConfigurator.setFileName(logPath);
+            logConfigurator.setRootLevel(Level.ALL);
+            logConfigurator.setUseLogCatAppender(true);
+            logConfigurator.configure();
+        } catch (Throwable e) {
+            Log.e(Constants.TAG, String.format("UNABLE TO CONFIGURE LOG4J: %s", e.getMessage()));
+        }
+    }
 }

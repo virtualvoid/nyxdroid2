@@ -216,12 +216,11 @@ public class ImageGetterAsync {
         active = true;
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean scaleImagesByDPI = prefs.getBoolean("scale_images_bydpi", true);
 
         resources = context.getResources();
 
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        density = scaleImagesByDPI ? (int) (metrics.density) : 1;
+        density = (int) (metrics.density);
 
         pendingTasks = new LinkedList<PendingTask>();
 

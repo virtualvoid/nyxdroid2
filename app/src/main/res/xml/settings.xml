@@ -2,26 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="@string/connectivity" >
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="ssl_enabled"
-            android:summaryOff="@string/standard_http_protocol_will_be_used_"
-            android:summaryOn="@string/secure_http_protocol_will_be_used_"
-            android:title="@string/communication_via_ssl" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="ssl_override"
-            android:summaryOff="@string/only_trused_ssl_certificates_will_be_accepted"
-            android:summaryOn="@string/all_ssl_certificates_will_be_accepted"
-            android:title="@string/ssl_certificates" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="use_beta_api"
-            android:summaryOff="@string/default_non_developer_settings"
-            android:summaryOn="@string/you_have_to_know_what_are_you_doing"
-            android:title="@string/use_beta_api" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/appearance" >
         <SwitchPreference
             android:defaultValue="true"
@@ -30,7 +10,6 @@
             android:summaryOn="@string/appearance_dark_theme"
             android:title="@string/dark_theme" >
         </SwitchPreference>
-        
         <ListPreference
             android:defaultValue="null"
             android:entries="@array/unread_appearance_names"
@@ -59,15 +38,8 @@
             android:summaryOff="@string/dont_display_voting_thumbs"
             android:summaryOn="@string/always_display_voting_thumbs"
             android:title="@string/display_voting_thumbs" />
-        
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="scale_images_bydpi"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/scale_images_by_device_dpi" />
-        
     </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/misc_" >
         <ListPreference
             android:defaultValue="0"
@@ -98,7 +70,6 @@
             android:summaryOff="@string/use_regular"
             android:summaryOn="@string/use_to_return_writeups"
             android:title="@string/backpress_button" />
-        
         <CheckBoxPreference
             android:defaultValue="true"
             android:disableDependentsState="true"
@@ -106,40 +77,22 @@
             android:summaryOff="@string/refresh_after_sending_writeup_never"
             android:summaryOn="@string/refresh_after_sending_writeup_always"
             android:title="@string/refresh_after_sending_writeup" />
-        
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:disableDependentsState="true"
-            android:key="gif_enabled"
-            android:title="@string/experimental_gif_support" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/notifications" >
-        <Preference
-            android:title="Get new FCM token"
-            android:key="notifications_clear_token"
-            android:summary="If notifications not work, you can try re-register FCM token"
-            />
         <CheckBoxPreference
             android:defaultValue="true"
-            android:disableDependentsState="true"
+            android:disableDependentsState="false"
+            android:key="display_reminders"
+            android:summaryOff="@string/display_reminders_off"
+            android:summaryOn="@string/display_reminders_on"
+            android:title="@string/display_reminders_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/notifications">
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
             android:key="notifications_enabled"
             android:summaryOff="@string/notifications_disabled"
             android:summaryOn="@string/notifications_enabled"
             android:title="@string/notifications" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:dependency="notifications_enabled"
-            android:disableDependentsState="false"
-            android:key="notifications_mail_enabled"
-            android:title="@string/notify_on_mail" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:dependency="notifications_enabled"
-            android:disableDependentsState="false"
-            android:key="notifications_reply_enabled"
-            android:title="@string/notify_on_reply" />
-
-
     </PreferenceCategory>
 
 </PreferenceScreen>

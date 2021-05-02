@@ -47,7 +47,6 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 	private Bundle firstItem;
 	private Bundle currentItem;
 	private boolean displayVotingThumbs;
-	private boolean gifSupport;
 
 	@Override
 	protected boolean useSlidingMenu() {
@@ -65,7 +64,6 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		displayVotingThumbs = prefs.getBoolean("display_voting_thumbs", true);
-		gifSupport = prefs.getBoolean("gif_enabled", false);
 
 		Intent launchIntent = getIntent();
 		Bundle launchExtras = launchIntent.getExtras();
@@ -228,24 +226,21 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {
-			Object object = null;
+			View view = null;
 			final String url = model[position].getString(Constants.KEY_URL);
 
 			matcher = pattern.matcher(url);
-			if (gifSupport && matcher.matches()) {
-				object = createMovieViewer(url);
+			if (matcher.matches()) {
+				view = createMovieViewer(url);
 			} else {
-				object = createPhotoViewer(url);
+				view = createPhotoViewer(url);
 			}
 
-			if (object instanceof View) {
-				View view = (View) object;
-				view.setOnLongClickListener(GalleryActivity.this);
+			view.setOnLongClickListener(GalleryActivity.this);
 
-				container.addView(view);
-			}
+			container.addView(view);
 
-			return object;
+			return view;
 		}
 
 		private PhotoView createPhotoViewer(final String url) {

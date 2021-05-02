@@ -205,4 +205,7 @@
     <string name="recipient">Recipient</string>
     <string name="got_new_fcm_token">Got new FCM token.</string>
     <string name="reminders">reminders</string>
+    <string name="display_reminders_on">Are displayed</string>
+    <string name="display_reminders_off">Wont be displayed</string>
+    <string name="display_reminders_title">Reminders in bookmarks</string>
 </resources>

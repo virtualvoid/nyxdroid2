@@ -11,6 +11,7 @@ import sk.virtualvoid.nyxdroid.v2.data.BookmarkReminder;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,6 +98,8 @@ public class BookmarkAdapter extends BasePocoAdapter<Bookmark> {
             holder = new ViewHolder();
             holder.UnreadCount = (TextView) row.findViewById(R.id.bookmark_row_unread_count);
             holder.Title = (TextView) row.findViewById(R.id.bookmark_row_title);
+            holder.Title.setEllipsize(TextUtils.TruncateAt.END);
+            holder.Title.setSingleLine();
 
             appearance.setFontSize(holder.UnreadCount, holder.Title);
 
@@ -163,6 +166,8 @@ public class BookmarkAdapter extends BasePocoAdapter<Bookmark> {
 
             holder = new ViewHolderCategory();
             holder.Title = (TextView) row.findViewById(R.id.bookmark_category_row_title);
+            holder.Title.setEllipsize(TextUtils.TruncateAt.END);
+            holder.Title.setSingleLine();
 
             appearance.setFontSize(holder.Title);
 

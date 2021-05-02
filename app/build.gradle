@@ -7,7 +7,7 @@ def pass = System.getenv("RELEASE_PASS")
 
 def versionMajor = 2
 def versionMinor = 1
-def versionPatch = 456
+def versionPatch = 457
 
 android {
     compileSdkVersion 30
@@ -75,28 +75,26 @@ dependencies {
     implementation project(':slidingmenujf')
 
     implementation platform('com.google.firebase:firebase-bom:27.0.0')
-    implementation 'com.google.firebase:firebase-analytics'
-
-    implementation "commons-logging:commons-logging-api:1.1"
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.legacy:legacy-preference-v14:1.0.0"
     implementation "androidx.preference:preference:1.1.1"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+
     implementation 'com.google.android.gms:play-services-base:17.6.0'
     implementation 'com.google.firebase:firebase-core:18.0.3'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-crashlytics:17.4.1'
     implementation 'com.google.firebase:firebase-messaging:21.1.0'
     implementation 'com.google.firebase:firebase-messaging-directboot:21.1.0'
 
-
     // Hack for universal image loader :)
     implementation 'com.github.nostra13:Android-Universal-Image-Loader:f6a9615868482672c3630cb7db6dcf43391e80de'
-    //implementation 'com.squareup.picasso:picasso:2.71828'
-
+    //TODO: will replace UIL with Picasso later on: implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation "commons-logging:commons-logging-api:1.1"
     implementation 'org.jsoup:jsoup:1.13.1'
     implementation 'pub.devrel:easypermissions:3.0.0'
-    implementation 'com.google.firebase:firebase-crashlytics:17.4.1'
 
     def multidex_version = "2.0.1"
     implementation "androidx.multidex:multidex:$multidex_version"

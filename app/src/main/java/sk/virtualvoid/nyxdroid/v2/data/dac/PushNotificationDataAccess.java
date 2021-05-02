@@ -45,7 +45,13 @@ public class PushNotificationDataAccess {
     public static class UnregisterTaskWorker extends TaskWorker<PushNotificationQuery, PushNotificationResponse> {
         @Override
         public PushNotificationResponse doWork(PushNotificationQuery input) throws NyxException {
-            throw new NyxException(Constants.NOT_IMPLEMENTED_YET);
+            Connector connector = new Connector(getContext());
+
+            JSONObject json = connector.post("/deregister_notifications/" + input.RegistrationId);
+
+            PushNotificationResponse result = new PushNotificationResponse();
+            result.ActionRequested = PushNotificationResponse.ACTION_UNREGISTER;
+            return result;
         }
     }
 }

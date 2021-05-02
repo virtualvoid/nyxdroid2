@@ -76,8 +76,6 @@ public class Connector {
     protected String authNick = null;
     protected String authToken = null;
 
-    public static final HashMap<String, Object> EmptyParams = new HashMap<String, Object>();
-
     public Connector(Context context) {
         if (context == null) {
             log.fatal("Connector ctor got empty context !!!");
@@ -198,7 +196,6 @@ public class Connector {
         }
         return null;
     }
-
 
     public JSONObject post(String url) {
         String jsonString = "";

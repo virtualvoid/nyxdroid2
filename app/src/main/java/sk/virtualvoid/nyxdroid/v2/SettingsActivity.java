@@ -75,8 +75,6 @@ public class SettingsActivity extends BaseActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.send_application_log:
-				return sendApplicationLog();
 			case R.id.clear_credentials:
 				return clearCredentials();
 			case R.id.clear_drawable_cache:
@@ -89,39 +87,6 @@ public class SettingsActivity extends BaseActivity {
 	public boolean onNavigationRequested(NavigationType navigationType, String url, Long discussionId, Long writeupId) {
 		/* Not needed here */
 		return false;
-	}
-
-	private boolean sendApplicationLog() {
-		try {
-			PackageManager packageManager = getPackageManager();
-			PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), 0);
-
-			Intent intent = new Intent(Intent.ACTION_SEND);
-			intent.setType("message/rfc822");
-			intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "juraj.suchan@gmail.com" });
-			intent.putExtra(Intent.EXTRA_SUBJECT, String.format("nyxdroid %d log", packageInfo.versionCode));
-
-			StringBuilder sb = new StringBuilder();
-			sb.append(getString(R.string.im_sending_you_application_log));
-			sb.append(System.getProperty("line.separator"));
-			sb.append(String.format("Device: %s, Model: %s, Manufacturer: %s, OS:%s / %s", android.os.Build.DEVICE, android.os.Build.MODEL, android.os.Build.MANUFACTURER, System.getProperty("os.name"), System.getProperty("os.version")));
-
-			intent.putExtra(Intent.EXTRA_TEXT, sb.toString());
-
-			File file = new File(NyxdroidApplication.logPath);
-			if (!file.exists()) {
-				Toast.makeText(this, R.string.application_log_wasnt_created_yet, Toast.LENGTH_LONG).show();
-			} else {
-				intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-
-				startActivity(Intent.createChooser(intent, getString(R.string.send_application_log_title)));
-			}
-		} catch (ActivityNotFoundException e) {
-			Toast.makeText(this, R.string.you_dont_have_email_client_installed, Toast.LENGTH_LONG).show();
-		} catch (NameNotFoundException e) {
-			Log.e(Constants.TAG, "sendApplicationLog error: " + e.getMessage());
-		}
-		return true;
 	}
 
 	private boolean clearCredentials() {

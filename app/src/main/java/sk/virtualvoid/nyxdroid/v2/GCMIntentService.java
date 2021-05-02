@@ -42,7 +42,6 @@ import sk.virtualvoid.nyxdroid.v2.data.query.PushNotificationQuery;
  * @author Juraj
  */
 public class GCMIntentService extends FirebaseMessagingService {
-    private static final String FIREBASE_TOKEN_KEY = "FIREBASE_TOKEN";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -51,19 +50,15 @@ public class GCMIntentService extends FirebaseMessagingService {
             return;
         }
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean mailEnabled = prefs.getBoolean("notifications_mail_enabled", true);
-        boolean replyEnabled = prefs.getBoolean("notifications_reply_enabled", true);
-
         Intent intent = remoteMessage.toIntent();
         String type = intent.getStringExtra("type");
 
-        if (type.equalsIgnoreCase("reply") && replyEnabled) {
+        if (type.equalsIgnoreCase("reply")) {
             Intent broadcastIntent = new Intent(Constants.REFRESH_NOTICES_INTENT_FILTER);
             sendBroadcast(broadcastIntent);
         }
 
-        if (type.equalsIgnoreCase("new_mail") && mailEnabled) {
+        if (type.equalsIgnoreCase("new_mail")) {
             Intent broadcastIntent = new Intent(Constants.REFRESH_MAIL_INTENT_FILTER);
             broadcastIntent.putExtra(Constants.REFRESH_MAIL_COUNT, 1);
             sendBroadcast(broadcastIntent);
@@ -84,8 +79,6 @@ public class GCMIntentService extends FirebaseMessagingService {
                     @Override
                     public void done(PushNotificationResponse response) {
                         rememberPushNotificationToken(context, token, overwrite);
-
-                        //Toast.makeText(context, R.string.got_new_fcm_token, Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -93,16 +86,35 @@ public class GCMIntentService extends FirebaseMessagingService {
         TaskManager.startTask(task, new PushNotificationQuery(token));
     }
 
+    public static void firePushNotificationUnregister(final Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        String token = prefs.getString(Constants.FIREBASE_TOKEN_KEY, null);
+        if (token != null && !token.isEmpty()) {
+            Task<PushNotificationQuery, PushNotificationResponse> task = PushNotificationDataAccess.unregister(
+                    context,
+                    new TaskListener<PushNotificationResponse>() {
+                        @Override
+                        public void done(PushNotificationResponse response) {
+                            rememberPushNotificationToken(context, "", true);
+                        }
+                    }
+            );
+
+            TaskManager.startTask(task, new PushNotificationQuery(token));
+        }
+    }
+
     public static void rememberPushNotificationToken(Context context, String token, boolean overwrite) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String oldToken = prefs.getString(FIREBASE_TOKEN_KEY, null);
+        String oldToken = prefs.getString(Constants.FIREBASE_TOKEN_KEY, null);
         if (oldToken != null && !overwrite) {
             return;
         }
 
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(FIREBASE_TOKEN_KEY, token);
+        editor.putString(Constants.FIREBASE_TOKEN_KEY, token);
         editor.commit();
     }
 }

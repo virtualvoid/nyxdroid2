@@ -29,6 +29,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 /**
@@ -68,12 +69,7 @@ public class LauncherActivity extends AppCompatActivity implements OnClickListen
     private void launchDefaultActivity() {
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        String authNick = prefs.getString(Constants.AUTH_NICK, null);
-        FirebaseAnalytics.getInstance(getApplicationContext())
-                .setUserId(authNick);
-
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         int defaultViewId = Integer.parseInt(prefs.getString("default_view", "2"));
         Bundle bundle = getIntent().getExtras();
 
