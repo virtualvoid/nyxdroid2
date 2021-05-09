@@ -117,7 +117,7 @@ public class BookmarkAdapter extends BasePocoAdapter<Bookmark> {
         }
 
         if (item.Replies > 0) {
-            holder.Title.setText(CustomHtml.fromHtml(String.format("%s <small><b>%d repl%s</b></small>", item.Name, item.Replies, item.Replies == 1 ? "y" : "ies")));
+            holder.Title.setText(String.format("%s (%d repl%s)", item.Name, item.Replies, item.Replies == 1 ? "y" : "ies"));
         } else {
             holder.Title.setText(item.Name);
         }
@@ -133,6 +133,9 @@ public class BookmarkAdapter extends BasePocoAdapter<Bookmark> {
 
             holder = new ViewHolderReminder();
             holder.Title = (TextView) row.findViewById(R.id.bookmark_reminder_row_title);
+            holder.Title.setEllipsize(TextUtils.TruncateAt.END);
+            holder.Title.setSingleLine();
+
             holder.RepliesCount = (TextView) row.findViewById(R.id.bookmark_reminder_row_reply_count);
 
             appearance.setFontSize(holder.Title);
@@ -143,16 +146,12 @@ public class BookmarkAdapter extends BasePocoAdapter<Bookmark> {
         }
 
         if (item.IsSingle) {
-            holder.Title.setText(CustomHtml.fromHtml(String.format("%s <small>%s</small>", item.Name, (item.Replies > 0 ? String.format("<small><b>%d repl%s</b></small>", item.Replies, item.Replies == 1 ? "y" : "ies") : ""))));
+            holder.Title.setText(String.format("%s%s", item.Name, (item.Replies > 0 ? String.format(" (%d repl%s)", item.Replies, item.Replies == 1 ? "y" : "ies") : "")));
         } else {
-            holder.Title.setText(CustomHtml.fromHtml(String.format("<b>%s</b> <small>%s</small>", item.Nick, BasePoco.timeToString(context, item.Time))));
+            holder.Title.setText(String.format("%s %s", BasePoco.timeToString(context, item.Time), item.Nick));
         }
-//        if (item.Replies > 0) {
-//            holder.RepliesCount.setText(Integer.toString(item.Replies));
-//        } else {
-            holder.RepliesCount.setText("");
-//        }
 
+        holder.RepliesCount.setText("");
         holder.Title.setTextColor(appearance.getBookmarkReadColor());
         return row;
     }

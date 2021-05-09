@@ -38,9 +38,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     final boolean enabled = (Boolean) newValue;
                     if (enabled) {
-                        registerForNotifications();
+                        GCMIntentServiceHelper.enableNotifications(getContext(), FirebaseMessaging.getInstance());
                     } else {
-                        unregisterFromNotifications();
+                        GCMIntentServiceHelper.disableNotifications(getContext(), FirebaseMessaging.getInstance());
                     }
                     return true;
                 }
@@ -60,27 +60,5 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 }
             });
         }
-    }
-
-    private void unregisterFromNotifications() {
-        GCMIntentService.firePushNotificationUnregister(getContext());
-    }
-
-    private void registerForNotifications() {
-        FirebaseMessaging messaging = FirebaseMessaging.getInstance();
-
-        Task<String> tokenTask = messaging.getToken();
-        tokenTask.addOnCompleteListener(new OnCompleteListener<String>() {
-            @Override
-            public void onComplete(@NonNull Task<String> task) {
-                if (!task.isSuccessful()) {
-                    Log.w(Constants.TAG, "Fetching FCM registration token failed", task.getException());
-                    return;
-                }
-
-                String token = task.getResult();
-                GCMIntentService.firePushNotificationRegister(getContext(), token, true);
-            }
-        });
     }
 }

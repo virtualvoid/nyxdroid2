@@ -2,7 +2,7 @@
 
     <string name="app_name">nyxdroid</string>
     <string name="app_version">api reboot-beta</string>
-    <string name="app_name_and_version">nyxdroid - seznam změn</string>
+    <string name="app_name_and_version">nyxdroid </string>
     <string name="general_error_occured">Vyskytla se chyba, zkuste to, prosím, později. Pokud se to opakuje, kontaktujte autora aplikace.</string>
     <string name="authorization_activity_nick">ID :</string>
     <string name="authorization_activity_code">Kód :</string>

@@ -69,20 +69,18 @@ public class GCMIntentService extends FirebaseMessagingService {
     public static void firePushNotificationUnregister(final Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String token = prefs.getString(Constants.FIREBASE_TOKEN_KEY, null);
-        if (token != null && !token.isEmpty()) {
-            Task<PushNotificationQuery, PushNotificationResponse> task = PushNotificationDataAccess.unregister(
-                    context,
-                    new TaskListener<PushNotificationResponse>() {
-                        @Override
-                        public void done(PushNotificationResponse response) {
-                            rememberPushNotificationToken(context, "", true);
-                        }
+        String token = prefs.getString(Constants.AUTH_TOKEN, null);
+        Task<PushNotificationQuery, PushNotificationResponse> task = PushNotificationDataAccess.unregister(
+                context,
+                new TaskListener<PushNotificationResponse>() {
+                    @Override
+                    public void done(PushNotificationResponse response) {
+                        rememberPushNotificationToken(context, "", true);
                     }
-            );
+                }
+        );
 
-            TaskManager.startTask(task, new PushNotificationQuery(token));
-        }
+        TaskManager.startTask(task, new PushNotificationQuery(token));
     }
 
     public static void rememberPushNotificationToken(Context context, String token, boolean overwrite) {

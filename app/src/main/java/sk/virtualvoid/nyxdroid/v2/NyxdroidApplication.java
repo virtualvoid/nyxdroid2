@@ -129,23 +129,12 @@ public class NyxdroidApplication extends MultiDexApplication {
 
     private void initializeMessaging(final boolean notificationsEnabled) {
         FirebaseMessaging messaging = FirebaseMessaging.getInstance();
-        Task<String> tokenTask = messaging.getToken();
-        tokenTask.addOnCompleteListener(new OnCompleteListener<String>() {
-            @Override
-            public void onComplete(@NonNull Task<String> task) {
-                if (!task.isSuccessful()) {
-                    Log.w(Constants.TAG, "Fetching FCM registration token failed", task.getException());
-                    return;
-                }
 
-                if (notificationsEnabled) {
-                    String token = task.getResult();
-                    GCMIntentService.firePushNotificationRegister(getApplicationContext(), token, false);
-                } else {
-                    GCMIntentService.firePushNotificationUnregister(getApplicationContext());
-                }
-            }
-        });
+        if (notificationsEnabled) {
+            GCMIntentServiceHelper.enableNotifications(getApplicationContext(), messaging);
+        } else {
+            GCMIntentServiceHelper.disableNotifications(getApplicationContext(), messaging);
+        }
     }
 
     private void initializeImageLoader() {
