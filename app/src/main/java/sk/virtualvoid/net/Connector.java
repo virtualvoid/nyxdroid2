@@ -1,14 +1,12 @@
-package sk.virtualvoid.net.nyx;
+package sk.virtualvoid.net;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.FileNameMap;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,14 +14,11 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -33,11 +28,8 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.FormBodyPart;
 import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
@@ -45,21 +37,15 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
-import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.GZipRequestInterceptor;
-import sk.virtualvoid.net.GZipResponseInterceptor;
-import sk.virtualvoid.net.OverridenSSLSocketFactory;
 import sk.virtualvoid.nyxdroid.library.Constants;
 
 import android.content.Context;
@@ -76,6 +62,8 @@ public class Connector {
     protected String authNick = null;
     protected String authToken = null;
 
+    protected ArrayList<OnApiErrorListener> onApiErrorListeners;
+
     public Connector(Context context) {
         if (context == null) {
             log.fatal("Connector ctor got empty context !!!");
@@ -88,6 +76,15 @@ public class Connector {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         authNick = prefs.getString(Constants.AUTH_NICK, null);
         authToken = prefs.getString(Constants.AUTH_TOKEN, null);
+
+        onApiErrorListeners = new ArrayList<>();
+        onApiErrorListeners.add(new OnApiErrorListener() {
+            @Override
+            public boolean onError(int httpCode, JSONObject obj) {
+                log.error(String.format("HTTP: %d, RESPONSE: %s", httpCode, obj.toString()));
+                return false;
+            }
+        });
     }
 
     public String getAuthNick() {
@@ -98,98 +95,69 @@ public class Connector {
         return authToken;
     }
 
-    public static boolean authorizationRequired(Context context) {
-        if (context == null) {
-            log.fatal("Connector/authorizationRequired got empty context !!!");
-
-            throw new RuntimeException("context");
-        }
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String token = prefs.getString(Constants.AUTH_TOKEN, null);
-        boolean confirmed = prefs.getBoolean(Constants.AUTH_CONFIRMED, false);
-        return !confirmed || token == null;
-    }
-
-    public static void authorizationRemove(Context context) {
-        if (context == null) {
-            log.fatal("Connector/authorizationRemove got empty context !!!");
-
-            throw new RuntimeException("context");
-        }
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        SharedPreferences.Editor prefsEditable = prefs.edit();
-        prefsEditable.remove(Constants.AUTH_NICK);
-        prefsEditable.remove(Constants.AUTH_TOKEN);
-        prefsEditable.remove(Constants.AUTH_CONFIRMED);
-        prefsEditable.commit();
-    }
-
-    public JSONObject authorizationRequest(String nick) {
+    public JSONObjectResult authorizationRequest(String nick) {
         String jsonString = "";
         try {
-            DefaultHttpClient client = getHttpClient(false);
+            DefaultHttpClient client = getHttpClient();
 
             HttpPost post = new HttpPost(Constants.getApiUrl() + "/create_token/" + nick);
             HttpResponse response = client.execute(post);
+            HttpEntity entity = response.getEntity();
+
+            jsonString = convertInputStreamToString(entity.getContent());
+            JSONObject obj = new JSONObject(jsonString);
+
             int statusCode = getStatusCode(response);
-            if (statusCode == 200) {
-                HttpEntity entity = response.getEntity();
+            notifyOnApiErrorListeners(statusCode, obj);
 
-                jsonString = convertInputStreamToString(entity.getContent());
-
-                JSONObject obj = new JSONObject(jsonString);
-                return obj;
-            }
+            return new JSONObjectResult(statusCode, obj);
         } catch (Throwable t) {
             log.error(String.format("authorizationRequest=%s", jsonString), t);
         }
         return null;
     }
 
-    public JSONObject get(String url) {
-        String jsonString = "";
+    public JSONObjectResult get(String url) {
         try {
-            DefaultHttpClient client = getHttpClient(false);
+            DefaultHttpClient client = getHttpClient();
 
             HttpGet get = new HttpGet(Constants.getApiUrl() + url);
             get.addHeader("Authorization", "Bearer " + authToken);
 
             HttpResponse response = client.execute(get);
+            HttpEntity entity = response.getEntity();
+            String jsonString = convertInputStreamToString(entity.getContent());
+            JSONObject obj = new JSONObject(jsonString);
+
             int statusCode = getStatusCode(response);
-            if (statusCode == 200) {
-                HttpEntity entity = response.getEntity();
+            notifyOnApiErrorListeners(statusCode, obj);
 
-                jsonString = convertInputStreamToString(entity.getContent());
-
-                JSONObject obj = new JSONObject(jsonString);
-                return obj;
-            }
+            return new JSONObjectResult(statusCode, obj);
         } catch (Throwable t) {
             log.error(String.format("get=%s", url), t);
         }
         return null;
     }
 
-    public JSONArray getArray(String url) {
-        String jsonString = "";
+    public IJSONResult getArray(String url) {
         try {
-            DefaultHttpClient client = getHttpClient(false);
+            DefaultHttpClient client = getHttpClient();
 
             HttpGet get = new HttpGet(Constants.getApiUrl() + url);
             get.addHeader("Authorization", "Bearer " + authToken);
 
             HttpResponse response = client.execute(get);
+            HttpEntity entity = response.getEntity();
+            String jsonString = convertInputStreamToString(entity.getContent());
+
             int statusCode = getStatusCode(response);
             if (statusCode == 200) {
-                HttpEntity entity = response.getEntity();
-
-                jsonString = convertInputStreamToString(entity.getContent());
-
                 JSONArray arr = new JSONArray(jsonString);
-                return arr;
+                return new JSONArrayResult(statusCode, arr);
+            } else {
+                JSONObject obj = new JSONObject(jsonString);
+                notifyOnApiErrorListeners(statusCode, obj);
+                return new JSONObjectResult(statusCode, obj);
             }
         } catch (Throwable t) {
             log.error(String.format("getArray=%s", url), t);
@@ -197,59 +165,54 @@ public class Connector {
         return null;
     }
 
-    public JSONObject post(String url) {
-        String jsonString = "";
+    public JSONObjectResult post(String url) {
         try {
-            DefaultHttpClient client = getHttpClient(false);
+            DefaultHttpClient client = getHttpClient();
 
             HttpPost post = new HttpPost(Constants.getApiUrl() + url);
             post.addHeader("Authorization", "Bearer " + authToken);
 
             HttpResponse response = client.execute(post);
+            HttpEntity entity = response.getEntity();
+            String jsonString = convertInputStreamToString(entity.getContent());
+            JSONObject obj = new JSONObject(jsonString);
+
             int statusCode = getStatusCode(response);
-            if (statusCode == 200) {
-                HttpEntity entity = response.getEntity();
+            notifyOnApiErrorListeners(statusCode, obj);
 
-                jsonString = convertInputStreamToString(entity.getContent());
-
-                JSONObject obj = new JSONObject(jsonString);
-                return obj;
-            }
+            return new JSONObjectResult(statusCode, obj);
         } catch (Throwable t) {
             log.error(String.format("post=%s", url), t);
         }
         return null;
     }
 
-    public JSONObject form(String url, List<NameValuePair> form) {
-        String jsonString = "";
+    public JSONObjectResult form(String url, List<NameValuePair> form) {
         try {
-            DefaultHttpClient client = getHttpClient(false);
+            DefaultHttpClient client = getHttpClient();
 
             HttpPost post = new HttpPost(Constants.getApiUrl() + url);
             post.addHeader("Authorization", "Bearer " + authToken);
             post.setEntity(new UrlEncodedFormEntity(form, HTTP.UTF_8));
 
             HttpResponse response = client.execute(post);
+            HttpEntity entity = response.getEntity();
+            String jsonString = convertInputStreamToString(entity.getContent());
+            JSONObject obj = new JSONObject(jsonString);
+
             int statusCode = getStatusCode(response);
-            if (statusCode == 200) {
-                HttpEntity entity = response.getEntity();
+            notifyOnApiErrorListeners(statusCode, obj);
 
-                jsonString = convertInputStreamToString(entity.getContent());
-
-                JSONObject obj = new JSONObject(jsonString);
-                return obj;
-            }
+            return new JSONObjectResult(statusCode, obj);
         } catch (Throwable t) {
             log.error(String.format("form=%s", url), t);
         }
         return null;
     }
 
-    public JSONObject multipart(String method, String url, HashMap<String, Object> parameters) {
-        String jsonString = "";
+    public JSONObjectResult multipart(String method, String url, HashMap<String, Object> parameters) {
         try {
-            DefaultHttpClient client = getHttpClient(false);
+            DefaultHttpClient client = getHttpClient();
 
             HttpEntityEnclosingRequestBase request = null;
 
@@ -293,42 +256,35 @@ public class Connector {
 
             HttpResponse response = client.execute(request);
             HttpEntity entity = response.getEntity();
+            String jsonString = convertInputStreamToString(entity.getContent());
+            JSONObject obj = new JSONObject(jsonString);
 
             int statusCode = getStatusCode(response);
-            if (statusCode == 200) {
-                jsonString = convertInputStreamToString(entity.getContent());
+            notifyOnApiErrorListeners(statusCode, obj);
 
-                JSONObject obj = new JSONObject(jsonString);
-                return obj;
-            } else {
-                jsonString = convertInputStreamToString(entity.getContent());
-                JSONObject obj = new JSONObject(jsonString);
-                // TODO: check errors
-            }
+            return new JSONObjectResult(statusCode, obj);
         } catch (Throwable t) {
             log.error(String.format("form=%s", url), t);
         }
         return null;
     }
 
-    public JSONObject delete(String url) {
-        String jsonString = "";
+    public JSONObjectResult delete(String url) {
         try {
-            DefaultHttpClient client = getHttpClient(false);
+            DefaultHttpClient client = getHttpClient();
 
             HttpDelete get = new HttpDelete(Constants.getApiUrl() + url);
             get.addHeader("Authorization", "Bearer " + authToken);
 
             HttpResponse response = client.execute(get);
+            HttpEntity entity = response.getEntity();
+            String jsonString = convertInputStreamToString(entity.getContent());
+            JSONObject obj = new JSONObject(jsonString);
+
             int statusCode = getStatusCode(response);
-            if (statusCode == 200) {
-                HttpEntity entity = response.getEntity();
+            notifyOnApiErrorListeners(statusCode, obj);
 
-                jsonString = convertInputStreamToString(entity.getContent());
-
-                JSONObject obj = new JSONObject(jsonString);
-                return obj;
-            }
+            return new JSONObjectResult(statusCode, obj);
         } catch (Throwable t) {
             log.error(String.format("delete=%s", url), t);
         }
@@ -336,7 +292,7 @@ public class Connector {
     }
 
 
-    private DefaultHttpClient getHttpClient(boolean includeGzip) {
+    private DefaultHttpClient getHttpClient() {
         DefaultHttpClient client = null;
 
         HttpParams ps = new BasicHttpParams();
@@ -356,12 +312,7 @@ public class Connector {
         ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(ps, registry);
 
         client = new DefaultHttpClient(manager, ps);
-        client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(3, true));
-
-        if (includeGzip) {
-            client.addRequestInterceptor(new GZipRequestInterceptor());
-            client.addResponseInterceptor(new GZipResponseInterceptor());
-        }
+        client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(3, false));
 
         CookieStore cookieStore = new BasicCookieStore();
         client.setCookieStore(cookieStore);
@@ -378,6 +329,17 @@ public class Connector {
         */
 
         return client;
+    }
+
+    private void notifyOnApiErrorListeners(int httpCode, JSONObject obj) {
+        for (int listenerIndex = 0; listenerIndex < onApiErrorListeners.size(); listenerIndex++) {
+            OnApiErrorListener listener = onApiErrorListeners.get(listenerIndex);
+            if (listener == null) {
+                continue;
+            }
+
+            listener.onError(httpCode, obj);
+        }
     }
 
     private static int getStatusCode(HttpResponse response) {
@@ -398,5 +360,46 @@ public class Connector {
         }
         is.close();
         return sb.toString();
+    }
+
+    public static boolean authorizationRequired(Context context) {
+        if (context == null) {
+            log.fatal("Connector/authorizationRequired got empty context !!!");
+
+            throw new RuntimeException("context");
+        }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String token = prefs.getString(Constants.AUTH_TOKEN, null);
+        boolean confirmed = prefs.getBoolean(Constants.AUTH_CONFIRMED, false);
+        return !confirmed || token == null;
+    }
+
+    public static void authorizationRemove(Context context) {
+        if (context == null) {
+            log.fatal("Connector/authorizationRemove got empty context !!!");
+
+            throw new RuntimeException("context");
+        }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        SharedPreferences.Editor prefsEditable = prefs.edit();
+        prefsEditable.remove(Constants.AUTH_NICK);
+        prefsEditable.remove(Constants.AUTH_TOKEN);
+        prefsEditable.remove(Constants.AUTH_CONFIRMED);
+        prefsEditable.commit();
+    }
+
+    public void addOnApiErrorListener(OnApiErrorListener listener) {
+        onApiErrorListeners.add(listener);
+    }
+
+    public void removeOnApiErrorListener(OnApiErrorListener listener) {
+        onApiErrorListeners.remove(listener);
+    }
+
+    public interface OnApiErrorListener {
+        boolean onError(int httpCode, JSONObject obj);
     }
 }

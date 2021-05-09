@@ -1,6 +1,5 @@
 package sk.virtualvoid.core;
 
-import sk.virtualvoid.net.nyx.IConnectorReporter;
 import android.content.Context;
 
 /**
@@ -11,8 +10,7 @@ import android.content.Context;
 public abstract class TaskWorker<TInput, TOutput> {	
 	private Context context;
 	private Object tag;
-	private IConnectorReporter connectorReporter;
-	
+
 	public TaskWorker() {
 	}
 	
@@ -31,14 +29,6 @@ public abstract class TaskWorker<TInput, TOutput> {
 	synchronized protected Object getTag() {
 		return tag;
 	}
-	
-	public synchronized void setConnectorReporter(IConnectorReporter connectorReporter) {
-		this.connectorReporter = connectorReporter;
-	}
-	
-	public synchronized IConnectorReporter getConnectorReporter() {
-		return connectorReporter;
-	}
-	
+
 	public abstract TOutput doWork(TInput input) throws NyxException;
 }

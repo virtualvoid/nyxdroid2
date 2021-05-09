@@ -1,6 +1,6 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
-import sk.virtualvoid.net.nyx.Connector;
+import sk.virtualvoid.net.Connector;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 
 /**

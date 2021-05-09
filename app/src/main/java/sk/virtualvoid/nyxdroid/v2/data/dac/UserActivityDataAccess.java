@@ -1,14 +1,12 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 import sk.virtualvoid.core.ITaskQuery;
 import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.nyx.Connector;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
 import android.app.Activity;

@@ -1,6 +1,5 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,7 +15,9 @@ import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.nyx.Connector;
+import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.Error;
+import sk.virtualvoid.net.JSONObjectResult;
 import sk.virtualvoid.nyxdroid.v2.R;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.Bookmark;
@@ -107,11 +108,12 @@ public class BookmarkDataAccess {
             boolean remindersEnabled = prefs.getBoolean("display_reminders", true);
 
             Connector connector = new Connector(getContext());
-            JSONObject bookmarks = connector.get("/bookmarks" + (input.IncludeUnread ? "/all" : ""));
-            if (bookmarks == null) {
-                throw new NyxException("Json result was null ?");
-            } else {
+            JSONObjectResult api = connector.get("/bookmarks" + (input.IncludeUnread ? "/all" : ""));
+
+            if (api.isSuccess()) {
                 try {
+                    JSONObject bookmarks = api.getJson();
+
                     // toto je taka hovadina az ma z toho boli brucho
                     if (remindersEnabled && (bookmarks.has("reminder_count") && !bookmarks.isNull("reminder_count") && bookmarks.getInt("reminder_count") > 0)) {
                         processReminders(resultList, connector);
@@ -125,6 +127,9 @@ public class BookmarkDataAccess {
                     log.error("GetBookmarksTaskWorker", e);
                     throw new NyxException(e);
                 }
+            } else {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
             }
 
             return new SuccessResponse<>(resultList, context);
@@ -150,9 +155,15 @@ public class BookmarkDataAccess {
             }
         }
 
-        private void processReminders(ArrayList<Bookmark> resultList, Connector connector) throws JSONException {
-            JSONObject reminders = connector.get("/bookmarks/reminders");
+        private void processReminders(ArrayList<Bookmark> resultList, Connector connector) throws Throwable {
+            JSONObjectResult api = connector.get("/bookmarks/reminders");
 
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
+            }
+
+            JSONObject reminders = api.getJson();
             if (reminders.has("posts") && !reminders.isNull("posts")) {
                 JSONArray posts = reminders.getJSONArray("posts");
 
@@ -208,10 +219,13 @@ public class BookmarkDataAccess {
             Context context = null;
 
             Connector connector = new Connector(getContext());
-            JSONObject json = connector.get("/bookmarks/history"); // TODO: /bookmarks/history/more ?
-            if (json == null) {
-                throw new NyxException("Json result was null ?");
+            JSONObjectResult api = connector.get("/bookmarks/history"); // TODO: /bookmarks/history/more ?
+
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
             } else {
+                JSONObject json = api.getJson();
                 try {
                     JSONArray discussions = json.getJSONArray("discussions");
                     for (int discussionIndex = 0; discussionIndex < discussions.length(); discussionIndex++) {
@@ -243,11 +257,13 @@ public class BookmarkDataAccess {
             final int limit = 20;
 
             Connector connector = new Connector(getContext());
-            JSONObject json = connector.get("/search/unified?search=" + input.SearchTerm + "&limit=" + limit);
-            if (json == null) {
-                throw new NyxException("Json result was null ?");
+            JSONObjectResult api = connector.get("/search/unified?search=" + input.SearchTerm + "&limit=" + limit);
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
             } else {
                 try {
+                    JSONObject json = api.getJson();
                     if (json.has("discussion") && !json.isNull("discussion")) {
                         JSONObject discussion = json.getJSONObject("discussion");
                         if (discussion.has("discussions") && !discussion.isNull("discussions")) {
@@ -288,11 +304,13 @@ public class BookmarkDataAccess {
             Context context = null;
 
             Connector connector = new Connector(getContext());
-            JSONObject json = connector.get("/bookmarks/all");
-            if (json == null) {
-                throw new NyxException("Json result was null ?");
+            JSONObjectResult api = connector.get("/bookmarks/all");
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
             } else {
                 try {
+                    JSONObject json = api.getJson();
                     JSONArray bookmarks = json.getJSONArray("bookmarks");
                     for (int bokmarkIndex = 0; bokmarkIndex < bookmarks.length(); bokmarkIndex++) {
                         JSONObject bookmark = bookmarks.getJSONObject(bokmarkIndex);
@@ -320,11 +338,13 @@ public class BookmarkDataAccess {
             Context context = null;
 
             Connector connector = new Connector(getContext());
-            JSONObject json = connector.get("/bookmarks/all");
-            if (json == null) {
-                throw new NyxException("Json result was null ?");
+            JSONObjectResult api = connector.get("/bookmarks/all");
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
             } else {
                 try {
+                    JSONObject json = api.getJson();
                     JSONArray bookmarks = json.getJSONArray("bookmarks");
                     for (int bookmarkIndex = 0; bookmarkIndex < bookmarks.length(); bookmarkIndex++) {
                         JSONObject bookmark = bookmarks.getJSONObject(bookmarkIndex);

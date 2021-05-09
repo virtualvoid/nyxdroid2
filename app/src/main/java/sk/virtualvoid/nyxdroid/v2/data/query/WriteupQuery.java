@@ -19,7 +19,6 @@ public class WriteupQuery implements ITaskQuery {
 	public Long TempId;
 	public VotingType VotingType;
 	public int VotingPosition;
-	public boolean VotingConfirmed;
 	public boolean VoteToggle;
 	
 	public String FilterUser;

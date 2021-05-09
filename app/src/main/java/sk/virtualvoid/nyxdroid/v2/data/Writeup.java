@@ -39,6 +39,7 @@ public class Writeup extends BaseComposePoco implements Parcelable {
 
     public boolean CanDelete;
     public boolean IsReminded;
+    public String MyRating;
 
     public Writeup(int type) {
         Type = type;
@@ -56,6 +57,7 @@ public class Writeup extends BaseComposePoco implements Parcelable {
         IsMine = source.readByte() == 1;
         CanDelete = source.readByte() == 1;
         IsReminded = source.readByte() == 1;
+        MyRating = source.readString();
     }
 
     @Override
@@ -96,6 +98,7 @@ public class Writeup extends BaseComposePoco implements Parcelable {
         writeup.Location = UserActivity.fromJson(post);
         writeup.CanDelete = post.has("can_be_deleted") && post.getBoolean("can_be_deleted");
         writeup.IsReminded = post.has("reminder") && post.getBoolean("reminder");
+        writeup.MyRating = post.has("my_rating") && !post.isNull("my_rating") ? post.getString("my_rating") : "";
 
         return writeup;
     }
@@ -221,6 +224,7 @@ public class Writeup extends BaseComposePoco implements Parcelable {
         dest.writeByte((byte) (IsMine ? 1 : 0));
         dest.writeByte((byte) (CanDelete ? 1 : 0));
         dest.writeByte((byte) (IsReminded ? 1 : 0));
+        dest.writeString(MyRating == null ? "" : MyRating);
     }
 
     /**

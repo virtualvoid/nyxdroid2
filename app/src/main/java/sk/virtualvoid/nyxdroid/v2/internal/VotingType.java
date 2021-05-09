@@ -6,7 +6,8 @@ package sk.virtualvoid.nyxdroid.v2.internal;
 public enum VotingType {
     POSITIVE("positive"),
     NEGATIVE("negative"),
-    NONE("");
+    NEGATIVE_VISIBLE("negative_visible"),
+    REMOVE("remove");
 
     private String value;
 
@@ -17,5 +18,9 @@ public enum VotingType {
     @Override
     public String toString() {
         return this.value;
+    }
+
+    public boolean isRemove() {
+        return this.value.equals(REMOVE.toString());
     }
 }

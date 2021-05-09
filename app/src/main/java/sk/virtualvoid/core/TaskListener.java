@@ -2,8 +2,6 @@ package sk.virtualvoid.core;
 
 import org.apache.log4j.Logger;
 
-import sk.virtualvoid.net.nyx.IConnectorReporter;
-import sk.virtualvoid.net.nyx.IConnectorReporterHandler;
 import sk.virtualvoid.nyxdroid.v2.R;
 import android.content.Context;
 import android.widget.Toast;
@@ -51,12 +49,6 @@ public abstract class TaskListener<TOutput> {
 		}
 
 		log.fatal(getClass().getCanonicalName() + " reported error: " + t == null ? "null" : t.getMessage());
-	}
-
-	public void handleConnectorReporter(IConnectorReporter connectorReporter) {
-		if (getContext() != null && getContext() instanceof IConnectorReporterHandler) {
-			((IConnectorReporterHandler) getContext()).handleConnectorReporter(connectorReporter);
-		}
 	}
 
 	public abstract void done(TOutput output);

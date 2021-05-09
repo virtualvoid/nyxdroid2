@@ -81,8 +81,6 @@ public class Task<TInput extends ITaskQuery, TOutput> extends AsyncTask<TInput, 
 
 		if (context != null) {
 			if (taskListener != null && taskWorker != null) {
-				taskListener.handleConnectorReporter(taskWorker.getConnectorReporter());
-
 				if (lastError != null) {
 					taskListener.handleError(lastError);
 				} else {

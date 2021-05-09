@@ -1,39 +1,19 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
-
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import org.apache.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskManager;
-import sk.virtualvoid.net.nyx.Connector;
+import sk.virtualvoid.net.Connector;
 import sk.virtualvoid.nyxdroid.library.Constants;
-import sk.virtualvoid.nyxdroid.v2.data.MailNotification;
-import sk.virtualvoid.nyxdroid.v2.data.Notice;
-import sk.virtualvoid.nyxdroid.v2.data.NoticeType;
 import sk.virtualvoid.nyxdroid.v2.data.PushNotificationResponse;
 import sk.virtualvoid.nyxdroid.v2.data.dac.PushNotificationDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.query.PushNotificationQuery;

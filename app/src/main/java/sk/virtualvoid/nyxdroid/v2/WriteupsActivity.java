@@ -313,7 +313,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
 
                     @Override
                     public void onCopyLink() {
-                        // www.nyx.cz/discussion/21293/id/39531584
+                        // nyx.cz/discussion/21293/id/39531584
                         amhWriteups.finish();
 
                         Item item = new Item(String.format("%s/discussion/%d/id/%d", Constants.INDEX, WriteupsActivity.this.id, wu.Id));
@@ -550,7 +550,11 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
         WriteupQuery query = new WriteupQuery();
         query.Id = id;
         query.TempId = wu.Id;
-        query.VotingType = votingType;
+        if (wu.MyRating.isEmpty()) {
+            query.VotingType = votingType;
+        } else {
+            query.VotingType = VotingType.REMOVE;
+        }
         query.VotingPosition = position;
 
         vote(query);
@@ -856,17 +860,15 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
             WriteupsActivity context = (WriteupsActivity) getContext();
 
             final WriteupQuery query = (WriteupQuery) getTag();
-            query.VotingConfirmed = true;
 
             switch (output.Result) {
                 case RATING_CHANGED:
                 case RATING_GIVEN:
                 case RATING_REMOVED:
-                    if (output.CurrentRating != null) {
                         Writeup wu = adapter.getItemById(query.TempId);
-                        wu.Rating = output.CurrentRating;
+                        wu.Rating = output.CurrentRating == null ? 0 : output.CurrentRating;
+                        wu.MyRating = query.VotingType.isRemove() ? "" : query.VotingType.toString();
                         adapter.notifyDataSetChanged();
-                    }
                     break;
 
                 case RATING_NEEDS_CONFIRMATION:
@@ -883,6 +885,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
                     dialogBuilder.setPositiveButton(R.string.positive_button, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            query.VotingType = VotingType.NEGATIVE_VISIBLE;
                             vote(query);
                         }
                     });

@@ -2,15 +2,17 @@ package sk.virtualvoid.nyxdroid.v2;
 
 import org.json.JSONObject;
 
+import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskManager;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.nyx.Connector;
+import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.Error;
+import sk.virtualvoid.net.JSONObjectResult;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.query.AuthorizationQuery;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,10 +29,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 /**
  * @author juraj
@@ -153,9 +151,15 @@ public class LauncherActivity extends AppCompatActivity implements OnClickListen
 
         TaskWorker<AuthorizationQuery, JSONObject> worker = new TaskWorker<AuthorizationQuery, JSONObject>() {
             @Override
-            public JSONObject doWork(AuthorizationQuery input) {
+            public JSONObject doWork(AuthorizationQuery input) throws NyxException {
                 Connector connector = new Connector(getContext());
-                return connector.authorizationRequest(input.Nick);
+
+                JSONObjectResult api = connector.authorizationRequest(input.Nick);
+                if (!api.isSuccess()) {
+                    Error error = api.getError();
+                    throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
+                }
+                return api.getJson();
             }
         };
 

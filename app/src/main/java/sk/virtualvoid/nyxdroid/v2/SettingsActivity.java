@@ -1,26 +1,16 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import java.io.File;
 import sk.virtualvoid.core.ITaskQuery;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskManager;
-import sk.virtualvoid.net.nyx.Connector;
-import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.net.Connector;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
 import sk.virtualvoid.nyxdroid.v2.data.dac.CommonDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.dac.UserActivityDataAccess;
 import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;

@@ -1,6 +1,5 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +8,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import sk.virtualvoid.core.ITaskQuery;
@@ -17,14 +15,15 @@ import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.nyx.Connector;
+import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.Error;
+import sk.virtualvoid.net.JSONObjectResult;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.Conversation;
 import sk.virtualvoid.nyxdroid.v2.data.Mail;
 import sk.virtualvoid.nyxdroid.v2.data.MailNotification;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
-import sk.virtualvoid.nyxdroid.v2.data.UserActivity;
 import sk.virtualvoid.nyxdroid.v2.data.WaitingFile;
 import sk.virtualvoid.nyxdroid.v2.data.query.MailQuery;
 
@@ -95,11 +94,13 @@ public class MailDataAccess {
                 baseUrl = baseUrl + "text=" + input.FilterText;
             }
 
-            JSONObject root = connector.get(baseUrl);
-            if (root == null) {
-                throw new NyxException("Json result was null ?");
+            JSONObjectResult api = connector.get(baseUrl);
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
             } else {
                 try {
+                    JSONObject root = api.getJson();
                     if (root.has("posts") && !root.isNull("posts")) {
                         JSONArray posts = root.getJSONArray("posts");
 
@@ -143,7 +144,7 @@ public class MailDataAccess {
         public NullResponse doWork(MailQuery input) throws NyxException {
             Connector connector = new Connector(getContext());
 
-            JSONObject json = null;
+            JSONObjectResult api = null;
             WaitingFile waitingFile = null;
 
             if (input.AttachmentSource != null) {
@@ -152,8 +153,12 @@ public class MailDataAccess {
                 map.put("file_type", "mail_attachment");
                 map.put("id_specific", 0L);
 
-                json = connector.multipart("PUT", "/file/upload", map);
-                waitingFile = WaitingFile.fromJSONObject(json);
+                api = connector.multipart("PUT", "/file/upload", map);
+                if (!api.isSuccess()) {
+                    Error error = api.getError();
+                    throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
+                }
+                waitingFile = WaitingFile.fromJSONObject(api.getJson());
             }
 
             List<NameValuePair> form = new ArrayList<NameValuePair>();
@@ -161,7 +166,7 @@ public class MailDataAccess {
             form.add(new BasicNameValuePair("message", input.Message));
             //form.add(new BasicNameValuePair("format", "text/plain"));
 
-            json = connector.form("/mail/send", form);
+            api = connector.form("/mail/send", form);
             // TODO: check if the call was successful
 
             return NullResponse.success();
@@ -174,12 +179,11 @@ public class MailDataAccess {
             Connector connector = new Connector(getContext());
 
             String baseUrl = "/mail/reminder/" + input.Id + "/" + input.NewState;
-
-            JSONObject root = connector.post(baseUrl);
-            if (root == null) {
-                throw new NyxException("Json result was null ?");
+            JSONObjectResult api = connector.post(baseUrl);
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
             }
-
             return NullResponse.success();
         }
     }
@@ -188,7 +192,11 @@ public class MailDataAccess {
         @Override
         public NullResponse doWork(MailQuery input) throws NyxException {
             Connector connector = new Connector(getContext());
-            JSONObject json = connector.delete("/mail/delete/" + input.Id);
+            JSONObjectResult api = connector.delete("/mail/delete/" + input.Id);
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
+            }
             return NullResponse.success();
         }
     }
@@ -201,11 +209,13 @@ public class MailDataAccess {
             Connector connector = new Connector(getContext());
 
             String baseUrl = "/status";
-            JSONObject root = connector.get(baseUrl);
-            if (root == null) {
-                throw new NyxException("Json result was null ?");
+            JSONObjectResult api = connector.get(baseUrl);
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
             } else {
                 try {
+                    JSONObject root = api.getJson();
                     if (root.has("user") && !root.isNull("user")) {
                         JSONObject user = root.getJSONObject("user");
 
@@ -229,11 +239,13 @@ public class MailDataAccess {
 
             Connector connector = new Connector(getContext());
 
-            JSONObject root = connector.get("/mail");
-            if (root == null) {
-                throw new NyxException("Json result was null ?");
+            JSONObjectResult api = connector.get("/mail");
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
             } else {
                 try {
+                    JSONObject root = api.getJson();
                     if (root.has("conversations") && !root.isNull("conversations")) {
                         JSONArray conversations = root.getJSONArray("conversations");
                         for (int conversationIndex = 0; conversationIndex < conversations.length(); conversationIndex++) {
