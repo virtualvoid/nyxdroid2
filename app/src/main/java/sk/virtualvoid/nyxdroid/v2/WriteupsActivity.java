@@ -517,7 +517,7 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
                 // NOVE: ak niesme v rovnakej diskusii spustime jej novu
                 // aktivitu
                 // (kvoli navratu k historii)
-                NavigationHandler.startNavigateTopic(this, WriteupsActivity.class, discussionId, (writeupId != null ? writeupId + 1 : null));
+                NavigationHandler.startNavigateTopic(this, WriteupsActivity.class, discussionId, (writeupId != null ? writeupId/* + 1*/ : null));
             }
         }
 

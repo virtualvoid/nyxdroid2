@@ -105,8 +105,9 @@ public class WriteupDataAccess {
             }
 
             // replies to particular post
-            if (input.Direction == Constants.WriteupDirection.WRITEUP_DIRECTION_NEWER && input.TempId != null) {
+            if (input.Direction == Constants.WriteupDirection.WRITEUP_DIRECTION_NEWER && input.LastId != null) {
                 baseUrl = baseUrl + "?order=newer_than&from_id=" + (input.LastId - 1);
+                //baseUrl = baseUrl + "/id/" + input.LastId + "/replies";
             }
 
             if (input.isFilterUser()) {
