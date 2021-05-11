@@ -64,7 +64,12 @@ public class CustomHtml {
                 ((Spannable) input).removeSpan(tempSpan);
             }
 
-            CustomUrlSpan replacement = new CustomUrlSpan(Constants.fixAttachmentUrl(span.getSource()), true);
+            String source = span.getSource();
+            if (source == null || source.isEmpty() || (source != null && source.startsWith("data:"))) {
+                continue;
+            }
+
+            CustomUrlSpan replacement = new CustomUrlSpan(Constants.fixAttachmentUrl(source), true);
 
             ((Spannable) input).setSpan(replacement, start, end, flags);
         }
