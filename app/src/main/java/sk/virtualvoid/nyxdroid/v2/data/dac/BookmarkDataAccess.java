@@ -15,8 +15,9 @@ import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.ConnectorFactory;
 import sk.virtualvoid.net.Error;
+import sk.virtualvoid.net.IConnector;
 import sk.virtualvoid.net.JSONObjectResult;
 import sk.virtualvoid.nyxdroid.v2.R;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
@@ -107,7 +108,7 @@ public class BookmarkDataAccess {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             boolean remindersEnabled = prefs.getBoolean("display_reminders", true);
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
             JSONObjectResult api = connector.get("/bookmarks" + (input.IncludeUnread ? "/all" : ""));
 
             if (api.isSuccess()) {
@@ -155,8 +156,8 @@ public class BookmarkDataAccess {
             }
         }
 
-        private void processReminders(ArrayList<Bookmark> resultList, Connector connector) throws Throwable {
-            JSONObjectResult api = connector.get("/bookmarks/reminders");
+        private void processReminders(ArrayList<Bookmark> resultList, IConnector IConnector) throws Throwable {
+            JSONObjectResult api = IConnector.get("/bookmarks/reminders");
 
             if (!api.isSuccess()) {
                 Error error = api.getError();
@@ -218,7 +219,7 @@ public class BookmarkDataAccess {
             ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
             Context context = null;
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
             JSONObjectResult api = connector.get("/bookmarks/history"); // TODO: /bookmarks/history/more ?
 
             if (!api.isSuccess()) {
@@ -254,9 +255,9 @@ public class BookmarkDataAccess {
             ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
             Context context = null;
 
-            final int limit = 20;
+            final int limit = 30;
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
             JSONObjectResult api = connector.get("/search/unified?search=" + input.SearchTerm + "&limit=" + limit);
             if (!api.isSuccess()) {
                 Error error = api.getError();
@@ -303,7 +304,7 @@ public class BookmarkDataAccess {
             ArrayList<BookmarkCategory> resultList = new ArrayList<BookmarkCategory>();
             Context context = null;
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
             JSONObjectResult api = connector.get("/bookmarks/all");
             if (!api.isSuccess()) {
                 Error error = api.getError();
@@ -337,7 +338,7 @@ public class BookmarkDataAccess {
             ArrayList<Bookmark> resultList = new ArrayList<Bookmark>();
             Context context = null;
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
             JSONObjectResult api = connector.get("/bookmarks/all");
             if (!api.isSuccess()) {
                 Error error = api.getError();

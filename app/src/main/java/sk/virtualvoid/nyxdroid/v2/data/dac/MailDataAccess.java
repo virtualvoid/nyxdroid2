@@ -1,22 +1,23 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import android.app.Activity;
+import android.content.Context;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import sk.virtualvoid.core.ITaskQuery;
 import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.ConnectorFactory;
 import sk.virtualvoid.net.Error;
+import sk.virtualvoid.net.IConnector;
 import sk.virtualvoid.net.JSONObjectResult;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
@@ -26,9 +27,6 @@ import sk.virtualvoid.nyxdroid.v2.data.MailNotification;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
 import sk.virtualvoid.nyxdroid.v2.data.WaitingFile;
 import sk.virtualvoid.nyxdroid.v2.data.query.MailQuery;
-
-import android.app.Activity;
-import android.content.Context;
 
 /**
  * @author juraj
@@ -65,7 +63,7 @@ public class MailDataAccess {
         public ArrayList<Mail> doWork(MailQuery input) throws NyxException {
             ArrayList<Mail> result = new ArrayList<Mail>();
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             String baseUrl = "/mail";
 
@@ -142,7 +140,7 @@ public class MailDataAccess {
     public static class SendMailTaskWorker extends TaskWorker<MailQuery, NullResponse> {
         @Override
         public NullResponse doWork(MailQuery input) throws NyxException {
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             JSONObjectResult api = null;
             WaitingFile waitingFile = null;
@@ -153,7 +151,7 @@ public class MailDataAccess {
                 map.put("file_type", "mail_attachment");
                 map.put("id_specific", 0L);
 
-                api = connector.multipart("PUT", "/file/upload", map);
+                api = connector.multipart("/file/upload", map);
                 if (!api.isSuccess()) {
                     Error error = api.getError();
                     throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
@@ -161,14 +159,12 @@ public class MailDataAccess {
                 waitingFile = WaitingFile.fromJSONObject(api.getJson());
             }
 
-            List<NameValuePair> form = new ArrayList<NameValuePair>();
-            form.add(new BasicNameValuePair("recipient", input.To));
-            form.add(new BasicNameValuePair("message", input.Message));
-            //form.add(new BasicNameValuePair("format", "text/plain"));
+            HashMap<String, String> form = new HashMap<>();
+            form.put("recipient", input.To);
+            form.put("message", input.Message);
 
             api = connector.form("/mail/send", form);
             // TODO: check if the call was successful
-
             return NullResponse.success();
         }
     }
@@ -176,7 +172,7 @@ public class MailDataAccess {
     public static class ReminderMailTaskWorker extends TaskWorker<MailQuery, NullResponse> {
         @Override
         public NullResponse doWork(MailQuery input) throws NyxException {
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             String baseUrl = "/mail/reminder/" + input.Id + "/" + input.NewState;
             JSONObjectResult api = connector.post(baseUrl);
@@ -191,7 +187,7 @@ public class MailDataAccess {
     public static class DeleteMailTaskWorker extends TaskWorker<MailQuery, NullResponse> {
         @Override
         public NullResponse doWork(MailQuery input) throws NyxException {
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
             JSONObjectResult api = connector.delete("/mail/delete/" + input.Id);
             if (!api.isSuccess()) {
                 Error error = api.getError();
@@ -206,7 +202,7 @@ public class MailDataAccess {
         public MailNotification doWork(ITaskQuery input) throws NyxException {
             MailNotification result = new MailNotification();
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             String baseUrl = "/status";
             JSONObjectResult api = connector.get(baseUrl);
@@ -237,7 +233,7 @@ public class MailDataAccess {
         public ArrayList<Conversation> doWork(ITaskQuery input) throws NyxException {
             ArrayList<Conversation> result = new ArrayList<>();
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             JSONObjectResult api = connector.get("/mail");
             if (!api.isSuccess()) {

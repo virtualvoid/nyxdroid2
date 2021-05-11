@@ -1,13 +1,12 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
-import org.json.JSONObject;
-
 import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.ConnectorFactory;
 import sk.virtualvoid.net.Error;
+import sk.virtualvoid.net.IConnector;
 import sk.virtualvoid.net.JSONObjectResult;
 import sk.virtualvoid.nyxdroid.v2.data.PushNotificationResponse;
 import sk.virtualvoid.nyxdroid.v2.data.query.PushNotificationQuery;
@@ -30,7 +29,7 @@ public class PushNotificationDataAccess {
     public static class RegisterTaskWorker extends TaskWorker<PushNotificationQuery, PushNotificationResponse> {
         @Override
         public PushNotificationResponse doWork(PushNotificationQuery input) throws NyxException {
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             JSONObjectResult api = connector.post("/register_for_notifications/" + connector.getAuthToken() + "/nyxdroid/" + input.RegistrationId);
             if (!api.isSuccess()) {
@@ -47,7 +46,7 @@ public class PushNotificationDataAccess {
     public static class UnregisterTaskWorker extends TaskWorker<PushNotificationQuery, PushNotificationResponse> {
         @Override
         public PushNotificationResponse doWork(PushNotificationQuery input) throws NyxException {
-            Connector connector = new Connector(getContext());
+            IConnector connector =ConnectorFactory.getInstance(getContext());
 
             JSONObjectResult api = connector.post("/deregister_notifications/" + input.RegistrationId);
             if (!api.isSuccess()) {

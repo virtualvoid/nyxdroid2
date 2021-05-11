@@ -1,22 +1,22 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import android.app.Activity;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import sk.virtualvoid.core.ITaskQuery;
 import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.ConnectorFactory;
 import sk.virtualvoid.net.Error;
+import sk.virtualvoid.net.IConnector;
 import sk.virtualvoid.net.IJSONResult;
 import sk.virtualvoid.net.JSONArrayResult;
 import sk.virtualvoid.net.JSONObjectResult;
@@ -40,8 +40,6 @@ import sk.virtualvoid.nyxdroid.v2.internal.VotingInfoResult;
 import sk.virtualvoid.nyxdroid.v2.internal.VotingResponse;
 import sk.virtualvoid.nyxdroid.v2.internal.VotingResult;
 import sk.virtualvoid.nyxdroid.v2.internal.WriteupBookmarkQueryType;
-
-import android.app.Activity;
 
 /**
  * @author Juraj
@@ -95,7 +93,7 @@ public class WriteupDataAccess {
             WriteupResponse result = new WriteupResponse();
             Context context = null;
 
-            Connector connector = new Connector(getContext());
+            IConnector IConnector = ConnectorFactory.getInstance(getContext());
 
             // older posts (scrolling down)
             String baseUrl = "/discussion/" + input.Id;
@@ -127,7 +125,7 @@ public class WriteupDataAccess {
                 baseUrl = baseUrl + "text=" + input.FilterContents;
             }
 
-            JSONObjectResult api = connector.get(baseUrl);
+            JSONObjectResult api = IConnector.get(baseUrl);
             if (!api.isSuccess()) {
                 Error error = api.getError();
                 throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
@@ -165,7 +163,7 @@ public class WriteupDataAccess {
                                 continue;
                             }
 
-                            writeup.IsMine = connector.getAuthNick().equalsIgnoreCase(post.getString("username"));
+                            writeup.IsMine = IConnector.getAuthNick().equalsIgnoreCase(post.getString("username"));
                             if (writeup.youtubeFix()) {
                                 log.warn(String.format("the writeup=%d from discussion=%d contains youtube, fixed.", writeup.Id, result.Id));
                             }
@@ -188,7 +186,7 @@ public class WriteupDataAccess {
     public static class SendWriteupTaskWorker extends TaskWorker<WriteupQuery, NullResponse> {
         @Override
         public NullResponse doWork(WriteupQuery input) throws NyxException {
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             JSONObjectResult api = null;
             WaitingFile waitingFile = null;
@@ -199,7 +197,7 @@ public class WriteupDataAccess {
                 map.put("file_type", "discussion_attachment");
                 map.put("id_specific", input.Id);
 
-                api = connector.multipart("PUT", "/file/upload", map);
+                api = connector.multipart("/file/upload", map);
                 if (!api.isSuccess()) {
                     Error error = api.getError();
                     throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
@@ -207,8 +205,8 @@ public class WriteupDataAccess {
                 waitingFile = WaitingFile.fromJSONObject(api.getJson());
             }
 
-            List<NameValuePair> form = new ArrayList<NameValuePair>();
-            form.add(new BasicNameValuePair("content", input.Contents));
+            HashMap<String, String> form = new HashMap<>();
+            form.put("content", input.Contents);
 
             api = connector.form("/discussion/" + input.Id + "/send/text", form);
             if (!api.isSuccess()) {
@@ -225,7 +223,7 @@ public class WriteupDataAccess {
         public VotingResponse doWork(WriteupQuery input) throws NyxException {
             VotingResponse result = new VotingResponse();
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             String baseUrl = "/discussion/" + input.Id + "/rating/" + input.TempId + "/" + input.VotingType.toString();
             JSONObjectResult api = connector.post(baseUrl);
@@ -236,7 +234,7 @@ public class WriteupDataAccess {
                 try {
                     if (api.isSuccess()) {
                         JSONObject root = api.getJson();
-                        result.CurrentRating = root.has("rating") ?  root.getInt("rating") : null;
+                        result.CurrentRating = root.has("rating") ? root.getInt("rating") : null;
                         result.Result = VotingResult.RATING_CHANGED;
                     } else if (api.isForbidden()) {
                         Error error = api.getError();
@@ -258,7 +256,7 @@ public class WriteupDataAccess {
         public VotingInfoResult doWork(WriteupQuery input) throws NyxException {
             VotingInfoResult result = new VotingInfoResult();
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             String baseUrl = "/discussion/" + input.Id + "/rating/" + input.TempId;
             IJSONResult api = connector.getArray(baseUrl);
@@ -299,7 +297,7 @@ public class WriteupDataAccess {
         public Poll doWork(PollVoteQuery query) throws NyxException {
             Poll result = null;
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
             String baseUrl = "/discussion/" + query.DiscussionId + "/poll/" + query.WriteupId + "/vote/" + query.Answer;
             JSONObjectResult api = connector.post(baseUrl);
             if (!api.isSuccess()) {
@@ -323,7 +321,7 @@ public class WriteupDataAccess {
     public static class ReminderTaskWorker extends TaskWorker<WriteupQuery, NullResponse> {
         @Override
         public NullResponse doWork(WriteupQuery input) throws NyxException {
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             String baseUrl = "/discussion/" + input.Id + "/reminder/" + input.TempId + "/" + input.NewState;
             JSONObjectResult api = connector.post(baseUrl);
@@ -339,7 +337,7 @@ public class WriteupDataAccess {
     public static class DeleteTaskWorker extends TaskWorker<WriteupQuery, NullResponse> {
         @Override
         public NullResponse doWork(WriteupQuery input) throws NyxException {
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             String baseUrl = "/discussion/" + input.Id + "/delete/" + input.TempId;
             JSONObjectResult api = connector.delete(baseUrl);
@@ -358,7 +356,7 @@ public class WriteupDataAccess {
             StringBuilder sb = new StringBuilder();
             WriteupHomeResponse result = new WriteupHomeResponse();
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             String baseUrl = "/discussion/" + input.Id;
             JSONObjectResult api = connector.get(baseUrl);
@@ -397,7 +395,7 @@ public class WriteupDataAccess {
             WriteupBookmarkResponse result = new WriteupBookmarkResponse();
 
             // /api/discussion/1/bookmark?new_state=true&category=5
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             boolean book = input.QueryType == WriteupBookmarkQueryType.BOOK;
             String baseUrl = "/discussion/" + input.DiscussionId + "/bookmark?new_state=" + book;
@@ -424,7 +422,7 @@ public class WriteupDataAccess {
             ArrayList<Last> result = new ArrayList<>();
             Context context = null;
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             JSONObjectResult api = connector.get("/last");
             if (!api.isSuccess()) {

@@ -7,8 +7,9 @@ import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskManager;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.ConnectorFactory;
 import sk.virtualvoid.net.Error;
+import sk.virtualvoid.net.IConnector;
 import sk.virtualvoid.net.JSONObjectResult;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.query.AuthorizationQuery;
@@ -49,7 +50,7 @@ public class LauncherActivity extends AppCompatActivity implements OnClickListen
 
         setTheme(R.style.NyxdroidTheme);
 
-        if ((savedInstanceState != null && savedInstanceState.containsKey(isRegistering)) || Connector.authorizationRequired(getApplicationContext())) {
+        if ((savedInstanceState != null && savedInstanceState.containsKey(isRegistering)) || ConnectorFactory.authorizationRequired(getApplicationContext())) {
             launchAuthorization();
 
             if (savedInstanceState != null && (tvResult != null && txtNick != null && txtCode != null && btnGetCode != null && btnFinished != null)) {
@@ -152,7 +153,7 @@ public class LauncherActivity extends AppCompatActivity implements OnClickListen
         TaskWorker<AuthorizationQuery, JSONObject> worker = new TaskWorker<AuthorizationQuery, JSONObject>() {
             @Override
             public JSONObject doWork(AuthorizationQuery input) throws NyxException {
-                Connector connector = new Connector(getContext());
+                IConnector connector =ConnectorFactory.getInstance(getContext());
 
                 JSONObjectResult api = connector.authorizationRequest(input.Nick);
                 if (!api.isSuccess()) {

@@ -10,8 +10,9 @@ import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.ConnectorFactory;
 import sk.virtualvoid.net.Error;
+import sk.virtualvoid.net.IConnector;
 import sk.virtualvoid.net.JSONObjectResult;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.Context;
@@ -36,7 +37,7 @@ public class NoticeDataAccess {
             ArrayList<Notice> result = new ArrayList<>();
             Context context = null;
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
             JSONObjectResult api = connector.get("/notifications");
             if (!api.isSuccess()) {
                 Error error = api.getError();

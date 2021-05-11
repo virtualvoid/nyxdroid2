@@ -1,14 +1,5 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import sk.virtualvoid.core.ITaskQuery;
-import sk.virtualvoid.core.Task;
-import sk.virtualvoid.core.TaskListener;
-import sk.virtualvoid.core.TaskManager;
-import sk.virtualvoid.net.Connector;
-import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
-import sk.virtualvoid.nyxdroid.v2.data.dac.CommonDataAccess;
-import sk.virtualvoid.nyxdroid.v2.data.dac.UserActivityDataAccess;
-import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,7 +9,15 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gcm.GCMRegistrar;
+import sk.virtualvoid.core.ITaskQuery;
+import sk.virtualvoid.core.Task;
+import sk.virtualvoid.core.TaskListener;
+import sk.virtualvoid.core.TaskManager;
+import sk.virtualvoid.net.ConnectorFactory;
+import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
+import sk.virtualvoid.nyxdroid.v2.data.dac.CommonDataAccess;
+import sk.virtualvoid.nyxdroid.v2.data.dac.UserActivityDataAccess;
+import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
 
 /**
  * 
@@ -101,9 +100,7 @@ public class SettingsActivity extends BaseActivity {
 		public void done(NullResponse output) {
 			Activity context = (Activity) getContext();
 
-			GCMRegistrar.setRegisteredOnServer(context, false);
-
-			Connector.authorizationRemove(context);
+			ConnectorFactory.authorizationRemove(context);
 
 			context.finish();
 		}

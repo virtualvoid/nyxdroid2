@@ -10,8 +10,9 @@ import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
-import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.ConnectorFactory;
 import sk.virtualvoid.net.Error;
+import sk.virtualvoid.net.IConnector;
 import sk.virtualvoid.net.JSONObjectResult;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.Search;
@@ -47,7 +48,7 @@ public class SearchDataAccess {
         public ArrayList<UserSearch> doWork(UserSearchQuery input) throws NyxException {
             ArrayList<UserSearch> result = new ArrayList<>();
 
-            Connector connector = new Connector(getContext());
+            IConnector connector = ConnectorFactory.getInstance(getContext());
 
             JSONObjectResult api = connector.get("/search/username/" + input.Nick);
             if (!api.isSuccess()) {

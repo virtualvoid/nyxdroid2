@@ -1,6 +1,5 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -17,7 +16,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -154,6 +152,7 @@ public class NyxdroidApplication extends MultiDexApplication {
     }
 
     private void initializeLogger() {
+        // TODO: logger nezapisuje kvoli permissions
         try {
             final LogConfigurator logConfigurator = new LogConfigurator();
             logConfigurator.setFileName(logPath);

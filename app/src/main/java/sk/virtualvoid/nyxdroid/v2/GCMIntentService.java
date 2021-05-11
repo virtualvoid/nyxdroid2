@@ -12,7 +12,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import sk.virtualvoid.core.Task;
 import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskManager;
-import sk.virtualvoid.net.Connector;
+import sk.virtualvoid.net.ConnectorFactory;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.PushNotificationResponse;
 import sk.virtualvoid.nyxdroid.v2.data.dac.PushNotificationDataAccess;
@@ -25,7 +25,7 @@ public class GCMIntentService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        if (Connector.authorizationRequired(this)) {
+        if (ConnectorFactory.authorizationRequired(this)) {
             Log.w(Constants.TAG, "Authorization not complete yet !");
             return;
         }

@@ -7,7 +7,7 @@ def pass = System.getenv("RELEASE_PASS")
 
 def versionMajor = 2
 def versionMinor = 1
-def versionPatch = 457
+def versionPatch = 458
 
 android {
     compileSdkVersion 30
@@ -15,10 +15,8 @@ android {
 
     defaultConfig {
         applicationId "sk.virtualvoid.nyxdroid.v2"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 30
-        //TODO hack for the DefaultHttpClient, its better to use another library, DefaultHttpClient is deprecated
-        useLibrary 'org.apache.http.legacy'
         multiDexEnabled true
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
@@ -88,6 +86,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:17.4.1'
     implementation 'com.google.firebase:firebase-messaging:21.1.0'
     implementation 'com.google.firebase:firebase-messaging-directboot:21.1.0'
+
+    implementation platform('com.squareup.okhttp3:okhttp-bom:4.9.0')
+    implementation 'com.squareup.okhttp3:okhttp'
 
     // Hack for universal image loader :)
     implementation 'com.github.nostra13:Android-Universal-Image-Loader:f6a9615868482672c3630cb7db6dcf43391e80de'
