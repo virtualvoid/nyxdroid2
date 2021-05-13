@@ -87,7 +87,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/notifications">
-        <SwitchPreferenceCompat
+        <SwitchPreference
             android:defaultValue="true"
             android:key="notifications_enabled"
             android:summaryOff="@string/notifications_disabled"

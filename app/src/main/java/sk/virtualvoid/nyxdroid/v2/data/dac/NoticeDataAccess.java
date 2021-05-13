@@ -1,6 +1,7 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
-import org.apache.log4j.Logger;
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,6 +15,7 @@ import sk.virtualvoid.net.ConnectorFactory;
 import sk.virtualvoid.net.Error;
 import sk.virtualvoid.net.IConnector;
 import sk.virtualvoid.net.JSONObjectResult;
+import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.Context;
 import sk.virtualvoid.nyxdroid.v2.data.Notice;
@@ -25,8 +27,6 @@ import sk.virtualvoid.nyxdroid.v2.data.query.NoticeQuery;
  * @author Juraj
  */
 public class NoticeDataAccess {
-    private final static Logger log = Logger.getLogger(NoticeDataAccess.class);
-
     public static Task<NoticeQuery, SuccessResponse<ArrayList<Notice>>> getNotifications(android.content.Context context, TaskListener<SuccessResponse<ArrayList<Notice>>> listener) {
         return new Task<NoticeQuery, SuccessResponse<ArrayList<Notice>>>(context, new GetNoticesTaskWorker(), listener);
     }
@@ -98,7 +98,7 @@ public class NoticeDataAccess {
                         }
                     }
                 } catch (Throwable t) {
-                    log.error("GetNoticesTaskWorker", t);
+                    Log.e(Constants.TAG, "GetNoticesTaskWorker", t);
                     throw new NyxException(t);
                 }
             }

@@ -20,6 +20,10 @@
         android:requestLegacyExternalStorage="true"
         android:theme="@style/NyxdroidTheme">
 
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <service
             android:name="sk.virtualvoid.nyxdroid.v2.GCMIntentService"
             android:exported="false">

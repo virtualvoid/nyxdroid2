@@ -3,8 +3,8 @@ package sk.virtualvoid.net;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,7 +30,6 @@ import okhttp3.ResponseBody;
 import sk.virtualvoid.nyxdroid.library.Constants;
 
 public class OkHttpConnector implements IConnector {
-    private static final Logger log = Logger.getLogger(OkHttpConnector.class);
     private static final MediaType applicationJson = MediaType.get("application/json; charset=utf-8");
     private static final FileNameMap fileNameMap = URLConnection.getFileNameMap();
 
@@ -42,7 +41,7 @@ public class OkHttpConnector implements IConnector {
 
     OkHttpConnector(Context context) {
         if (context == null) {
-            log.fatal("Connector ctor got empty context !!!");
+            Log.wtf(Constants.TAG, "Connector ctor got empty context !!!");
 
             throw new RuntimeException("context");
         }
@@ -57,7 +56,7 @@ public class OkHttpConnector implements IConnector {
         onApiErrorListeners.add(new OnApiErrorListener() {
             @Override
             public boolean onError(int httpCode, JSONObject obj) {
-                log.error(String.format("HTTP: %d, RESPONSE: %s", httpCode, obj.toString()));
+                Log.wtf(Constants.TAG, String.format("HTTP: %d, RESPONSE: %s", httpCode, obj.toString()));
                 return false;
             }
         });
@@ -96,7 +95,7 @@ public class OkHttpConnector implements IConnector {
 
             return new JSONObjectResult(code, json);
         } catch (Throwable t) {
-            log.error(String.format("authorizationRequest=%s: %s", nick, t.getMessage()));
+            Log.e(Constants.TAG, String.format("authorizationRequest=%s: %s", nick, t.getMessage()));
         }
 
         return null;
@@ -124,7 +123,7 @@ public class OkHttpConnector implements IConnector {
 
             return new JSONObjectResult(code, json);
         } catch (Throwable t) {
-            log.error(String.format("get=%s: %s", url, t.getMessage()));
+            Log.e(Constants.TAG, String.format("get=%s: %s", url, t.getMessage()));
         }
 
         return null;
@@ -154,7 +153,7 @@ public class OkHttpConnector implements IConnector {
                 return new JSONObjectResult(code, json);
             }
         } catch (Throwable t) {
-            log.error(String.format("getArray=%s: %s", url, t.getMessage()));
+            Log.e(Constants.TAG, String.format("getArray=%s: %s", url, t.getMessage()));
         }
 
         return null;
@@ -183,7 +182,7 @@ public class OkHttpConnector implements IConnector {
 
             return new JSONObjectResult(code, json);
         } catch (Throwable t) {
-            log.error(String.format("post=%s: %s", url, t.getMessage()));
+            Log.e(Constants.TAG, String.format("post=%s: %s", url, t.getMessage()));
         }
 
         return null;
@@ -219,7 +218,7 @@ public class OkHttpConnector implements IConnector {
 
             return new JSONObjectResult(code, json);
         } catch (Throwable t) {
-            log.error(String.format("form=%s: %s", url, t.getMessage()));
+            Log.e(Constants.TAG, String.format("form=%s: %s", url, t.getMessage()));
         }
 
         return null;
@@ -241,11 +240,11 @@ public class OkHttpConnector implements IConnector {
                     String convertedValue = value.toString();
                     requestBodyBuilder.addFormDataPart(key, convertedValue);
                 } else if (value instanceof File) {
-                    File file = (File)value;
+                    File file = (File) value;
                     String contentType = fileNameMap.getContentTypeFor(file.getName());
                     requestBodyBuilder.addFormDataPart(key, file.getName(), RequestBody.create(file, MediaType.parse(contentType)));
                 } else {
-                    log.error(String.format("Unknown type for multipart with key: %s", key));
+                    Log.e(Constants.TAG, String.format("Unknown type for multipart with key: %s", key));
                 }
             }
 
@@ -269,7 +268,7 @@ public class OkHttpConnector implements IConnector {
 
             return new JSONObjectResult(code, json);
         } catch (Throwable t) {
-            log.error(String.format("multipart=%s: %s", url, t.getMessage()));
+            Log.e(Constants.TAG, String.format("multipart=%s: %s", url, t.getMessage()));
         }
 
         return null;
@@ -298,7 +297,7 @@ public class OkHttpConnector implements IConnector {
 
             return new JSONObjectResult(code, json);
         } catch (Throwable t) {
-            log.error(String.format("delete=%s: %s", url, t.getMessage()));
+            Log.e(Constants.TAG, String.format("delete=%s: %s", url, t.getMessage()));
         }
 
         return null;

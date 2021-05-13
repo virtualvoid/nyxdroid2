@@ -53,34 +53,42 @@ public class GCMIntentService extends FirebaseMessagingService {
     }
 
     public static void firePushNotificationRegister(final Context context, final String token, final boolean overwrite) {
-        Task<PushNotificationQuery, PushNotificationResponse> task = PushNotificationDataAccess.register(
-                context,
-                new TaskListener<PushNotificationResponse>() {
-                    @Override
-                    public void done(PushNotificationResponse response) {
-                        rememberPushNotificationToken(context, token, overwrite);
-                    }
-                }
-        );
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        TaskManager.startTask(task, new PushNotificationQuery(token));
+        boolean confirmed = prefs.getBoolean(Constants.AUTH_CONFIRMED, false);
+        if (confirmed) {
+            Task<PushNotificationQuery, PushNotificationResponse> task = PushNotificationDataAccess.register(
+                    context,
+                    new TaskListener<PushNotificationResponse>() {
+                        @Override
+                        public void done(PushNotificationResponse response) {
+                            rememberPushNotificationToken(context, token, overwrite);
+                        }
+                    }
+            );
+
+            TaskManager.startTask(task, new PushNotificationQuery(token));
+        }
     }
 
     public static void firePushNotificationUnregister(final Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String token = prefs.getString(Constants.AUTH_TOKEN, null);
-        Task<PushNotificationQuery, PushNotificationResponse> task = PushNotificationDataAccess.unregister(
-                context,
-                new TaskListener<PushNotificationResponse>() {
-                    @Override
-                    public void done(PushNotificationResponse response) {
-                        rememberPushNotificationToken(context, "", true);
+        boolean confirmed = prefs.getBoolean(Constants.AUTH_CONFIRMED, false);
+        if (confirmed) {
+            String token = prefs.getString(Constants.AUTH_TOKEN, null);
+            Task<PushNotificationQuery, PushNotificationResponse> task = PushNotificationDataAccess.unregister(
+                    context,
+                    new TaskListener<PushNotificationResponse>() {
+                        @Override
+                        public void done(PushNotificationResponse response) {
+                            rememberPushNotificationToken(context, "", true);
+                        }
                     }
-                }
-        );
+            );
 
-        TaskManager.startTask(task, new PushNotificationQuery(token));
+            TaskManager.startTask(task, new PushNotificationQuery(token));
+        }
     }
 
     public static void rememberPushNotificationToken(Context context, String token, boolean overwrite) {

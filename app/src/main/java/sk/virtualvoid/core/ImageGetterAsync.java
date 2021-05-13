@@ -21,8 +21,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
-import org.apache.log4j.Logger;
-
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -38,8 +36,6 @@ import sk.virtualvoid.nyxdroid.v2.internal.Appearance;
  * @author Juraj
  */
 public class ImageGetterAsync {
-    private final static Logger log = Logger.getLogger(ImageGetterAsync.class);
-
     private Resources resources;
     private int density;
     private boolean active = true;
@@ -93,7 +89,7 @@ public class ImageGetterAsync {
             }
         };
 
-        log.debug(String.format("ImageGetterAsync lru cache construction: maxMem=%d, maxSize=%d", mDrawableLruMaxMemory, mDrawableLruMaxSize));
+        Log.d(Constants.TAG,String.format("ImageGetterAsync lru cache construction: maxMem=%d, maxSize=%d", mDrawableLruMaxMemory, mDrawableLruMaxSize));
     }
 
     /**
@@ -132,7 +128,7 @@ public class ImageGetterAsync {
             TextView textView = textViewRef.get();
 
             if (textView == null) {
-                log.warn(String.format("ImageGetterHandler.onDone: textView is garbage collected for spawn position: %d, source: %s", spawnPosition, source));
+                Log.w(Constants.TAG,String.format("ImageGetterHandler.onDone: textView is garbage collected for spawn position: %d, source: %s", spawnPosition, source));
                 return false;
             }
 
@@ -250,7 +246,7 @@ public class ImageGetterAsync {
         return new Html.ImageGetter() {
             public Drawable getDrawable(String url) {
                 if (url == null || url.isEmpty()) {
-                    log.info(String.format("ImageGetterAsync spawn: got weird source as url: %s in message: %s", url, _message));
+                    Log.i(Constants.TAG,String.format("ImageGetterAsync spawn: got weird source as url: %s in message: %s", url, _message));
                     return defaultDrawable;
                 }
 
@@ -258,7 +254,7 @@ public class ImageGetterAsync {
 
                 Drawable drawable = mDrawableLruCache.get(source);
                 if (drawable != null) {
-                    log.info(String.format("ImageGetterAsync spawn: request wasn't found in cache ! source=%s", source));
+                    Log.i(Constants.TAG,String.format("ImageGetterAsync spawn: request wasn't found in cache ! source=%s", source));
                     return drawable;
                 }
 

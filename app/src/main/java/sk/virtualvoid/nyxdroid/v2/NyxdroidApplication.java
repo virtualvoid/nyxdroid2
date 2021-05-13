@@ -1,7 +1,6 @@
 package sk.virtualvoid.nyxdroid.v2;
 
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -21,13 +20,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 
-import de.mindpipe.android.logging.log4j.LogConfigurator;
 import sk.virtualvoid.core.ImageGetterAsync;
 import sk.virtualvoid.nyxdroid.library.Constants;
 
@@ -35,13 +29,6 @@ import sk.virtualvoid.nyxdroid.library.Constants;
  * @author Juraj
  */
 public class NyxdroidApplication extends MultiDexApplication {
-    public static final String logPath = Environment.getExternalStorageDirectory() + File.separator + "nyxdroid.log";
-
-    private static final Logger log = Logger.getLogger(NyxdroidApplication.class);
-    private static final UncaughtExceptionHandler defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-
-    public NyxdroidApplication() {
-    }
 
     @Override
     public void onCreate() {
@@ -58,7 +45,6 @@ public class NyxdroidApplication extends MultiDexApplication {
         initializeAnalytics(authNick);
         initializeMessaging(notificationsEnabled);
         initializeImageLoader();
-        initializeLogger();
     }
 
     @Override
@@ -71,7 +57,6 @@ public class NyxdroidApplication extends MultiDexApplication {
 
     @Override
     public void onLowMemory() {
-        log.warn("onLowMemory!");
         ImageGetterAsync.clearDrawableCache();
         super.onLowMemory();
     }
@@ -92,6 +77,8 @@ public class NyxdroidApplication extends MultiDexApplication {
                     .showErrorNotification(this, e.getConnectionStatusCode());
         } catch (GooglePlayServicesNotAvailableException e) {
             Log.e(Constants.TAG, "Unable to initialize TLS 1.2!");
+        } catch (Throwable e) {
+            Log.e(Constants.TAG, String.format("providerInstallerFix: %s", e.getMessage()));
         }
     }
 
@@ -149,18 +136,5 @@ public class NyxdroidApplication extends MultiDexApplication {
                 .build();
 
         ImageLoader.getInstance().init(ilConfig);
-    }
-
-    private void initializeLogger() {
-        // TODO: logger nezapisuje kvoli permissions
-        try {
-            final LogConfigurator logConfigurator = new LogConfigurator();
-            logConfigurator.setFileName(logPath);
-            logConfigurator.setRootLevel(Level.ALL);
-            logConfigurator.setUseLogCatAppender(true);
-            logConfigurator.configure();
-        } catch (Throwable e) {
-            Log.e(Constants.TAG, String.format("UNABLE TO CONFIGURE LOG4J: %s", e.getMessage()));
-        }
     }
 }

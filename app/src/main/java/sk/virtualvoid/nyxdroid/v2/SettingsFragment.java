@@ -2,20 +2,13 @@ package sk.virtualvoid.nyxdroid.v2;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
-import androidx.preference.SwitchPreferenceCompat;
+import androidx.preference.SwitchPreference;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import sk.virtualvoid.nyxdroid.library.Constants;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     public SettingsFragment() {
@@ -31,7 +24,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SwitchPreferenceCompat notificationsEnabled = findPreference("notifications_enabled");
+        SwitchPreference notificationsEnabled = findPreference("notifications_enabled");
         if (notificationsEnabled != null) {
             notificationsEnabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override

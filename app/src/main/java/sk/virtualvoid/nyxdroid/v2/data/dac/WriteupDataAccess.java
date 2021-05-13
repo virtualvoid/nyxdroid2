@@ -1,8 +1,8 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
 import android.app.Activity;
+import android.util.Log;
 
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -45,8 +45,6 @@ import sk.virtualvoid.nyxdroid.v2.internal.WriteupBookmarkQueryType;
  * @author Juraj
  */
 public class WriteupDataAccess {
-    private final static Logger log = Logger.getLogger(WriteupDataAccess.class);
-
     public static Task<WriteupQuery, SuccessResponse<WriteupResponse>> getWriteups(Activity context, TaskListener<SuccessResponse<WriteupResponse>> listener) {
         return new Task<>(context, new GetWriteupsTaskWorker(), listener);
     }
@@ -159,13 +157,13 @@ public class WriteupDataAccess {
 
                             Writeup writeup = Writeup.fromJSONObject(post);
                             if (writeup == null) {
-                                log.warn("unable to construct writeup, what ?: " + post.toString());
+                                Log.w(Constants.TAG, "unable to construct writeup, what ?: " + post.toString());
                                 continue;
                             }
 
                             writeup.IsMine = IConnector.getAuthNick().equalsIgnoreCase(post.getString("username"));
                             if (writeup.youtubeFix()) {
-                                log.warn(String.format("the writeup=%d from discussion=%d contains youtube, fixed.", writeup.Id, result.Id));
+                                Log.w(Constants.TAG, String.format("the writeup=%d from discussion=%d contains youtube, fixed.", writeup.Id, result.Id));
                             }
 
                             result.Writeups.add(writeup);
@@ -174,7 +172,7 @@ public class WriteupDataAccess {
 
                     context = Context.fromJSONObject(root);
                 } catch (Throwable e) {
-                    log.error("GetWriteupsTaskWorker", e);
+                    Log.e(Constants.TAG, "GetWriteupsTaskWorker", e);
                     throw new NyxException(e);
                 }
             }
@@ -242,7 +240,7 @@ public class WriteupDataAccess {
                                 ? VotingResult.RATING_NEEDS_CONFIRMATION : VotingResult.ERROR;
                     }
                 } catch (Throwable t) {
-                    log.error("RatingOverviewTaskWorker", t);
+                    Log.e(Constants.TAG, "RatingOverviewTaskWorker", t);
                     throw new NyxException(t);
                 }
             }
@@ -279,11 +277,11 @@ public class WriteupDataAccess {
                             result.Negative++;
                             result.NegativeList.add(nick);
                         } else {
-                            log.trace("wtf vote:" + nick + ", " + tag);
+                            Log.wtf(Constants.TAG, "wtf vote:" + nick + ", " + tag);
                         }
                     }
                 } catch (Throwable t) {
-                    log.error("RatingOverviewTaskWorker", t);
+                    Log.e(Constants.TAG, "RatingOverviewTaskWorker", t);
                     throw new NyxException(t);
                 }
             }
@@ -309,7 +307,7 @@ public class WriteupDataAccess {
                     result = (Poll) Writeup.fromJSONObject(root);
                     result.IsMine = connector.getAuthNick().equalsIgnoreCase(result.Nick);
                 } catch (Throwable t) {
-                    log.error("PollVoteTaskWorker", t);
+                    Log.e(Constants.TAG, "PollVoteTaskWorker", t);
                     throw new NyxException(t);
                 }
             }
@@ -379,7 +377,7 @@ public class WriteupDataAccess {
                         }
                     }
                 } catch (Throwable t) {
-                    log.error("RatingOverviewTaskWorker", t);
+                    Log.e(Constants.TAG, "RatingOverviewTaskWorker", t);
                     throw new NyxException(t);
                 }
             }
@@ -454,7 +452,7 @@ public class WriteupDataAccess {
                             writeup.IsReminded = post.has("reminder") && post.getBoolean("reminder");
 
                             if (writeup.youtubeFix()) {
-                                log.warn(String.format("the writeup=%d from discussion=%d contains youtube, fixed.", writeup.Id, writeup.DiscussionId));
+                                Log.w(Constants.TAG, String.format("the writeup=%d from discussion=%d contains youtube, fixed.", writeup.Id, writeup.DiscussionId));
                             }
 
                             result.add(writeup);
@@ -463,7 +461,7 @@ public class WriteupDataAccess {
 
                     context = Context.fromJSONObject(root);
                 } catch (Throwable t) {
-                    log.error("GetLastWriteupsTaskWorker", t);
+                    Log.e(Constants.TAG, "GetLastWriteupsTaskWorker", t);
                     throw new NyxException(t);
                 }
             }

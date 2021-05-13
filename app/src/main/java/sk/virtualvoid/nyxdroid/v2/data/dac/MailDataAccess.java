@@ -2,8 +2,8 @@ package sk.virtualvoid.nyxdroid.v2.data.dac;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,8 +32,6 @@ import sk.virtualvoid.nyxdroid.v2.data.query.MailQuery;
  * @author juraj
  */
 public class MailDataAccess {
-    private final static Logger log = Logger.getLogger(MailDataAccess.class);
-
     public static Task<MailQuery, ArrayList<Mail>> getMail(Activity context, TaskListener<ArrayList<Mail>> listener) {
         return new Task<MailQuery, ArrayList<Mail>>(context, new GetMailTaskWorker(), listener);
     }
@@ -128,7 +126,7 @@ public class MailDataAccess {
                         }
                     }
                 } catch (Throwable t) {
-                    log.error("GetMailTaskWorker", t);
+                    Log.e(Constants.TAG, "GetMailTaskWorker", t);
                     throw new NyxException(t);
                 }
             }
@@ -219,7 +217,7 @@ public class MailDataAccess {
                         result.Count = user.getInt("mail_unread");
                     }
                 } catch (Throwable t) {
-                    log.error("GetNotificationsTaskWorker", t);
+                    Log.e(Constants.TAG, "GetNotificationsTaskWorker", t);
                     throw new NyxException(t);
                 }
             }
@@ -257,7 +255,7 @@ public class MailDataAccess {
                         }
                     }
                 } catch (Throwable t) {
-                    log.error("GetConversationTaskWorker", t);
+                    Log.e(Constants.TAG, "GetConversationTaskWorker", t);
                     throw new NyxException(t);
                 }
             }

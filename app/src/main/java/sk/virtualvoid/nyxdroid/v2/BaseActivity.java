@@ -22,8 +22,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import org.apache.log4j.Logger;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
@@ -46,7 +44,6 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
  * @author juraj
  */
 public abstract class BaseActivity extends AppCompatActivity implements INavigationHandler, ITaskKey, EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
-    private final static Logger log = Logger.getLogger(BaseActivity.class);
     private static volatile int ACTIVITY_COUNT = 0;
 
     protected Appearance appearance;
@@ -137,7 +134,7 @@ public abstract class BaseActivity extends AppCompatActivity implements INavigat
                     Toast.makeText(this, R.string.cant_open_it, Toast.LENGTH_SHORT).show();
                 }
             } catch (UnsupportedEncodingException e) {
-                log.error("BaseActivity::onNavigationRequested: IMAGE url decoding problem: " + e.getMessage());
+                Log.e(Constants.TAG,"BaseActivity::onNavigationRequested: IMAGE url decoding problem: " + e.getMessage());
             }
         }
 

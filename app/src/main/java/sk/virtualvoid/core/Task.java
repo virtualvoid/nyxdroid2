@@ -1,116 +1,113 @@
 package sk.virtualvoid.core;
 
-import org.apache.log4j.Logger;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
+
+import sk.virtualvoid.nyxdroid.library.Constants;
 
 /**
- * 
- * @author juraj
- * 
  * @param <TInput>
  * @param <TOutput>
+ * @author juraj
  */
 public class Task<TInput extends ITaskQuery, TOutput> extends AsyncTask<TInput, Void, TOutput> {
-	private final static Logger log = Logger.getLogger(Task.class);
+    Context context;
+    TaskListener<TOutput> taskListener;
+    TaskWorker<TInput, TOutput> taskWorker;
+    Throwable lastError;
 
-	Context context;
-	TaskListener<TOutput> taskListener;
-	TaskWorker<TInput, TOutput> taskWorker;
-	Throwable lastError;
+    public Task(Context context, TaskWorker<TInput, TOutput> taskWorker, TaskListener<TOutput> taskListener) {
+        this.context = context;
 
-	public Task(Context context, TaskWorker<TInput, TOutput> taskWorker, TaskListener<TOutput> taskListener) {
-		this.context = context;
+        this.taskListener = taskListener;
+        this.taskListener.setContext(context);
 
-		this.taskListener = taskListener;
-		this.taskListener.setContext(context);
+        this.taskWorker = taskWorker;
+        this.taskWorker.setContext(context);
 
-		this.taskWorker = taskWorker;
-		this.taskWorker.setContext(context);
+        this.lastError = null;
+    }
 
-		this.lastError = null;
-	}
+    public synchronized void setTag(Object tag) {
+        this.taskListener.setTag(tag);
+        this.taskWorker.setTag(tag);
+    }
 
-	public synchronized void setTag(Object tag) {
-		this.taskListener.setTag(tag);
-		this.taskWorker.setTag(tag);
-	}
-	
-	//private static void execute(ITaskQuery... query) { }
-	
-	@Override
-	protected void onPreExecute() {
-		super.onPreExecute();
+    //private static void execute(ITaskQuery... query) { }
 
-		if (context != null && context instanceof Activity) {
-			Activity activity = ((Activity) context);
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
 
-			activity.setProgressBarIndeterminateVisibility(true);
-			TaskManager.addTask(activity, this);
-		}
+        if (context != null && context instanceof Activity) {
+            Activity activity = ((Activity) context);
 
-		if (context == null) {
-			log.fatal(String.format("onPreExecute: %s doesn't have context attached !", getClass().getCanonicalName()));
-		}
-	}
+            activity.setProgressBarIndeterminateVisibility(true);
+            TaskManager.addTask(activity, this);
+        }
 
-	@Override
-	protected TOutput doInBackground(TInput... params) {
-		try {
-			return taskWorker.doWork(params == null || params.length == 0 ? null : params[0]);
-		} catch (Throwable t) {
-			log.error("doInBackground", t);
-			lastError = t;
-		}
-		return null;
-	}
+        if (context == null) {
+            Log.wtf(Constants.TAG, String.format("onPreExecute: %s doesn't have context attached !", getClass().getCanonicalName()));
+        }
+    }
 
-	private void handlePostExecute(TOutput result) {
-		if (context != null && context instanceof Activity) {
-			Activity activity = ((Activity) context);
-			activity.setProgressBarIndeterminateVisibility(false);
-		}
+    @Override
+    protected TOutput doInBackground(TInput... params) {
+        try {
+            return taskWorker.doWork(params == null || params.length == 0 ? null : params[0]);
+        } catch (Throwable t) {
+            Log.e(Constants.TAG, "doInBackground", t);
+            lastError = t;
+        }
+        return null;
+    }
 
-		TaskManager.removeTask(this);
+    private void handlePostExecute(TOutput result) {
+        if (context != null && context instanceof Activity) {
+            Activity activity = ((Activity) context);
+            activity.setProgressBarIndeterminateVisibility(false);
+        }
 
-		if (isCancelled()) {
-			return;
-		}
+        TaskManager.removeTask(this);
 
-		if (context != null) {
-			if (taskListener != null && taskWorker != null) {
-				if (lastError != null) {
-					taskListener.handleError(lastError);
-				} else {
-					taskListener.done(result);
-				}
-			} else {
-				log.fatal(String.format("onPostExecute: %s doesn't have LISTENER/WORKER, WTF?", getClass().getCanonicalName()));
-			}
-		} else {
-			log.fatal(String.format("onPostExecute: %s doesn't have context attached !", getClass().getCanonicalName()));
-		}
-	}
+        if (isCancelled()) {
+            return;
+        }
 
-	@Override
-	protected void onCancelled() {
-		super.onCancelled();
+        if (context != null) {
+            if (taskListener != null && taskWorker != null) {
+                if (lastError != null) {
+                    taskListener.handleError(lastError);
+                } else {
+                    taskListener.done(result);
+                }
+            } else {
+                Log.wtf(Constants.TAG, String.format("onPostExecute: %s doesn't have LISTENER/WORKER, WTF?", getClass().getCanonicalName()));
+            }
+        } else {
+            Log.wtf(Constants.TAG, String.format("onPostExecute: %s doesn't have context attached !", getClass().getCanonicalName()));
+        }
+    }
 
-		handlePostExecute(null);
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
 
-		log.debug(String.format("onCancelled: %s execution cancelled: no reason.", getClass().getCanonicalName()));
-	}
+        handlePostExecute(null);
 
-	@Override
-	protected void onPostExecute(TOutput result) {
-		super.onPostExecute(result);
+        Log.d(Constants.TAG,String.format("onCancelled: %s execution cancelled: no reason.", getClass().getCanonicalName()));
+    }
 
-		handlePostExecute(result);
-	}
+    @Override
+    protected void onPostExecute(TOutput result) {
+        super.onPostExecute(result);
 
-	public boolean isAlive() {
-		return getStatus() == Status.RUNNING || getStatus() == Status.PENDING;
-	}
+        handlePostExecute(result);
+    }
+
+    public boolean isAlive() {
+        return getStatus() == Status.RUNNING || getStatus() == Status.PENDING;
+    }
 }

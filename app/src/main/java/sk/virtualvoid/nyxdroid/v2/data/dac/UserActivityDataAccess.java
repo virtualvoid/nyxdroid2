@@ -1,6 +1,6 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
-import org.apache.log4j.Logger;
+import android.app.Activity;
 
 import sk.virtualvoid.core.ITaskQuery;
 import sk.virtualvoid.core.NyxException;
@@ -9,7 +9,6 @@ import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskWorker;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
-import android.app.Activity;
 
 /**
  * 
@@ -17,8 +16,7 @@ import android.app.Activity;
  *
  */
 public class UserActivityDataAccess {
-	private final static Logger log = Logger.getLogger(UserActivityDataAccess.class);
-	
+
 	public static Task<ITaskQuery, NullResponse> inactivate(Activity context, TaskListener<NullResponse> listener) {
 		return new Task<ITaskQuery, NullResponse>(context, new InactivateTaskWorker(), listener);
 	}

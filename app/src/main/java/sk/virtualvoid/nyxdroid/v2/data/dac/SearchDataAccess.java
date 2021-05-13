@@ -1,10 +1,12 @@
 package sk.virtualvoid.nyxdroid.v2.data.dac;
 
-import java.util.ArrayList;
+import android.app.Activity;
+import android.util.Log;
 
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
@@ -20,14 +22,10 @@ import sk.virtualvoid.nyxdroid.v2.data.UserSearch;
 import sk.virtualvoid.nyxdroid.v2.data.query.SearchQuery;
 import sk.virtualvoid.nyxdroid.v2.data.query.UserSearchQuery;
 
-import android.app.Activity;
-
 /**
  * @author Juraj
  */
 public class SearchDataAccess {
-    private final static Logger log = Logger.getLogger(SearchDataAccess.class);
-
     public static Task<SearchQuery, ArrayList<Search>> search(Activity context, TaskListener<ArrayList<Search>> listener) {
         return new Task<SearchQuery, ArrayList<Search>>(context, new SearchTaskWorker(), listener);
     }
@@ -62,7 +60,7 @@ public class SearchDataAccess {
                     result.addAll(getUsers(root, "friends"));
                     result.addAll(getUsers(root, "others"));
                 } catch (Throwable t) {
-                    log.error("UserSearchTaskWorker", t);
+                    Log.e(Constants.TAG, "UserSearchTaskWorker", t);
                     throw new NyxException(t);
                 }
             }

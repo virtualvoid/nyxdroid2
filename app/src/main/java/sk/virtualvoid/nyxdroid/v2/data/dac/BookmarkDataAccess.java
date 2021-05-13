@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +18,7 @@ import sk.virtualvoid.net.ConnectorFactory;
 import sk.virtualvoid.net.Error;
 import sk.virtualvoid.net.IConnector;
 import sk.virtualvoid.net.JSONObjectResult;
+import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.R;
 import sk.virtualvoid.nyxdroid.v2.data.BasePoco;
 import sk.virtualvoid.nyxdroid.v2.data.Bookmark;
@@ -30,6 +30,7 @@ import sk.virtualvoid.nyxdroid.v2.data.query.BookmarkQuery;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
@@ -37,8 +38,6 @@ import androidx.preference.PreferenceManager;
  * @author Juraj
  */
 public class BookmarkDataAccess {
-    private final static Logger log = Logger.getLogger(BookmarkDataAccess.class);
-
     public static Task<BookmarkQuery, SuccessResponse<ArrayList<Bookmark>>> getBookmarks(Activity context, TaskListener<SuccessResponse<ArrayList<Bookmark>>> listener) {
         return new Task<BookmarkQuery, SuccessResponse<ArrayList<Bookmark>>>(context, new GetBookmarksTaskWorker(), listener);
     }
@@ -125,7 +124,7 @@ public class BookmarkDataAccess {
 
                     context = Context.fromJSONObject(bookmarks);
                 } catch (Throwable e) {
-                    log.error("GetBookmarksTaskWorker", e);
+                    Log.e(Constants.TAG,"GetBookmarksTaskWorker", e);
                     throw new NyxException(e);
                 }
             } else {
@@ -240,7 +239,7 @@ public class BookmarkDataAccess {
 
                     context = Context.fromJSONObject(json);
                 } catch (Throwable e) {
-                    log.error("GetBookmarksTaskWorker", e);
+                    Log.e(Constants.TAG,"GetBookmarksTaskWorker", e);
                     throw new NyxException(e);
                 }
             }
@@ -288,7 +287,7 @@ public class BookmarkDataAccess {
 
                     context = Context.fromJSONObject(json);
                 } catch (Throwable e) {
-                    log.error("GetBookmarksTaskWorker", e);
+                    Log.e(Constants.TAG,"GetBookmarksTaskWorker", e);
                     throw new NyxException(e);
                 }
             }
@@ -322,7 +321,7 @@ public class BookmarkDataAccess {
 
                     context = Context.fromJSONObject(json);
                 } catch (Throwable e) {
-                    log.error("GetBookmarksTaskWorker", e);
+                    Log.e(Constants.TAG,"GetBookmarksTaskWorker", e);
                     throw new NyxException(e);
                 }
             }
@@ -365,7 +364,7 @@ public class BookmarkDataAccess {
 
                     context = Context.fromJSONObject(json);
                 } catch (Throwable e) {
-                    log.error("GetBookmarksTaskWorker", e);
+                    Log.e(Constants.TAG,"GetBookmarksTaskWorker", e);
                     throw new NyxException(e);
                 }
             }

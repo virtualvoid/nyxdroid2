@@ -1,19 +1,5 @@
 package sk.virtualvoid.core;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import org.apache.log4j.Logger;
-
-import sk.virtualvoid.nyxdroid.library.Constants;
-
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -27,7 +13,19 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.widget.Toast;
+import android.util.Log;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import sk.virtualvoid.nyxdroid.library.Constants;
 
 /**
  * 
@@ -35,8 +33,6 @@ import android.widget.Toast;
  * 
  */
 public class CoreUtility {
-	private final static Logger log = Logger.getLogger(CoreUtility.class);
-
 	static void copyStream(InputStream is, OutputStream os) {
 		final int buffer_size = 1024;
 		try {
@@ -48,7 +44,7 @@ public class CoreUtility {
 				os.write(bytes, 0, count);
 			}
 		} catch (Exception ex) {
-			log.error("copyStream: " + ex.getMessage());
+			Log.e(Constants.TAG,"copyStream: " + ex.getMessage());
 		}
 	}
 
@@ -64,7 +60,7 @@ public class CoreUtility {
 			}
 			return buffer.toByteArray();
 		} catch (IOException e) {
-			log.error("copyStream to byteArray" + e.getMessage());
+			Log.e(Constants.TAG,"copyStream to byteArray" + e.getMessage());
 		}
 		return null;
 	}
@@ -108,7 +104,7 @@ public class CoreUtility {
 		try {
 			f.createNewFile();
 		} catch (IOException e) {
-			log.error("getNyxClientDataDirectory: " + e.getMessage());
+			Log.e(Constants.TAG,"getNyxClientDataDirectory: " + e.getMessage());
 		}
 
 		return nyx;
@@ -123,7 +119,7 @@ public class CoreUtility {
 			cursor.moveToFirst();
 			return cursor.getString(column_index);
 		} catch (Throwable t) {
-			log.error("getRealPathFromURI: " + t.getMessage());
+			Log.e(Constants.TAG,"getRealPathFromURI: " + t.getMessage());
 		}
 		return null;
 	}
@@ -159,7 +155,7 @@ public class CoreUtility {
 			Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f), null, outopts);
 			return b;
 		} catch (Throwable t) {
-			log.error("getBitmapFromFile: " + t.getMessage());
+			Log.e(Constants.TAG,"getBitmapFromFile: " + t.getMessage());
 		}
 		return null;
 	}
@@ -180,7 +176,7 @@ public class CoreUtility {
 			outputStream.close();
 			return cacheFile;
 		} catch (Throwable t) {
-			log.warn("downloadFileWeb: " + t.getMessage());
+			Log.e(Constants.TAG,"downloadFileWeb: " + t.getMessage());
 		}
 		return null;
 	}
@@ -195,7 +191,7 @@ public class CoreUtility {
 			InputStream inputStream = connection.getInputStream();
 			return inputStream;
 		} catch (Throwable t) {
-			log.warn("downloadFileWeb: " + t.getMessage());
+			Log.w(Constants.TAG,"downloadFileWeb: " + t.getMessage());
 		}
 		return null;
 	}
@@ -209,7 +205,7 @@ public class CoreUtility {
 				return src;
 			}
 		} catch (Throwable t) {
-			log.warn("downloadFileCache: " + t.getMessage());
+			Log.w(Constants.TAG,"downloadFileCache: " + t.getMessage());
 		}
 		return null;
 	}

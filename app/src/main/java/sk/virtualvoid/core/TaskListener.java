@@ -1,10 +1,11 @@
 package sk.virtualvoid.core;
 
-import org.apache.log4j.Logger;
-
-import sk.virtualvoid.nyxdroid.v2.R;
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
+
+import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.nyxdroid.v2.R;
 
 /**
  * 
@@ -12,12 +13,10 @@ import android.widget.Toast;
  * 
  */
 public abstract class TaskListener<TOutput> {
-	protected final static Logger log = Logger.getLogger(TaskListener.class);
-
 	public static final TaskListener<Void> EmptyListener = new TaskListener<Void>() {
 		@Override
 		public void done(Void output) {
-			log.debug("EmptyListener called");
+			Log.d(Constants.TAG,"EmptyListener called");
 		}
 	};
 
@@ -25,6 +24,7 @@ public abstract class TaskListener<TOutput> {
 	private Object tag;
 
 	public TaskListener() {
+		int debug = 0;
 	}
 
 	protected Context getContext() {
@@ -48,7 +48,7 @@ public abstract class TaskListener<TOutput> {
 			Toast.makeText(getContext(), getContext().getResources().getString(R.string.general_error_occured), Toast.LENGTH_LONG).show();
 		}
 
-		log.fatal(getClass().getCanonicalName() + " reported error: " + t == null ? "null" : t.getMessage());
+		Log.wtf(Constants.TAG,getClass().getCanonicalName() + " reported error: " + t == null ? "null" : t.getMessage());
 	}
 
 	public abstract void done(TOutput output);
