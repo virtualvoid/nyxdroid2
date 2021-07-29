@@ -1,13 +1,5 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import sk.virtualvoid.core.CoreUtility;
-import sk.virtualvoid.core.widgets.CustomViewPager;
-import sk.virtualvoid.nyxdroid.library.Constants;
-import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
-import uk.co.senab.photoview.PhotoView;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
@@ -17,13 +9,10 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,9 +22,19 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import com.bumptech.glide.Glide;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import sk.virtualvoid.core.CoreUtility;
+import sk.virtualvoid.core.widgets.CustomViewPager;
+import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
+import uk.co.senab.photoview.PhotoView;
 
 
 /**
@@ -205,18 +204,18 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 	private class ImagePagerAdapter extends PagerAdapter {
 		private Bundle[] model;
 		private Activity context;
-		private Pattern pattern;
-		private Matcher matcher;
+		//private Pattern pattern;
+		//private Matcher matcher;
 		private Drawable placeholder;
-		private ImageLoader imageLoader;
+		//private ImageLoader imageLoader;
 
 		public ImagePagerAdapter(Bundle[] model, Activity context) {
 			this.model = model;
 			this.context = context;
 
-			this.pattern = Pattern.compile("([^\\s]+(\\.(?i)(gif))$)", Pattern.CASE_INSENSITIVE);
+			//this.pattern = Pattern.compile("([^\\s]+(\\.(?i)(gif))$)", Pattern.CASE_INSENSITIVE);
 			this.placeholder = context.getResources().getDrawable(R.drawable.placeholder);
-			this.imageLoader = ImageLoader.getInstance();
+			//this.imageLoader = ImageLoader.getInstance();
 		}
 
 		@Override
@@ -229,12 +228,12 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 			View view = null;
 			final String url = model[position].getString(Constants.KEY_URL);
 
-			matcher = pattern.matcher(url);
-			if (matcher.matches()) {
-				view = createMovieViewer(url);
-			} else {
+//			matcher = pattern.matcher(url);
+//			if (matcher.matches()) {
+//				view = createMovieViewer(url);
+//			} else {
 				view = createPhotoViewer(url);
-			}
+//			}
 
 			view.setOnLongClickListener(GalleryActivity.this);
 
@@ -245,67 +244,74 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 
 		private PhotoView createPhotoViewer(final String url) {
 			final PhotoView photoView = new PhotoView(context);
-			photoView.setImageDrawable(placeholder);
+			//photoView.setImageDrawable(placeholder);
 
-			imageLoader.displayImage(url, photoView, new ImageLoadingListener() {
-				@Override
-				public void onLoadingStarted(String url, View view) {
-					setProgressBarIndeterminateVisibility(true);
-				}
+			Glide.with(context)
+					.load(url)
+					.fitCenter()
+					.placeholder(placeholder)
+					.into(photoView);
 
-				@Override
-				public void onLoadingFailed(String url, View view, FailReason failReason) {
-					setProgressBarIndeterminateVisibility(false);
-				}
-
-				@Override
-				public void onLoadingComplete(String url, View view, Bitmap bitmap) {
-					setProgressBarIndeterminateVisibility(false);
-				}
-
-				@Override
-				public void onLoadingCancelled(String url, View view) {
-					setProgressBarIndeterminateVisibility(false);
-				}
-			});
+//			imageLoader.displayImage(url, photoView, new ImageLoadingListener() {
+//				@Override
+//				public void onLoadingStarted(String url, View view) {
+//					setProgressBarIndeterminateVisibility(true);
+//				}
+//
+//				@Override
+//				public void onLoadingFailed(String url, View view, FailReason failReason) {
+//					setProgressBarIndeterminateVisibility(false);
+//				}
+//
+//				@Override
+//				public void onLoadingComplete(String url, View view, Bitmap bitmap) {
+//					setProgressBarIndeterminateVisibility(false);
+//				}
+//
+//				@Override
+//				public void onLoadingCancelled(String url, View view) {
+//					setProgressBarIndeterminateVisibility(false);
+//				}
+//			});
 
 			return photoView;
 		}
 
-		@SuppressLint("SetJavaScriptEnabled")
-		private WebView createMovieViewer(final String url) {
-			final WebView view = new WebView(context);
-
-			view.setBackgroundColor(0x00000000);
-			view.setLayerType(WebView.LAYER_TYPE_HARDWARE, null);
-			view.getSettings().setJavaScriptEnabled(true);
-			view.getSettings().setBuiltInZoomControls(true);
-
-			view.setWebChromeClient(new WebChromeClient() { 
-				@Override
-				public void onProgressChanged(WebView view, int newProgress) {
-					super.onProgressChanged(view, newProgress);
-					view.invalidate();
-					setProgressBarIndeterminateVisibility(false);
-				}
-			});
-			
-			view.loadUrl(url);
-			
-			setProgressBarIndeterminateVisibility(true);
-
-			return view;
-		}
+//		@SuppressLint("SetJavaScriptEnabled")
+//		private WebView createMovieViewer(final String url) {
+//			final WebView view = new WebView(context);
+//
+//			view.setBackgroundColor(0x00000000);
+//			view.setLayerType(WebView.LAYER_TYPE_HARDWARE, null);
+//			view.getSettings().setJavaScriptEnabled(true);
+//			view.getSettings().setBuiltInZoomControls(true);
+//
+//			view.setWebChromeClient(new WebChromeClient() {
+//				@Override
+//				public void onProgressChanged(WebView view, int newProgress) {
+//					super.onProgressChanged(view, newProgress);
+//					view.invalidate();
+//					setProgressBarIndeterminateVisibility(false);
+//				}
+//			});
+//
+//			view.loadUrl(url);
+//
+//			setProgressBarIndeterminateVisibility(true);
+//
+//			return view;
+//		}
 
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
 			View view = (View) object;
 
-			if (view instanceof WebView) {
-				((WebView)view).freeMemory();
-			}
+//			if (view instanceof WebView) {
+//				((WebView)view).freeMemory();
+//			}
 
 			if (view instanceof PhotoView) {
+				// what now ?
 			}
 
 			container.removeView(view);
@@ -315,6 +321,5 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 		public boolean isViewFromObject(View view, Object object) {
 			return view == object;
 		}
-
 	}
 }

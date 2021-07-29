@@ -75,6 +75,9 @@ public class Constants {
     }
 
     public static String fixAttachmentUrl(String url) {
+        if (url == null) {
+            return "";
+        }
         if (!url.startsWith(Constants.HTTP) && !url.startsWith(Constants.HTTPS)) {
             url = String.format("%s%s", Constants.INDEX_WWW, url);
         }

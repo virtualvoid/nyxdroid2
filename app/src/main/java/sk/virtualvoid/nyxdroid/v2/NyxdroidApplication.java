@@ -16,13 +16,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
-import sk.virtualvoid.core.ImageGetterAsync;
 import sk.virtualvoid.nyxdroid.library.Constants;
 
 /**
@@ -45,20 +41,6 @@ public class NyxdroidApplication extends MultiDexApplication {
         initializeAnalytics(authNick);
         initializeMessaging(notificationsEnabled);
         initializeImageLoader();
-    }
-
-    @Override
-    public void onTrimMemory(int level) {
-        if (level >= Constants.MEMORY_TRIM_LEVEL) {
-            ImageGetterAsync.clearDrawableCache();
-        }
-        super.onTrimMemory(level);
-    }
-
-    @Override
-    public void onLowMemory() {
-        ImageGetterAsync.clearDrawableCache();
-        super.onLowMemory();
     }
 
     private void asyncTaskFix() {
@@ -123,18 +105,18 @@ public class NyxdroidApplication extends MultiDexApplication {
     }
 
     private void initializeImageLoader() {
-        DisplayImageOptions ilOptions = new DisplayImageOptions.Builder()
-                .cacheOnDisc(true)
-                .cacheInMemory(true)
-                .build();
-
-        ImageLoaderConfiguration ilConfig = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                .defaultDisplayImageOptions(ilOptions)
-                .discCacheFileCount(Constants.ImageLoader.DiscCacheFileCount)
-                .memoryCacheExtraOptions(Constants.ImageLoader.MemoryCacheMaxWidth, Constants.ImageLoader.MemoryCacheMaxHeight)
-                .denyCacheImageMultipleSizesInMemory()
-                .build();
-
-        ImageLoader.getInstance().init(ilConfig);
+//        DisplayImageOptions ilOptions = new DisplayImageOptions.Builder()
+//                .cacheOnDisc(true)
+//                .cacheInMemory(true)
+//                .build();
+//
+//        ImageLoaderConfiguration ilConfig = new ImageLoaderConfiguration.Builder(getApplicationContext())
+//                .defaultDisplayImageOptions(ilOptions)
+//                .discCacheFileCount(Constants.ImageLoader.DiscCacheFileCount)
+//                .memoryCacheExtraOptions(Constants.ImageLoader.MemoryCacheMaxWidth, Constants.ImageLoader.MemoryCacheMaxHeight)
+//                .denyCacheImageMultipleSizesInMemory()
+//                .build();
+//
+//        ImageLoader.getInstance().init(ilConfig);
     }
 }

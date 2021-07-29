@@ -188,7 +188,7 @@ public class BaseMenu {
 			Task<ITaskQuery, NullResponse> logoutTask = UserActivityDataAccess.inactivate(activity, new TaskListener<NullResponse>() {
 				@Override
 				public void done(NullResponse output) {
-					ImageGetterAsync.clearDrawableCache();
+					//ImageGetterAsync.clearDrawableCache();
 					activity.finish();
 				}
 			});

@@ -248,7 +248,7 @@ public abstract class BaseActivity extends AppCompatActivity implements INavigat
 
         // clear cache only on 'real' app-exit
         if (ACTIVITY_COUNT <= 0) {
-            ImageGetterAsync.clearDrawableCache();
+            //ImageGetterAsync.clearDrawableCache();
         }
 
         Log.w(Constants.TAG, "onDestroy, ActivityCount: " + ACTIVITY_COUNT);
@@ -413,7 +413,7 @@ public abstract class BaseActivity extends AppCompatActivity implements INavigat
         // hide progress bar
         setProgressBarIndeterminateVisibility(false);
         // free up some memory
-        ImageGetterAsync.clearDrawableCache();
+        //ImageGetterAsync.clearDrawableCache();
 
         // remember activityCount (is this good idea?)
         outState.putInt(Constants.KEY_ACTIVITY_COUNT, ACTIVITY_COUNT);

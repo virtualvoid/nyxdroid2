@@ -2,8 +2,6 @@ package sk.virtualvoid.nyxdroid.v2.data.dac;
 
 import android.app.Activity;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import sk.virtualvoid.core.ITaskQuery;
 import sk.virtualvoid.core.NyxException;
 import sk.virtualvoid.core.Task;
@@ -19,9 +17,6 @@ public class CommonDataAccess {
     public static class ClearDrawableCacheTaskWorker extends TaskWorker<ITaskQuery, NullResponse> {
         @Override
         public NullResponse doWork(ITaskQuery input) throws NyxException {
-            ImageLoader imageLoader = ImageLoader.getInstance();
-            imageLoader.clearMemoryCache();
-            imageLoader.clearDiscCache();
             return null;
         }
     }
