@@ -1,12 +1,11 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.1"
 
     defaultConfig {
+        compileSdk 31
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 31
     }
 
     buildTypes {
@@ -15,6 +14,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    compileOptions {
+        sourceCompatibility = '17'
+        targetCompatibility = '17'
+    }
+    namespace 'uk.co.senab.actionbarpulltorefresh.library'
 }
 
 dependencies {
