@@ -15,8 +15,8 @@ public class Constants {
 
     public static final String HTTP = "http://";
     public static final String HTTPS = "https://";
-    public static final String INDEX_WWW = "https://www.nyx.cz";
-    public static final String INDEX = "https://www.nyx.cz";
+    public static final String INDEX_WWW = "https://nyx.cz";
+    public static final String INDEX = "https://nyx.cz";
 
     public static final String AUTH_NICK = "AuthNick";
     public static final String AUTH_TOKEN = "AuthToken";
