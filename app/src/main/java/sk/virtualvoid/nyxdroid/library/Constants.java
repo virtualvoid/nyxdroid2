@@ -44,6 +44,7 @@ public class Constants {
     public static final String KEY_ACTIVITY_COUNT = "baseActivityActivityCount";
 
     public static final String REQUEST_MAIL = "mail";
+    public static final String REPLY_TO_MAIL = "{reply m|%s}: ";
     public static final String REQUEST_WRITEUP = "writeup";
     public static final String REQUEST_WRITEUP_DISCUSSION_ID = "writeup_discussion_id";
     public static final String REQUEST_WRITEUP_DISCUSSION_NAME = "writeup_discussion_name";

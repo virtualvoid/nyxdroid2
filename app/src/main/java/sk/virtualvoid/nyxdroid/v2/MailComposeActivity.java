@@ -106,6 +106,11 @@ public class MailComposeActivity extends BaseActivity {
 			adapterModel.add(new TypedPoco<Mail>(Type.REPLY, replyingMail));
 
 			txtRecipient.setVisibility(View.GONE);
+
+			if(replyingMail.ReplyTo) {
+				txtMessage.setText(String.format(Constants.REPLY_TO_MAIL, replyingMail.Id));
+			}
+
 			txtMessage.requestFocus();
 		} else if (spawnBundle.containsKey(Constants.KEY_NICK)) {
 			final UserSearchAdapter userSearchAdapter = new UserSearchAdapter(MailComposeActivity.this);

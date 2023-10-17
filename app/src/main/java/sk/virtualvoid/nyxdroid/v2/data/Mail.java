@@ -13,6 +13,7 @@ public class Mail extends BaseComposePoco implements Parcelable {
 	public boolean IsUnread;
 	public boolean IsReminded;
 	public UserActivity Location;
+	public boolean ReplyTo;
 	
 	public Mail() {
 
@@ -27,6 +28,7 @@ public class Mail extends BaseComposePoco implements Parcelable {
 		IsUnread = source.readByte() == 1;
 		IsReminded = source.readByte() == 1;
 		Location = source.readParcelable(UserActivity.class.getClassLoader());
+		ReplyTo = source.readByte() == 1;
 	}
 
 	@Override
@@ -44,6 +46,7 @@ public class Mail extends BaseComposePoco implements Parcelable {
 		dest.writeByte((byte) (IsUnread ? 1 : 0));
 		dest.writeByte((byte) (IsReminded ? 1 : 0));
 		dest.writeParcelable(Location, 0);
+		dest.writeByte((byte) (ReplyTo ? 1 : 0));
 	}
 
 	/**

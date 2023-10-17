@@ -131,7 +131,7 @@ public class MailActivity extends BaseActivity implements ISecondBaseMenu {
 					@Override
 					public void onReply() {
 						mailActionModeHandle.finish();
-
+						mail.ReplyTo = true;
 						compose(mail);
 					}
 
