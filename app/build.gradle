@@ -10,11 +10,14 @@ def versionMinor = 1
 def versionPatch = 459
 
 android {
+    compileSdk 36
+    buildToolsVersion "36"
+    namespace "sk.virtualvoid.nyxdroid.v2"
+
     defaultConfig {
         applicationId "sk.virtualvoid.nyxdroid.v2"
         minSdkVersion 21
-        compileSdk 31
-        targetSdkVersion 31
+        targetSdk 36
         multiDexEnabled true
         versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
@@ -69,7 +72,7 @@ dependencies {
     implementation project(':slidingmenujf')
 
     implementation platform('com.google.firebase:firebase-bom:27.0.0')
-
+    implementation "androidx.core:core:1.17.0"
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation "androidx.legacy:legacy-preference-v14:1.0.0"
     implementation "androidx.preference:preference:1.1.1"

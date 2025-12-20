@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:background="?android:attr/windowBackground">
+    android:background="?android:attr/windowBackground"
+    android:paddingTop="90dp">
 
     <LinearLayout
         android:layout_width="match_parent"

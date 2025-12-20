@@ -182,18 +182,18 @@ public class WriteupComposeActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
+        int id = item.getItemId();
+        if (id == android.R.id.home){
                 setResult(Constants.REQUEST_RESPONSE_CANCEL);
                 finish();
-                return true;
-            case R.id.attachment:
-                return attachment();
-            case R.id.send:
-                return send();
-            case R.id.voteup:
-                return vote(VotingType.POSITIVE);
-            case R.id.votedown:
+                return true;}
+        if (id == R.id.attachment){
+                return attachment();}
+        if (id == R.id.send){
+                return send();}
+        if (id == R.id.voteup){
+                return vote(VotingType.POSITIVE);}
+        if (id == R.id.votedown){
                 return vote(VotingType.NEGATIVE);
         }
         return false;

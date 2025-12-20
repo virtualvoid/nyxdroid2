@@ -24,17 +24,17 @@ public class MailActionMode implements ActionMode.Callback {
 
 	@Override
 	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.reply:
+		int id =item.getItemId();
+        if (id == R.id.reply){
 				listener.onReply();
-				return true;
-			case R.id.copy:
+				return true;}
+        if (id == R.id.copy){
 				listener.onCopy();
-				return true;
-			case R.id.reminder:
+				return true;}
+        if (id == R.id.reminder){
 				listener.onReminder();
-				return true;
-			case R.id.delete:
+				return true;}
+        if (id == R.id.delete){
 				listener.onDelete();
 				return true;
 		}

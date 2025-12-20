@@ -437,18 +437,18 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.compose:
+        int id = item.getItemId();
+            if (id == R.id.compose)
                 return composeOne(null);
-            case R.id.refresh:
+            if (id == R.id.refresh)
                 return load(null, null, false);
-            case R.id.gallery:
+            if (id == R.id.gallery)
                 return galleryGrid();
-            case R.id.replytomorewriteups:
+            if (id == R.id.replytomorewriteups)
                 return replyToMoreWriteups();
-            case R.id.book_or_unbook:
+            if (id == R.id.book_or_unbook)
                 return bookOrUnbook();
-        }
+
         return super.onOptionsItemSelected(item);
     }
 

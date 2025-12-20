@@ -188,14 +188,14 @@ public class MailComposeActivity extends BaseActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
+		int id = item.getItemId();
+        if (id == android.R.id.home){
 				setResult(Constants.REQUEST_RESPONSE_CANCEL);
 				finish();
-				return true;
-			case R.id.attachment:
-				return attachment();
-			case R.id.send:
+				return true;}
+        if (id == R.id.attachment){
+				return attachment();}
+        if (id == R.id.send){
 				send();
 				return true;
 		}

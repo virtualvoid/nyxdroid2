@@ -151,8 +151,8 @@ public class BookmarksActivity extends BaseActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.refresh:
+		int id = item.getItemId();
+        if (id == R.id.refresh){
 				return refresh();
 		}
 		return super.onOptionsItemSelected(item);

@@ -79,7 +79,7 @@ public class NotificationsActivity extends BaseActivity {
 		});
 
 		refreshReceiverEnabled = true;
-		registerReceiver(refreshReceiver, new IntentFilter(Constants.REFRESH_NOTICES_INTENT_FILTER));
+		registerReceiver(refreshReceiver, new IntentFilter(Constants.REFRESH_NOTICES_INTENT_FILTER), Context.RECEIVER_NOT_EXPORTED );
 
 		refresh();
 	}

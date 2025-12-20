@@ -63,10 +63,10 @@ public class SettingsActivity extends BaseActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.clear_credentials:
-				return clearCredentials();
-			case R.id.clear_drawable_cache:
+		int id = item.getItemId();
+            if (id == R.id.clear_credentials){
+				return clearCredentials();}
+            if (id == R.id.clear_drawable_cache){
 				return clearDrawableCache();
 		}
 		return super.onOptionsItemSelected(item);

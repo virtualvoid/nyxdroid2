@@ -23,32 +23,32 @@ public class WriteupsActionMode implements ActionMode.Callback {
 
 	@Override
 	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.reply:
+		int id= item.getItemId();
+        if (id == R.id.reply){
 				listener.onReply();
-				return true;
-			case R.id.sendmail:
+				return true;}
+        if (id == R.id.sendmail) {
 				listener.onSendMail();
-				return true;
-			case R.id.viewreplies:
+				return true;}
+        if (id == R.id.viewreplies){
 				listener.onViewReplies();
-				return true;
-			case R.id.viewrating:
+				return true;}
+        if (id == R.id.viewrating){
 				listener.onViewRating();
-				return true;
-			case R.id.copy:
+				return true;}
+        if (id == R.id.copy){
 				listener.onCopy();
-				return true;
-			case R.id.view_as_gallery_from_here:
+				return true;}
+        if (id == R.id.view_as_gallery_from_here){
 				listener.onViewGallery();
-				return true;
-			case R.id.reminder:
+				return true;}
+        if (id == R.id.reminder){
 				listener.onReminder();
-				return true;
-			case R.id.delete:
+				return true;}
+        if (id == R.id.delete){
 				listener.onDelete();
-				return true;
-			case R.id.copylink:
+				return true;}
+        if (id == R.id.copylink){
 				listener.onCopyLink();
 				return true;
 		}

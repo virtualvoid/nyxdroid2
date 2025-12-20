@@ -157,12 +157,12 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.ge_openbrowser:
-				return viewInBrowser();
-			case R.id.ge_begin:
-				return toBegin();
-			case R.id.ge_current:
+		int id = item.getItemId();
+            if (id == R.id.ge_openbrowser){
+				return viewInBrowser();}
+            if (id == R.id.ge_begin){
+				return toBegin();}
+            if (id == R.id.ge_current){
 				return toCurrent();
 		}
 		return super.onOptionsItemSelected(item);

@@ -37,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
 
 
 /**
@@ -186,7 +187,7 @@ public class MailActivity extends BaseActivity implements ISecondBaseMenu {
 		});
 				
 		refreshReceiverEnabled = true;
-		registerReceiver(refreshReceiver, new IntentFilter(Constants.REFRESH_MAIL_INTENT_FILTER));
+		registerReceiver(refreshReceiver, new IntentFilter(Constants.REFRESH_MAIL_INTENT_FILTER), Context.RECEIVER_NOT_EXPORTED );
 
 		load(true, null, null, null);
 	}

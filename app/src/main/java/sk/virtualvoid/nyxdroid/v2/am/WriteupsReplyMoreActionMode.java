@@ -43,8 +43,8 @@ public class WriteupsReplyMoreActionMode implements ActionMode.Callback {
 
 	@Override
 	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.reply:
+		int id = item.getItemId();
+        if (id == R.id.reply){
 				listener.onReply();
 				return true;
 		}
