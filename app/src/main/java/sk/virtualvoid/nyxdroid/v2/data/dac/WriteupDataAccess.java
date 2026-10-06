@@ -73,6 +73,10 @@ public class WriteupDataAccess {
         return new Task<>(context, new GetHomeTaskWorker(), listener);
     }
 
+    public static Task<WriteupQuery, WriteupHomeResponse> getBoard(Activity context, TaskListener<WriteupHomeResponse> listener) {
+        return new Task<>(context, new GetBoardTaskWorker(), listener);
+    }
+
     public static Task<WriteupBookmarkQuery, WriteupBookmarkResponse> bookOrUnbookWriteup(Activity context, TaskListener<WriteupBookmarkResponse> listener) {
         return new Task<>(context, new BookOrUnbookWriteupTaskWorker(), listener);
     }
@@ -384,6 +388,27 @@ public class WriteupDataAccess {
 
             result.Header = sb.toString();
             return result;
+        }
+    }
+
+    public static class GetBoardTaskWorker extends TaskWorker<WriteupQuery, WriteupHomeResponse> {
+        @Override
+        public WriteupHomeResponse doWork(WriteupQuery input) throws NyxException {
+            IConnector connector = ConnectorFactory.getInstance(getContext());
+            JSONObjectResult api = connector.get("/discussion/" + input.Id + "/content/home");
+            if (api == null) {
+                throw new NyxException("Unable to load discussion board.");
+            }
+            if (!api.isSuccess()) {
+                Error error = api.getError();
+                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
+            }
+
+            try {
+                return WriteupHomeResponse.fromBoardJSONObject(api.getJson());
+            } catch (org.json.JSONException e) {
+                throw new NyxException(e);
+            }
         }
     }
 

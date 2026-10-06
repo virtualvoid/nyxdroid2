@@ -103,6 +103,8 @@
     <string name="no_data">Žádná data</string>
     <string name="tab_title_discussion">Diskuze</string>
     <string name="tab_title_headerhome">Záhlaví</string>
+    <string name="tab_title_board">Nástěnka</string>
+    <string name="board_empty">Nástěnka je prázdná.</string>
     <string name="event_choose_status">Zvolit</string>
     <string name="warning">Upozornění</string>
     <string name="are_you_sure_authorization_is_complete">Jste si jistí, že autorizace opravdu proběhla do konce ?</string>

@@ -103,6 +103,8 @@
     <string name="no_data">It\'s empty here.</string>
     <string name="tab_title_discussion">Discussion</string>
     <string name="tab_title_headerhome">Header</string>
+    <string name="tab_title_board">Noticeboard</string>
+    <string name="board_empty">The noticeboard is empty.</string>
     <string name="event_choose_status">Choose</string>
     <string name="warning">Warning</string>
     <string name="are_you_sure_authorization_is_complete">Are you sure you have completed authorization ?</string>
