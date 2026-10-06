@@ -684,14 +684,43 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
         }
 
         ArrayList<Bundle> infoBundleList = new ArrayList<Bundle>();
+        Writeup startWriteup = null;
+        int startWriteupPosition = 0;
+        boolean startUrlFound = startUrl == null;
 
         ArrayList<Writeup> writeupList = adapter.getItems();
         for (int i = 0; i < writeupList.size(); i++) {
             Writeup wu = writeupList.get(i);
+            if (startWriteupId != null && wu.Id == startWriteupId) {
+                startWriteup = wu;
+                startWriteupPosition = infoBundleList.size();
+            }
+
             ArrayList<Bundle> infoWu = wu.allImages();
+            if (startUrl != null && (startWriteupId == null || wu.Id == startWriteupId)) {
+                for (Bundle info : infoWu) {
+                    if (startUrl.equalsIgnoreCase(info.getString(Constants.KEY_URL))) {
+                        startUrlFound = true;
+                        break;
+                    }
+                }
+            }
             if (infoWu.size() > 0) {
                 infoBundleList.addAll(infoWu);
             }
+        }
+
+        // Linked image attachments are not included in Writeup.allImages().
+        if (!startUrlFound) {
+            Bundle info = new Bundle();
+            info.putLong(Constants.KEY_WU_ID, startWriteupId != null ? startWriteupId : 0);
+            info.putString(Constants.KEY_NICK, startWriteup != null ? startWriteup.Nick : "");
+            info.putLong(Constants.KEY_TIME, startWriteup != null ? startWriteup.Time : 0);
+            info.putInt(Constants.KEY_RATING, startWriteup != null ? startWriteup.Rating : 0);
+            info.putBoolean(Constants.KEY_UNREAD, startWriteup != null && startWriteup.Unread);
+            info.putString(Constants.KEY_URL, startUrl);
+            info.putString(Constants.KEY_THUMBNAIL_URL, startUrl);
+            infoBundleList.add(startWriteupPosition, info);
         }
 
         if (infoBundleList.size() == 0) {
