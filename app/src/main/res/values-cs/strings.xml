@@ -151,6 +151,10 @@
     <string name="timeformat_today" formatted="false">dnes %02d:%02d:%02d</string>
     <string name="timeformat_normal" formatted="false">%d.%d.%d %02d:%02d:%02d</string>
     <string name="ge_openbrowser">Otevřít</string>
+    <string name="gallery_download">Stáhnout obrázek</string>
+    <string name="gallery_download_saved">Obrázek uložen do: %1$s</string>
+    <string name="gallery_download_failed">Obrázek se nepodařilo uložit.</string>
+    <string name="gallery_download_permission_denied">Pro uložení obrázku povolte přístup k úložišti.</string>
     <string name="unread_appearance">Styl nepřečtených příspěvků</string>
     <string name="choose_color_or_standard_settings">Vyberte si barvu, nebo standardní nastavení</string>
     <string name="cant_open_it">Neumím to otevřít.</string>
