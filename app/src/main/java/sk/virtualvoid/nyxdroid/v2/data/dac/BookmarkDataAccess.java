@@ -108,7 +108,7 @@ public class BookmarkDataAccess {
             boolean remindersEnabled = prefs.getBoolean("display_reminders", true);
 
             IConnector connector = ConnectorFactory.getInstance(getContext());
-            JSONObjectResult api = connector.get("/bookmarks" + (input.IncludeUnread ? "/all" : ""));
+            JSONObjectResult api = connector.get("/bookmarks/all");
 
             if (api.isSuccess()) {
                 try {
@@ -147,7 +147,7 @@ public class BookmarkDataAccess {
                 for (int bookmarkInCategoryIndex = 0; bookmarkInCategoryIndex < bookmarksInCategory.length(); bookmarkInCategoryIndex++) {
                     JSONObject bookmark = bookmarksInCategory.getJSONObject(bookmarkInCategoryIndex);
                     Bookmark result = bookmark(bookmark, category);
-                    if (!input.IncludeUnread && result.Unread == 0) {
+                    if (!input.IncludeUnread && result.Unread <= 0) {
                         continue;
                     }
                     resultList.add(result);
@@ -219,7 +219,7 @@ public class BookmarkDataAccess {
             Context context = null;
 
             IConnector connector = ConnectorFactory.getInstance(getContext());
-            JSONObjectResult api = connector.get("/bookmarks/history"); // TODO: /bookmarks/history/more ?
+            JSONObjectResult api = connector.get("/bookmarks/history?show_read=" + input.IncludeUnread);
 
             if (!api.isSuccess()) {
                 Error error = api.getError();

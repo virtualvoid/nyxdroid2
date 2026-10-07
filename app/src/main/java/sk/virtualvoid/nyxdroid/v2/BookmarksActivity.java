@@ -34,6 +34,8 @@ import androidx.appcompat.widget.SearchView;
  * 
  */
 public class BookmarksActivity extends BaseActivity {
+	private static final String STATE_SHOW_READ_HISTORY = "show_read_history";
+	private static final String STATE_SHOW_READ_BOOKMARKS = "show_read_bookmarks";
 	private boolean movementMode;
 	private boolean unreadBookmarks;
 	private boolean unreadHistory;
@@ -58,6 +60,10 @@ public class BookmarksActivity extends BaseActivity {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		unreadBookmarks = prefs.getBoolean("unread_bookmarks", true);
 		unreadHistory = prefs.getBoolean("unread_bookmarks_history", true);
+		if (savedInstanceState != null) {
+			unreadHistory = savedInstanceState.getBoolean(STATE_SHOW_READ_HISTORY, unreadHistory);
+			unreadBookmarks = savedInstanceState.getBoolean(STATE_SHOW_READ_BOOKMARKS, unreadBookmarks);
+		}
 
 		expandState = new HashMap<Long, Boolean>();
 
@@ -108,8 +114,16 @@ public class BookmarksActivity extends BaseActivity {
 	}
 
 	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean(STATE_SHOW_READ_HISTORY, unreadHistory);
+		outState.putBoolean(STATE_SHOW_READ_BOOKMARKS, unreadBookmarks);
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.bookmarks_menu, menu);
+		updateUnreadFilter(menu.findItem(R.id.bookmarks_unread_only));
 
 		MenuItem searchMenuItem = menu.findItem(R.id.search);
 		searchMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
@@ -149,9 +163,25 @@ public class BookmarksActivity extends BaseActivity {
 		return onAfterCreateOptionsMenu(menu);
 	}
 
+	private void updateUnreadFilter(MenuItem item) {
+		boolean showRead = movementMode ? unreadHistory : unreadBookmarks;
+		item.setChecked(!showRead);
+		item.setIcon(showRead ? R.drawable.ic_history_filter_off : R.drawable.ic_history_filter);
+		item.setTitle(showRead ? R.string.history_show_unread
+				: (movementMode ? R.string.history_show_all : R.string.bookmarks_show_all));
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+			case R.id.bookmarks_unread_only:
+				if (movementMode) {
+					unreadHistory = !unreadHistory;
+				} else {
+					unreadBookmarks = !unreadBookmarks;
+				}
+				updateUnreadFilter(item);
+				return refresh();
 			case R.id.refresh:
 				return refresh();
 		}
