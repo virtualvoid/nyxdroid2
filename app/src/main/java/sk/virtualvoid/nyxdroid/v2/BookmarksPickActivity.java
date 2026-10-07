@@ -9,6 +9,7 @@ import sk.virtualvoid.core.TaskListener;
 import sk.virtualvoid.core.TaskManager;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.data.Bookmark;
+import sk.virtualvoid.nyxdroid.v2.data.Attachment;
 import sk.virtualvoid.nyxdroid.v2.data.BookmarkCategory;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
 import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
@@ -162,7 +163,7 @@ public class BookmarksPickActivity extends BaseActivity {
 				WriteupQuery query = new WriteupQuery();
 				query.Id = id;
 				query.Contents = additionalText;
-				query.AttachmentSource = attachmentFile;
+				query.Attachments.add(Attachment.fromFile(attachmentFile));
 				
 				Task<WriteupQuery, NullResponse> task = WriteupDataAccess.sendWriteup(BookmarksPickActivity.this, sendWriteupTaskListener);
 				TaskManager.startTask(task, query);

@@ -1,8 +1,9 @@
 package sk.virtualvoid.nyxdroid.v2.data.query;
 
-import java.io.File;
+import java.util.ArrayList;
 
 import sk.virtualvoid.core.ITaskQuery;
+import sk.virtualvoid.nyxdroid.v2.data.Attachment;
 
 /**
  * 
@@ -19,7 +20,7 @@ public class MailQuery implements ITaskQuery {
 	public Long Id;
 	public String To;
 	public String Message;
-	public File AttachmentSource;
+	public ArrayList<Attachment> Attachments = new ArrayList<>();
 
 	public boolean NewState;
 

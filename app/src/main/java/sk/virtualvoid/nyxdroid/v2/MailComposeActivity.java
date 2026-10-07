@@ -1,11 +1,7 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
-import pub.devrel.easypermissions.EasyPermissions;
-import sk.virtualvoid.core.CoreUtility;
 import sk.virtualvoid.core.CustomHtml;
 import sk.virtualvoid.core.ImageDownloader;
 import sk.virtualvoid.core.Task;
@@ -28,8 +24,8 @@ import sk.virtualvoid.nyxdroid.v2.data.query.MailQuery;
 import sk.virtualvoid.nyxdroid.v2.data.query.UserSearchQuery;
 import sk.virtualvoid.nyxdroid.v2.internal.DelayedTextWatcher;
 
-import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -45,7 +41,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 
 /**
@@ -63,7 +58,7 @@ public class MailComposeActivity extends BaseActivity {
 
 	private String replyingNick;
 	private Mail replyingMail;
-	private String attachmentSource;
+	private boolean sending;
 
 	private ArrayList<TypedPoco<?>> adapterModel = new ArrayList<TypedPoco<?>>();
 	private ComposeAdapter adapter;
@@ -160,13 +155,21 @@ public class MailComposeActivity extends BaseActivity {
 			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 		}
 
+		if (savedInstanceState != null) {
+			replyingNick = savedInstanceState.getString("compose_recipient", replyingNick);
+			ArrayList<Attachment> attachments = (ArrayList<Attachment>) savedInstanceState.getSerializable(Attachment.STATE_ATTACHMENTS);
+			if (attachments != null) {
+				for (Attachment attachment : attachments) adapterModel.add(new TypedPoco<>(Type.ATTACHMENT, attachment));
+			}
+		}
+
 		ListView lv = getListView();
 		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 				TypedPoco<?> item = (TypedPoco<?>) adapterModel.get(position);
 				if (item.Type == Type.ATTACHMENT) {
-					attachmentSource = null;
+					if (sending) return true;
 					adapterModel.remove(position);
 					adapter.notifyDataSetChanged();
 					return true;
@@ -178,6 +181,29 @@ public class MailComposeActivity extends BaseActivity {
 
 		adapter = new ComposeAdapter<Mail>(this, adapterModel, imageDownloader, null);
 		setListAdapter(adapter);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putSerializable(Attachment.STATE_ATTACHMENTS, Attachment.getSelected(adapterModel));
+		outState.putString("compose_recipient", replyingNick);
+		setSending(false);
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu.findItem(R.id.send).setEnabled(!sending);
+		menu.findItem(R.id.attachment).setEnabled(!sending);
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	private void setSending(boolean value) {
+		sending = value;
+		txtMessage.setEnabled(!value);
+		txtRecipient.setEnabled(!value);
+		adapter.setAttachmentsEditable(!value);
+		invalidateOptionsMenu();
 	}
 
 	@Override
@@ -203,53 +229,47 @@ public class MailComposeActivity extends BaseActivity {
 	}
 
 	@Override
+	protected void onDestroy() {
+		TaskManager.cancelTasks(this);
+		super.onDestroy();
+	}
+
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == Constants.REQUEST_ATTACHMENT && resultCode == Activity.RESULT_OK) {
-			attachmentSource = CoreUtility.getRealPathFromURI(this, data.getData());
-			if (attachmentSource == null) {
+			if (!Attachment.addSelected(this, data, adapterModel)) {
 				Toast.makeText(this, R.string.file_doesnt_exists_or_cant_read, Toast.LENGTH_LONG).show();
-				return;
 			}
-
-			File attachmentFile = new File(attachmentSource);
-			if (!attachmentFile.exists() || !attachmentFile.canRead()) {
-				Toast.makeText(this, R.string.file_doesnt_exists_or_cant_read, Toast.LENGTH_LONG).show();
-				attachmentSource = null;
-			} else {
-				adapterModel.add(new TypedPoco<Attachment>(Type.ATTACHMENT, new Attachment(attachmentSource)));
-				adapter.notifyDataSetChanged();
-			}
+			adapter.notifyDataSetChanged();
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-	}
-
 	private boolean attachment() {
-		if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-			Intent intent = new Intent(Intent.ACTION_PICK);
-			intent.setType("image/*");
-			intent.putExtra("return-data", false);
+		if (sending) return true;
+		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		intent.setType("*/*");
+		intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		try {
 			startActivityForResult(intent, Constants.REQUEST_ATTACHMENT);
-		} else {
-			// TODO: rationale
-			EasyPermissions.requestPermissions(this, "inak to nejde", Constants.REQUEST_PERMISSION_READ_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+		} catch (ActivityNotFoundException e) {
+			Toast.makeText(this, R.string.cant_open_it, Toast.LENGTH_SHORT).show();
 		}
 		return true;
 	}
 
 	private void send() {
+		if (sending) return;
 		if (replyingNick == null || replyingNick.length() == 0) {
 			Toast.makeText(this, R.string.and_what_about_nick, Toast.LENGTH_SHORT).show();
 			return;
 		}
 
 		String message = txtMessage.getText().toString();
-		if (message.length() == 0 && attachmentSource == null) {
+		ArrayList<Attachment> attachments = Attachment.getSelected(adapterModel);
+		if (message.length() == 0 && attachments.isEmpty()) {
 			Toast.makeText(this, R.string.and_what_about_message, Toast.LENGTH_SHORT).show();
 			return;
 		}
@@ -258,11 +278,10 @@ public class MailComposeActivity extends BaseActivity {
 		query.To = replyingNick;
 		query.Message = message;
 
-		if (attachmentSource != null) {
-			query.AttachmentSource = new File(attachmentSource);
-		}
+		query.Attachments = attachments;
 
 		Task<MailQuery, NullResponse> task = MailDataAccess.sendMail(MailComposeActivity.this, sendMailTaskListener);
+		setSending(true);
 		TaskManager.startTask(task, query);
 	}
 
@@ -273,9 +292,17 @@ public class MailComposeActivity extends BaseActivity {
 	 */
 	public class SendMailTaskListener extends TaskListener<NullResponse> {
 		@Override
+		public void handleError(Throwable error) {
+			setSending(false);
+			super.handleError(error);
+		}
+
+		@Override
 		public void done(NullResponse output) {
+			setSending(false);
 			if (!output.Success) {
 				Toast.makeText(getContext(), R.string.something_terrible_happened_to_nyx, Toast.LENGTH_SHORT).show();
+				return;
 			}
 
 			setResult(Constants.REQUEST_RESPONSE_OK);

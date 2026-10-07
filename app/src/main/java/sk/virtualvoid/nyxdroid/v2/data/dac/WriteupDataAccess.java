@@ -28,7 +28,6 @@ import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
 import sk.virtualvoid.nyxdroid.v2.data.Poll;
 import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
 import sk.virtualvoid.nyxdroid.v2.data.UserActivity;
-import sk.virtualvoid.nyxdroid.v2.data.WaitingFile;
 import sk.virtualvoid.nyxdroid.v2.data.Writeup;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupBookmarkResponse;
 import sk.virtualvoid.nyxdroid.v2.data.WriteupHomeResponse;
@@ -190,33 +189,11 @@ public class WriteupDataAccess {
         public NullResponse doWork(WriteupQuery input) throws NyxException {
             IConnector connector = ConnectorFactory.getInstance(getContext());
 
-            JSONObjectResult api = null;
-            WaitingFile waitingFile = null;
-
-            if (input.AttachmentSource != null) {
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("file", input.AttachmentSource);
-                map.put("file_type", "discussion_attachment");
-                map.put("id_specific", input.Id);
-
-                api = connector.multipart("/file/upload", map);
-                if (!api.isSuccess()) {
-                    Error error = api.getError();
-                    throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
-                }
-                waitingFile = WaitingFile.fromJSONObject(api.getJson());
-            }
-
             HashMap<String, String> form = new HashMap<>();
             form.put("content", input.Contents);
 
-            api = connector.form("/discussion/" + input.Id + "/send/text", form);
-            if (!api.isSuccess()) {
-                Error error = api.getError();
-                throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
-            }
-
-            return NullResponse.success();
+            return AttachmentDataAccess.send(getContext(), connector, input.Attachments, "discussion_attachment", input.Id,
+                    "/discussion/" + input.Id + "/send/text", form);
         }
     }
 

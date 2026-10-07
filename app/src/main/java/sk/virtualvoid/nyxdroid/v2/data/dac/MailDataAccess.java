@@ -25,7 +25,6 @@ import sk.virtualvoid.nyxdroid.v2.data.Conversation;
 import sk.virtualvoid.nyxdroid.v2.data.Mail;
 import sk.virtualvoid.nyxdroid.v2.data.MailNotification;
 import sk.virtualvoid.nyxdroid.v2.data.NullResponse;
-import sk.virtualvoid.nyxdroid.v2.data.WaitingFile;
 import sk.virtualvoid.nyxdroid.v2.data.query.MailQuery;
 
 /**
@@ -140,30 +139,12 @@ public class MailDataAccess {
         public NullResponse doWork(MailQuery input) throws NyxException {
             IConnector connector = ConnectorFactory.getInstance(getContext());
 
-            JSONObjectResult api = null;
-            WaitingFile waitingFile = null;
-
-            if (input.AttachmentSource != null) {
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("file", input.AttachmentSource);
-                map.put("file_type", "mail_attachment");
-                map.put("id_specific", 0L);
-
-                api = connector.multipart("/file/upload", map);
-                if (!api.isSuccess()) {
-                    Error error = api.getError();
-                    throw new NyxException(String.format("%s: %s", error.getCode(), error.getMessage()));
-                }
-                waitingFile = WaitingFile.fromJSONObject(api.getJson());
-            }
-
             HashMap<String, String> form = new HashMap<>();
             form.put("recipient", input.To);
             form.put("message", input.Message);
 
-            api = connector.form("/mail/send", form);
-            // TODO: check if the call was successful
-            return NullResponse.success();
+            return AttachmentDataAccess.send(getContext(), connector, input.Attachments, "mail_attachment", 0L,
+                    "/mail/send", form);
         }
     }
 

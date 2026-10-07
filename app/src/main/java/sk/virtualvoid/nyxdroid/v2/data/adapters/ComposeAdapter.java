@@ -8,9 +8,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import com.bumptech.glide.Glide;
 
 import sk.virtualvoid.core.CustomHtml;
 import sk.virtualvoid.core.ImageDownloader;
@@ -33,12 +35,18 @@ import sk.virtualvoid.nyxdroid.v2.data.Attachment;
 public class ComposeAdapter<TComposePoco extends BaseComposePoco> extends BasePocoAdapter<TypedPoco<?>> {
 	private ImageDownloader imageDownloader;
 	private ImageGetterAsync imageGetterAsync;
+	private boolean attachmentsEditable = true;
 	
 	public ComposeAdapter(AppCompatActivity context, ArrayList<TypedPoco<?>> model, ImageDownloader imageDownloader, ImageGetterAsync imageGetterAsync) {
 		super(context, model);
 		
 		this.imageDownloader = imageDownloader;
 		this.imageGetterAsync = imageGetterAsync;
+	}
+
+	public void setAttachmentsEditable(boolean value) {
+		attachmentsEditable = value;
+		notifyDataSetChanged();
 	}
 
 	@Override
@@ -104,8 +112,9 @@ public class ComposeAdapter<TComposePoco extends BaseComposePoco> extends BasePo
 				row = context.getLayoutInflater().inflate(R.layout.response_attachment_row, parent, false);
 				
 				holder = new AttachmentViewHolder();
-				holder.AttachmentComment = (TextView)row.findViewById(R.id.response_attachment_row_comment);
+				holder.FileName = (TextView)row.findViewById(R.id.response_attachment_row_name);
 				holder.Thumbnail = (ImageView)row.findViewById(R.id.response_attachment_row_thumbnail);
+				holder.Remove = (ImageButton)row.findViewById(R.id.response_attachment_row_remove);
 				
 				row.setTag(holder);
 			} else {
@@ -114,7 +123,22 @@ public class ComposeAdapter<TComposePoco extends BaseComposePoco> extends BasePo
 			
 			Attachment attachment = (Attachment)item.ChildPoco;
 			
-			imageDownloader.download(Constants.ImageLoader.FILE_PROTOCOL + attachment.AttachmentSource, holder.Thumbnail);
+			holder.FileName.setText(attachment.getFileName());
+			Glide.clear(holder.Thumbnail);
+			if (attachment.isImage()) {
+				Glide.with(context).load(attachment.getUri()).fitCenter().dontAnimate()
+						.placeholder(R.drawable.ic_attachment_file).error(R.drawable.ic_attachment_file)
+						.into(holder.Thumbnail);
+			} else {
+				holder.Thumbnail.setImageResource(R.drawable.ic_attachment_file);
+			}
+			holder.Remove.setEnabled(attachmentsEditable);
+			holder.Remove.setOnClickListener(v -> {
+				if (attachmentsEditable) {
+					model.remove(item);
+					notifyDataSetChanged();
+				}
+			});
 		}
 
 		return row;
@@ -127,7 +151,8 @@ public class ComposeAdapter<TComposePoco extends BaseComposePoco> extends BasePo
 	}
 	
 	static class AttachmentViewHolder {
-		public TextView AttachmentComment;
+		public TextView FileName;
 		public ImageView Thumbnail;
+		public ImageButton Remove;
 	}
 }
