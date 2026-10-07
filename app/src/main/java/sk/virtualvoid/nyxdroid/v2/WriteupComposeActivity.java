@@ -1,11 +1,7 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
-import pub.devrel.easypermissions.EasyPermissions;
-import sk.virtualvoid.core.CoreUtility;
 import sk.virtualvoid.core.ImageDownloader;
 import sk.virtualvoid.core.ImageGetterAsync;
 import sk.virtualvoid.core.Task;
@@ -22,11 +18,9 @@ import sk.virtualvoid.nyxdroid.v2.data.dac.WriteupDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.query.WriteupQuery;
 import sk.virtualvoid.nyxdroid.v2.internal.VotingType;
 
-import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -37,10 +31,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 /**
  * @author Juraj
@@ -52,7 +43,7 @@ public class WriteupComposeActivity extends BaseActivity {
     private Long discussionId;
     private String discussionName;
     private ArrayList<Writeup> replyingWriteupList;
-    private String attachmentSource;
+    private boolean sending;
 
     private ImageDownloader imageDownloader;
     private ImageGetterAsync imageGetterAsync;
@@ -107,11 +98,19 @@ public class WriteupComposeActivity extends BaseActivity {
             }
         }
 
+        if (savedInstanceState != null) {
+            ArrayList<Attachment> attachments = (ArrayList<Attachment>) savedInstanceState.getSerializable(Attachment.STATE_ATTACHMENTS);
+            if (attachments != null) {
+                for (Attachment attachment : attachments) adapterModel.add(new TypedPoco<>(Type.ATTACHMENT, attachment));
+            }
+        }
+
         ListView lv = getListView();
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (sending) return;
                 TypedPoco<?> item = (TypedPoco<?>) adapterModel.get(position);
                 if (item.Type == Type.REPLY) {
                     Writeup replyingWriteup = (Writeup) item.ChildPoco;
@@ -126,7 +125,7 @@ public class WriteupComposeActivity extends BaseActivity {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 TypedPoco<?> item = (TypedPoco<?>) adapterModel.get(position);
                 if (item.Type == Type.ATTACHMENT) {
-                    attachmentSource = null;
+                    if (sending) return true;
                     adapterModel.remove(position);
                     adapter.notifyDataSetChanged();
                     return true;
@@ -150,6 +149,8 @@ public class WriteupComposeActivity extends BaseActivity {
         if (replyingWriteupList != null) {
             outState.putSerializable(Constants.REQUEST_WRITEUP, replyingWriteupList);
         }
+        outState.putSerializable(Attachment.STATE_ATTACHMENTS, Attachment.getSelected(adapterModel));
+        setSending(false);
     }
 
     @Override
@@ -199,7 +200,24 @@ public class WriteupComposeActivity extends BaseActivity {
         return false;
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        for (int id : new int[] { R.id.send, R.id.attachment, R.id.voteup, R.id.votedown }) {
+            MenuItem item = menu.findItem(id);
+            if (item != null) item.setEnabled(!sending);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void setSending(boolean value) {
+        sending = value;
+        txtMessage.setEnabled(!value);
+        adapter.setAttachmentsEditable(!value);
+        invalidateOptionsMenu();
+    }
+
     private boolean vote(VotingType votingType) {
+        if (sending) return true;
         Writeup replyingWriteup = replyingWriteupList.get(0);
 
         Intent data = new Intent();
@@ -213,49 +231,43 @@ public class WriteupComposeActivity extends BaseActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        TaskManager.cancelTasks(this);
+        super.onDestroy();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.REQUEST_ATTACHMENT && resultCode == Activity.RESULT_OK) {
-            attachmentSource = CoreUtility.getRealPathFromURI(this, data.getData());
-            if (attachmentSource == null) {
+            if (!Attachment.addSelected(this, data, adapterModel)) {
                 Toast.makeText(this, R.string.file_doesnt_exists_or_cant_read, Toast.LENGTH_LONG).show();
-                return;
             }
-
-            File attachmentFile = new File(attachmentSource);
-            if (!attachmentFile.exists() || !attachmentFile.canRead()) {
-                Toast.makeText(this, R.string.file_doesnt_exists_or_cant_read, Toast.LENGTH_LONG).show();
-                attachmentSource = null;
-            } else {
-                adapterModel.add(new TypedPoco<Attachment>(Type.ATTACHMENT, new Attachment(attachmentSource)));
-                adapter.notifyDataSetChanged();
-            }
+            adapter.notifyDataSetChanged();
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
     private boolean attachment() {
-        if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            intent.putExtra("return-data", false);
+        if (sending) return true;
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
             startActivityForResult(intent, Constants.REQUEST_ATTACHMENT);
-        } else {
-            // TODO: rationale
-            EasyPermissions.requestPermissions(this, "inak to nejde", Constants.REQUEST_PERMISSION_READ_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, R.string.cant_open_it, Toast.LENGTH_SHORT).show();
         }
         return true;
     }
 
     private boolean send() {
+        if (sending) return true;
         String message = txtMessage.getText().toString();
-        if (message.length() == 0 && attachmentSource == null) {
+        ArrayList<Attachment> attachments = Attachment.getSelected(adapterModel);
+        if (message.length() == 0 && attachments.isEmpty()) {
             Toast.makeText(this, R.string.and_what_about_message, Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -264,11 +276,10 @@ public class WriteupComposeActivity extends BaseActivity {
         query.Id = discussionId;
         query.Contents = message;
 
-        if (attachmentSource != null) {
-            query.AttachmentSource = new File(attachmentSource);
-        }
+        query.Attachments = attachments;
 
         Task<WriteupQuery, NullResponse> task = WriteupDataAccess.sendWriteup(WriteupComposeActivity.this, sendWriteupTaskListener);
+        setSending(true);
         TaskManager.startTask(task, query);
 
         return true;
@@ -281,12 +292,20 @@ public class WriteupComposeActivity extends BaseActivity {
 
     private static class SendWriteupTaskListener extends TaskListener<NullResponse> {
         @Override
+        public void handleError(Throwable error) {
+            ((WriteupComposeActivity) getContext()).setSending(false);
+            super.handleError(error);
+        }
+
+        @Override
         public void done(NullResponse output) {
-            BaseActivity context = (BaseActivity) getContext();
+            WriteupComposeActivity context = (WriteupComposeActivity) getContext();
+            context.setSending(false);
 
             if (!output.Success) {
                 Toast.makeText(getContext(), R.string.something_terrible_happened_to_nyx, Toast.LENGTH_SHORT).show();
                 context.setResult(Constants.REQUEST_RESPONSE_FAIL);
+                return;
             } else {
                 Toast.makeText(getContext(), R.string.sent, Toast.LENGTH_SHORT).show();
                 context.setResult(Constants.REQUEST_RESPONSE_OK);

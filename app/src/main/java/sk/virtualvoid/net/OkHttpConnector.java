@@ -242,7 +242,10 @@ public class OkHttpConnector implements IConnector {
                 } else if (value instanceof File) {
                     File file = (File) value;
                     String contentType = fileNameMap.getContentTypeFor(file.getName());
+                    if (contentType == null) contentType = "application/octet-stream";
                     requestBodyBuilder.addFormDataPart(key, file.getName(), RequestBody.create(file, MediaType.parse(contentType)));
+                } else if (value instanceof MultipartBody.Part) {
+                    requestBodyBuilder.addPart((MultipartBody.Part) value);
                 } else {
                     Log.e(Constants.TAG, String.format("Unknown type for multipart with key: %s", key));
                 }
