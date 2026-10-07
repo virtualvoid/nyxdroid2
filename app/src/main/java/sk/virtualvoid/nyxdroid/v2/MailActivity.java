@@ -1,5 +1,7 @@
 package sk.virtualvoid.nyxdroid.v2;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import sk.virtualvoid.core.CoreUtility;
@@ -269,11 +271,42 @@ public class MailActivity extends BaseActivity implements ISecondBaseMenu {
 
 	@Override
 	public boolean onNavigationRequested(NavigationType navigationType, String url, Long discussionId, Long writeupId, Long mailId) {
+		if (navigationType == NavigationType.IMAGE) {
+			try {
+				String decodedUrl = URLDecoder.decode(url, Constants.DEFAULT_CHARSET.displayName());
+				return gallery(decodedUrl);
+			} catch (UnsupportedEncodingException e) {
+				Log.e(Constants.TAG, "MailActivity::onNavigationRequested: IMAGE url decoding problem: " + e.getMessage());
+				return false;
+			}
+		}
+
 		if (navigationType == NavigationType.MAIL && mailId != null) {
 			return load(true, mailId, null, null);
 		}
 
 		return super.onNavigationRequested(navigationType, url, discussionId, writeupId, mailId);
+	}
+
+	private boolean gallery(String url) {
+		Bundle info = new Bundle();
+		info.putLong(Constants.KEY_WU_ID, 0);
+		info.putString(Constants.KEY_NICK, "");
+		info.putLong(Constants.KEY_TIME, 0);
+		info.putInt(Constants.KEY_RATING, 0);
+		info.putBoolean(Constants.KEY_UNREAD, false);
+		info.putString(Constants.KEY_URL, url);
+		info.putString(Constants.KEY_THUMBNAIL_URL, url);
+
+		Bundle[] infoArray = new Bundle[] { info };
+		Intent intent = new Intent(MailActivity.this, GalleryActivity.class);
+		intent.putExtra(Constants.KEY_URL, url);
+		intent.putExtra(Constants.KEY_BUNDLE_ARRAY, infoArray);
+
+		startActivityForResult(intent, Constants.REQUEST_GALLERY);
+		overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+
+		return true;
 	}
 
 	@Override
