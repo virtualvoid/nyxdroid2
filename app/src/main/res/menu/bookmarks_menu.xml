@@ -27,6 +27,12 @@
         app:showAsAction="ifRoom|collapseActionView"
         android:title="@string/bookmarks_search"/>
     <item
+        android:id="@+id/bookmarks_unread_only"
+        android:checkable="true"
+        android:icon="@drawable/ic_history_filter_off"
+        app:showAsAction="always"
+        android:title="@string/history_show_unread"/>
+    <item
         android:id="@+id/refresh"
         android:icon="?attr/reload_icon"
         app:showAsAction="always"

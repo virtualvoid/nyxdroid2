@@ -93,6 +93,9 @@
     <string name="always_display">Vždy zobrazovat</string>
     <string name="read_bookmarks">Přečtené sledované diskuze</string>
     <string name="read_history">Přečtené v historii</string>
+    <string name="history_show_unread">Zobrazit jen nepřečtené diskuze</string>
+    <string name="history_show_all">Zobrazit celou historii</string>
+    <string name="bookmarks_show_all">Zobrazit všechny sledované diskuze</string>
     <string name="app_name_events">události</string>
     <string name="app_name_event_detail">...</string>
     <string name="event_details">Detaily</string>

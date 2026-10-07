@@ -93,6 +93,9 @@
     <string name="always_display">Always display</string>
     <string name="read_bookmarks">Read in bookmarks</string>
     <string name="read_history">Read in history</string>
+    <string name="history_show_unread">Show only unread discussions</string>
+    <string name="history_show_all">Show all history</string>
+    <string name="bookmarks_show_all">Show all followed discussions</string>
     <string name="app_name_events">events</string>
     <string name="app_name_event_detail">...</string>
     <string name="event_details">Details</string>
