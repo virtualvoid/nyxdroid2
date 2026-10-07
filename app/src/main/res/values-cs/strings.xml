@@ -151,6 +151,9 @@
     <string name="timeformat_today" formatted="false">dnes %02d:%02d:%02d</string>
     <string name="timeformat_normal" formatted="false">%d.%d.%d %02d:%02d:%02d</string>
     <string name="ge_openbrowser">Otevřít</string>
+    <string name="gallery_loading_more">Načítání dalších obrázků...</string>
+    <string name="gallery_load_more_failed">Další obrázky se nepodařilo načíst.</string>
+    <string name="gallery_no_more_images">Žádné další obrázky.</string>
     <string name="unread_appearance">Styl nepřečtených příspěvků</string>
     <string name="choose_color_or_standard_settings">Vyberte si barvu, nebo standardní nastavení</string>
     <string name="cant_open_it">Neumím to otevřít.</string>

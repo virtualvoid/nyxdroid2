@@ -10,4 +10,45 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
+    <LinearLayout
+        android:id="@+id/gallery_page_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#CC000000"
+        android:gravity="center_vertical"
+        android:minHeight="48dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/gallery_page_progress"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="12dp" />
+
+        <TextView
+            android:id="@+id/gallery_page_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/gallery_page_retry"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/refresh"
+            android:src="?attr/reload_icon"
+            android:tint="#FFFFFF"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
 </RelativeLayout>
