@@ -77,6 +77,8 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
     private long id;
     private Long requestedLastWuId;
     private String name;
+    private String galleryFilterUser;
+    private String galleryFilterContents;
     private boolean booked;
     private boolean canWrite;
     private boolean canDelete;
@@ -712,17 +714,21 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
         Writeup startWriteup = null;
         int startWriteupPosition = 0;
         boolean startUrlFound = startUrl == null;
+        long oldestPostId = Long.MAX_VALUE;
 
         ArrayList<Writeup> writeupList = adapter.getItems();
         for (int i = 0; i < writeupList.size(); i++) {
             Writeup wu = writeupList.get(i);
-            if (startWriteupId != null && wu.Id == startWriteupId) {
+            if (wu.Id > 0) {
+                oldestPostId = Math.min(oldestPostId, wu.Id);
+            }
+            if (startWriteupId != null && startWriteupId.equals(wu.Id)) {
                 startWriteup = wu;
                 startWriteupPosition = infoBundleList.size();
             }
 
             ArrayList<Bundle> infoWu = wu.allImages();
-            if (startUrl != null && (startWriteupId == null || wu.Id == startWriteupId)) {
+            if (startUrl != null && (startWriteupId == null || startWriteupId.equals(wu.Id))) {
                 for (Bundle info : infoWu) {
                     if (startUrl.equalsIgnoreCase(info.getString(Constants.KEY_URL))) {
                         startUrlFound = true;
@@ -766,6 +772,10 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
         }
 
         intent.putExtra(Constants.KEY_BUNDLE_ARRAY, infoArray);
+        intent.putExtra(Constants.KEY_ID, id);
+        intent.putExtra(Constants.KEY_GALLERY_LAST_POST_ID, oldestPostId == Long.MAX_VALUE ? 0 : oldestPostId);
+        intent.putExtra(Constants.KEY_GALLERY_FILTER_USER, galleryFilterUser);
+        intent.putExtra(Constants.KEY_GALLERY_FILTER_CONTENTS, galleryFilterContents);
         startActivityForResult(intent, Constants.REQUEST_GALLERY);
         overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
 
@@ -778,7 +788,12 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
         }
 
         int position = adapter.getItemPosition(wuId);
-        getListView().setSelection(position);
+        if (position >= 0) {
+            getListView().setSelection(position);
+        } else {
+            // The gallery can now reach posts that are not in the discussion's current page.
+            load(id, wuId, true);
+        }
     }
 
     private void vote(WriteupQuery query) {
@@ -873,6 +888,8 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
             WriteupQuery query = (WriteupQuery) getTag();
             WriteupsActivity context = (WriteupsActivity) getContext();
 
+            galleryFilterUser = query.FilterUser;
+            galleryFilterContents = query.FilterContents;
             if (adapter == null || query.NavigatingOutside || query.Direction == WriteupDirection.WRITEUP_DIRECTION_NEWEST) {
                 adapter = new WriteupAdapter(context, output.Writeups);
                 context.setListAdapter(adapter);
@@ -887,7 +904,9 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
                 getListView().setSelection(position);
 
                 if (position == -1) {
-                    previousPositions.pop();
+                    if (!previousPositions.isEmpty()) {
+                        previousPositions.pop();
+                    }
                     Toast.makeText(context, "Uhm...", Toast.LENGTH_SHORT).show();
                 }
             }

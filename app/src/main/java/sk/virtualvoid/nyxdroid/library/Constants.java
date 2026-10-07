@@ -40,6 +40,9 @@ public class Constants {
     public static final String KEY_THUMBNAIL_URL = "ThumbnailUrl";
     public static final String KEY_UNREAD = "Unread";
     public static final String KEY_BUNDLE_ARRAY = "bundleArray";
+    public static final String KEY_GALLERY_LAST_POST_ID = "galleryLastPostId";
+    public static final String KEY_GALLERY_FILTER_USER = "galleryFilterUser";
+    public static final String KEY_GALLERY_FILTER_CONTENTS = "galleryFilterContents";
     public static final String KEY_VOTING_RESULT = "wuVoteResult";
     public static final String KEY_ACTIVITY_COUNT = "baseActivityActivityCount";
 

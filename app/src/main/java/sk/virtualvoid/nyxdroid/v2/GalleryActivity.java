@@ -1,6 +1,5 @@
 package sk.virtualvoid.nyxdroid.v2;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipData.Item;
@@ -18,21 +17,30 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
 import android.widget.Toast;
+import android.widget.TextView;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 import sk.virtualvoid.core.CoreUtility;
+import sk.virtualvoid.core.Task;
+import sk.virtualvoid.core.TaskListener;
+import sk.virtualvoid.core.TaskManager;
 import sk.virtualvoid.core.widgets.CustomViewPager;
 import sk.virtualvoid.nyxdroid.library.Constants;
+import sk.virtualvoid.nyxdroid.library.Constants.WriteupDirection;
+import sk.virtualvoid.nyxdroid.v2.data.SuccessResponse;
+import sk.virtualvoid.nyxdroid.v2.data.WriteupResponse;
+import sk.virtualvoid.nyxdroid.v2.data.dac.WriteupDataAccess;
+import sk.virtualvoid.nyxdroid.v2.data.query.WriteupQuery;
+import sk.virtualvoid.nyxdroid.v2.internal.GalleryState;
 import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
 import uk.co.senab.photoview.PhotoView;
 
@@ -46,6 +54,11 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 	private Bundle firstItem;
 	private Bundle currentItem;
 	private boolean displayVotingThumbs;
+	private GalleryState galleryState;
+	private CustomViewPager viewPager;
+	private ImagePagerAdapter imageAdapter;
+	private Task<WriteupQuery, SuccessResponse<WriteupResponse>> pageTask;
+	private boolean galleryActive;
 
 	@Override
 	protected boolean useSlidingMenu() {
@@ -64,48 +77,36 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		displayVotingThumbs = prefs.getBoolean("display_voting_thumbs", true);
 
-		Intent launchIntent = getIntent();
-		Bundle launchExtras = launchIntent.getExtras();
-
-		Parcelable[] parcelableArray = launchExtras.getParcelableArray(Constants.KEY_BUNDLE_ARRAY);
-
-		final Bundle[] infoArray = new Bundle[parcelableArray.length];
-		for (int i = 0; i < parcelableArray.length; i++) {
-			infoArray[i] = (Bundle) parcelableArray[i];
-		}
-
-		int position = 0;
-		if (launchExtras.containsKey(Constants.KEY_WU_ID)) {
-			long writeupId = launchExtras.getLong(Constants.KEY_WU_ID);
-			for (int index = 0; index < infoArray.length; index++) {
-				Bundle test = infoArray[index];
-				if (test.containsKey(Constants.KEY_WU_ID) && test.getLong(Constants.KEY_WU_ID) == writeupId) {
-					position += index;
-					break;
+		galleryState = new ViewModelProvider(this).get(GalleryState.class);
+		if (!galleryState.initialized) {
+			Bundle launchExtras = getIntent().getExtras();
+			Parcelable[] parcelableArray = launchExtras.getParcelableArray(Constants.KEY_BUNDLE_ARRAY);
+			if (parcelableArray != null) {
+				for (Parcelable item : parcelableArray) {
+					galleryState.images.add((Bundle) item);
 				}
 			}
+			galleryState.discussionId = launchExtras.getLong(Constants.KEY_ID);
+			galleryState.lastWriteupId = launchExtras.getLong(Constants.KEY_GALLERY_LAST_POST_ID);
+			galleryState.filterUser = launchExtras.getString(Constants.KEY_GALLERY_FILTER_USER);
+			galleryState.filterContents = launchExtras.getString(Constants.KEY_GALLERY_FILTER_CONTENTS);
+			galleryState.hasMore = galleryState.discussionId > 0 && galleryState.lastWriteupId > 0;
+			galleryState.position = findStartPosition(launchExtras);
+			galleryState.initialized = true;
 		}
-
-		if (launchExtras.containsKey(Constants.KEY_URL)) {
-			String url = launchExtras.getString(Constants.KEY_URL);
-
-			for (int index = position, counter = 0; index < infoArray.length; index++, counter++) {
-				Bundle test = infoArray[index];
-				if (test.containsKey(Constants.KEY_URL) && test.getString(Constants.KEY_URL).equalsIgnoreCase(url)) {
-					if (index != position) {
-						position += counter;
-					}
-					break;
-				}
-			}
+		if (galleryState.images.isEmpty()) {
+			finish();
+			return;
 		}
-
-		CustomViewPager viewPager = (CustomViewPager) findViewById(R.id.gallery_vp);
-		viewPager.setAdapter(new ImagePagerAdapter(infoArray, this));
+		viewPager = (CustomViewPager) findViewById(R.id.gallery_vp);
+		imageAdapter = new ImagePagerAdapter(galleryState.images, this);
+		viewPager.setAdapter(imageAdapter);
 		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageSelected(int page) {
-				buildTitle(infoArray[page]);
+				galleryState.position = page;
+				buildTitle(galleryState.images.get(page));
+				loadMoreIfNeeded();
 			}
 
 			@Override
@@ -117,8 +118,105 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 			}
 		});
 
-		buildTitle(firstItem = infoArray[0]);
-		viewPager.setCurrentItem(position);
+		firstItem = galleryState.images.get(0);
+		buildTitle(galleryState.images.get(galleryState.position));
+		viewPager.setCurrentItem(galleryState.position);
+		findViewById(R.id.gallery_page_retry).setOnClickListener(view -> {
+			galleryState.loadFailed = false;
+			loadMoreIfNeeded();
+		});
+		updatePageStatus();
+	}
+
+	private int findStartPosition(Bundle extras) {
+		int position = 0;
+		if (extras.containsKey(Constants.KEY_WU_ID)) {
+			for (int index = 0; index < galleryState.images.size(); index++) {
+				Bundle image = galleryState.images.get(index);
+				if (image.containsKey(Constants.KEY_WU_ID) && image.getLong(Constants.KEY_WU_ID) == extras.getLong(Constants.KEY_WU_ID)) {
+					position = index;
+					break;
+				}
+			}
+		}
+		String url = extras.getString(Constants.KEY_URL);
+		if (url != null) {
+			for (int index = position; index < galleryState.images.size(); index++) {
+				if (url.equalsIgnoreCase(galleryState.images.get(index).getString(Constants.KEY_URL))) {
+					return index;
+				}
+			}
+		}
+		return position;
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		galleryActive = true;
+		if (viewPager != null) {
+			loadMoreIfNeeded();
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		galleryActive = false;
+		TaskManager.killIfNeeded(pageTask);
+		pageTask = null;
+		super.onPause();
+	}
+
+	private void loadMoreIfNeeded() {
+		if (!galleryActive || pageTask != null || !galleryState.shouldLoadMore()) {
+			updatePageStatus();
+			return;
+		}
+		WriteupQuery query = new WriteupQuery();
+		query.Id = galleryState.discussionId;
+		query.LastId = galleryState.lastWriteupId;
+		query.Direction = WriteupDirection.WRITEUP_DIRECTION_OLDER;
+		query.FilterUser = galleryState.filterUser;
+		query.FilterContents = galleryState.filterContents;
+		pageTask = WriteupDataAccess.getWriteups(this, new TaskListener<SuccessResponse<WriteupResponse>>() {
+			@Override
+			public void done(SuccessResponse<WriteupResponse> response) {
+				try {
+					galleryState.appendOlderPosts(response.getData().Writeups);
+				} catch (RuntimeException error) {
+					handleError(error);
+					return;
+				}
+				pageTask = null;
+				imageAdapter.notifyDataSetChanged();
+				updatePageStatus();
+				// Keep searching through text-only pages while the user is still near the end.
+				viewPager.post(() -> loadMoreIfNeeded());
+			}
+
+			@Override
+			public void handleError(Throwable error) {
+				pageTask = null;
+				galleryState.loadFailed = true;
+				Log.e(Constants.TAG, "Unable to load older gallery posts", error);
+				updatePageStatus();
+			}
+		});
+		updatePageStatus();
+		TaskManager.startTask(pageTask, query);
+	}
+
+	private void updatePageStatus() {
+		boolean loadingPage = pageTask != null;
+		boolean atEnd = galleryState.position == galleryState.images.size() - 1;
+		boolean visible = atEnd && galleryState.discussionId > 0
+				&& (loadingPage || galleryState.loadFailed || !galleryState.hasMore);
+		findViewById(R.id.gallery_page_status).setVisibility(visible ? View.VISIBLE : View.GONE);
+		findViewById(R.id.gallery_page_progress).setVisibility(loadingPage ? View.VISIBLE : View.GONE);
+		findViewById(R.id.gallery_page_retry).setVisibility(galleryState.loadFailed ? View.VISIBLE : View.GONE);
+		TextView label = (TextView) findViewById(R.id.gallery_page_message);
+		label.setText(loadingPage ? R.string.gallery_loading_more
+				: galleryState.loadFailed ? R.string.gallery_load_more_failed : R.string.gallery_no_more_images);
 	}
 
 	@Override
@@ -168,6 +266,18 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		pageTask = null;
+	}
+
+	@Override
+	protected void onDestroy() {
+		TaskManager.cancelTasks(this);
+		super.onDestroy();
+	}
+
 	private boolean viewInBrowser() {
 		if (!CoreUtility.launchBrowser(this, currentItem.getString(Constants.KEY_URL))) {
 			Toast.makeText(this, R.string.cant_open_it, Toast.LENGTH_SHORT).show();
@@ -202,39 +312,26 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 	}
 
 	private class ImagePagerAdapter extends PagerAdapter {
-		private Bundle[] model;
-		private Activity context;
-		//private Pattern pattern;
-		//private Matcher matcher;
-		private Drawable placeholder;
-		//private ImageLoader imageLoader;
+		private final ArrayList<Bundle> model;
+		private final Activity context;
+		private final Drawable placeholder;
 
-		public ImagePagerAdapter(Bundle[] model, Activity context) {
+		public ImagePagerAdapter(ArrayList<Bundle> model, Activity context) {
 			this.model = model;
 			this.context = context;
 
-			//this.pattern = Pattern.compile("([^\\s]+(\\.(?i)(gif))$)", Pattern.CASE_INSENSITIVE);
 			this.placeholder = context.getResources().getDrawable(R.drawable.placeholder);
-			//this.imageLoader = ImageLoader.getInstance();
 		}
 
 		@Override
 		public int getCount() {
-			return model.length;
+			return model.size();
 		}
 
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {
-			View view = null;
-			final String url = model[position].getString(Constants.KEY_URL);
-
-//			matcher = pattern.matcher(url);
-//			if (matcher.matches()) {
-//				view = createMovieViewer(url);
-//			} else {
-				view = createPhotoViewer(url);
-//			}
-
+			final String url = model.get(position).getString(Constants.KEY_URL);
+			PhotoView view = createPhotoViewer(url);
 			view.setOnLongClickListener(GalleryActivity.this);
 
 			container.addView(view);
@@ -244,75 +341,24 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 
 		private PhotoView createPhotoViewer(final String url) {
 			final PhotoView photoView = new PhotoView(context);
-			//photoView.setImageDrawable(placeholder);
 
 			Glide.with(context)
 					.load(url)
+					.diskCacheStrategy(DiskCacheStrategy.SOURCE)
 					.fitCenter()
 					.dontAnimate()
 					.placeholder(placeholder)
 					.into(photoView);
 
-//			imageLoader.displayImage(url, photoView, new ImageLoadingListener() {
-//				@Override
-//				public void onLoadingStarted(String url, View view) {
-//					setProgressBarIndeterminateVisibility(true);
-//				}
-//
-//				@Override
-//				public void onLoadingFailed(String url, View view, FailReason failReason) {
-//					setProgressBarIndeterminateVisibility(false);
-//				}
-//
-//				@Override
-//				public void onLoadingComplete(String url, View view, Bitmap bitmap) {
-//					setProgressBarIndeterminateVisibility(false);
-//				}
-//
-//				@Override
-//				public void onLoadingCancelled(String url, View view) {
-//					setProgressBarIndeterminateVisibility(false);
-//				}
-//			});
-
 			return photoView;
 		}
-
-//		@SuppressLint("SetJavaScriptEnabled")
-//		private WebView createMovieViewer(final String url) {
-//			final WebView view = new WebView(context);
-//
-//			view.setBackgroundColor(0x00000000);
-//			view.setLayerType(WebView.LAYER_TYPE_HARDWARE, null);
-//			view.getSettings().setJavaScriptEnabled(true);
-//			view.getSettings().setBuiltInZoomControls(true);
-//
-//			view.setWebChromeClient(new WebChromeClient() {
-//				@Override
-//				public void onProgressChanged(WebView view, int newProgress) {
-//					super.onProgressChanged(view, newProgress);
-//					view.invalidate();
-//					setProgressBarIndeterminateVisibility(false);
-//				}
-//			});
-//
-//			view.loadUrl(url);
-//
-//			setProgressBarIndeterminateVisibility(true);
-//
-//			return view;
-//		}
 
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
 			View view = (View) object;
 
-//			if (view instanceof WebView) {
-//				((WebView)view).freeMemory();
-//			}
-
 			if (view instanceof PhotoView) {
-				// what now ?
+				Glide.clear((PhotoView) view);
 			}
 
 			container.removeView(view);

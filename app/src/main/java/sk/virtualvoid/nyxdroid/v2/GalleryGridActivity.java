@@ -14,6 +14,7 @@ import sk.virtualvoid.nyxdroid.v2.data.WriteupResponse;
 import sk.virtualvoid.nyxdroid.v2.data.adapters.GalleryGridAdapter;
 import sk.virtualvoid.nyxdroid.v2.data.dac.WriteupDataAccess;
 import sk.virtualvoid.nyxdroid.v2.data.query.WriteupQuery;
+import sk.virtualvoid.nyxdroid.v2.internal.NavigationHandler;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -95,6 +96,9 @@ public class GalleryGridActivity extends BaseActivity {
 				intent.putExtra(Constants.KEY_WU_ID, currentWriteupId);
 				intent.putExtra(Constants.KEY_URL, currentUrl);
 				intent.putExtra(Constants.KEY_BUNDLE_ARRAY, bundlesArray);
+				intent.putExtra(Constants.KEY_ID, discussionId);
+				intent.putExtra(Constants.KEY_GALLERY_LAST_POST_ID, lastWriteupId == null ? 0L : lastWriteupId.longValue());
+				intent.putExtra(Constants.KEY_GALLERY_FILTER_CONTENTS, "img src");
 
 				startActivityForResult(intent, Constants.REQUEST_GALLERY);
 				overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
@@ -146,7 +150,11 @@ public class GalleryGridActivity extends BaseActivity {
 		}
 
 		int position = adapter.getItemPosition(wuId);
-		gridView.setSelection(position);
+		if (position >= 0) {
+			gridView.setSelection(position);
+		} else {
+			NavigationHandler.startNavigateTopic(this, WriteupsActivity.class, discussionId, wuId);
+		}
 	}
 
 	private void load() {
