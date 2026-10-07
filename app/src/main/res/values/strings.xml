@@ -151,6 +151,10 @@
     <string name="timeformat_today" formatted="false">dnes %02d:%02d:%02d</string>
     <string name="timeformat_normal" formatted="false">%d.%d.%d %02d:%02d:%02d</string>
     <string name="ge_openbrowser">Open</string>
+    <string name="gallery_download">Download image</string>
+    <string name="gallery_download_saved">Image saved to: %1$s</string>
+    <string name="gallery_download_failed">Unable to save image.</string>
+    <string name="gallery_download_permission_denied">Allow storage access to save the image.</string>
     <string name="unread_appearance">Unread write-up style</string>
     <string name="choose_color_or_standard_settings">Please choose standard settings or colored.</string>
     <string name="cant_open_it">I can\'t open it.</string>

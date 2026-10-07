@@ -716,13 +716,13 @@ public class WriteupsActivity extends BaseActivity implements IVotingHandler, IP
         ArrayList<Writeup> writeupList = adapter.getItems();
         for (int i = 0; i < writeupList.size(); i++) {
             Writeup wu = writeupList.get(i);
-            if (startWriteupId != null && wu.Id == startWriteupId) {
+            if (startWriteupId != null && startWriteupId.equals(wu.Id)) {
                 startWriteup = wu;
                 startWriteupPosition = infoBundleList.size();
             }
 
             ArrayList<Bundle> infoWu = wu.allImages();
-            if (startUrl != null && (startWriteupId == null || wu.Id == startWriteupId)) {
+            if (startUrl != null && (startWriteupId == null || startWriteupId.equals(wu.Id))) {
                 for (Bundle info : infoWu) {
                     if (startUrl.equalsIgnoreCase(info.getString(Constants.KEY_URL))) {
                         startUrlFound = true;

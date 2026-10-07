@@ -3,6 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/ge_download"
+        android:icon="@drawable/ic_gallery_download"
+        android:title="@string/gallery_download"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/ge_openbrowser"
         android:icon="?attr/openbrowser"
         android:title="@string/ge_openbrowser"

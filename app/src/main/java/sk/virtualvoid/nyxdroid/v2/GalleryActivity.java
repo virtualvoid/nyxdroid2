@@ -1,5 +1,6 @@
 package sk.virtualvoid.nyxdroid.v2;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
@@ -9,8 +10,10 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -24,16 +27,24 @@ import android.widget.Toast;
 
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import sk.virtualvoid.core.CoreUtility;
+import sk.virtualvoid.core.ITaskQuery;
+import sk.virtualvoid.core.Task;
+import sk.virtualvoid.core.TaskListener;
+import sk.virtualvoid.core.TaskManager;
 import sk.virtualvoid.core.widgets.CustomViewPager;
 import sk.virtualvoid.nyxdroid.library.Constants;
 import sk.virtualvoid.nyxdroid.v2.internal.NavigationType;
+import sk.virtualvoid.nyxdroid.v2.internal.GalleryImageSaver;
 import uk.co.senab.photoview.PhotoView;
 
 
@@ -43,9 +54,13 @@ import uk.co.senab.photoview.PhotoView;
  * 
  */
 public class GalleryActivity extends BaseActivity implements View.OnLongClickListener {
+	private static final int REQUEST_SAVE_IMAGE_PERMISSION = 65;
+	private static final String STATE_PENDING_SAVE_URL = "pending_save_url";
 	private Bundle firstItem;
 	private Bundle currentItem;
 	private boolean displayVotingThumbs;
+	private boolean savingImage;
+	private String pendingSaveUrl;
 
 	@Override
 	protected boolean useSlidingMenu() {
@@ -60,6 +75,9 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (savedInstanceState != null) {
+			pendingSaveUrl = savedInstanceState.getString(STATE_PENDING_SAVE_URL);
+		}
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		displayVotingThumbs = prefs.getBoolean("display_voting_thumbs", true);
@@ -156,8 +174,16 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 	}
 
 	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu.findItem(R.id.ge_download).setEnabled(!savingImage && pendingSaveUrl == null);
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+			case R.id.ge_download:
+				return downloadImage();
 			case R.id.ge_openbrowser:
 				return viewInBrowser();
 			case R.id.ge_begin:
@@ -166,6 +192,77 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 				return toCurrent();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private boolean downloadImage() {
+		if (savingImage || pendingSaveUrl != null || currentItem == null) {
+			return true;
+		}
+		String url = currentItem.getString(Constants.KEY_URL);
+		if (url == null || url.isEmpty()) {
+			Toast.makeText(this, R.string.gallery_download_failed, Toast.LENGTH_LONG).show();
+			return true;
+		}
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+				&& ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			pendingSaveUrl = url;
+			invalidateOptionsMenu();
+			ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQUEST_SAVE_IMAGE_PERMISSION);
+		} else {
+			startImageDownload(url);
+		}
+		return true;
+	}
+
+	private void startImageDownload(String url) {
+		savingImage = true;
+		invalidateOptionsMenu();
+		Task<ITaskQuery, String> task = new Task<>(this, new GalleryImageSaver(getApplicationContext(), url), new TaskListener<String>() {
+			@Override
+			public void done(String path) {
+				savingImage = false;
+				invalidateOptionsMenu();
+				Toast.makeText(GalleryActivity.this, getString(R.string.gallery_download_saved, path), Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void handleError(Throwable error) {
+				savingImage = false;
+				invalidateOptionsMenu();
+				Log.e(Constants.TAG, "Unable to save gallery image", error);
+				Toast.makeText(GalleryActivity.this, R.string.gallery_download_failed, Toast.LENGTH_LONG).show();
+			}
+		});
+		TaskManager.startTask(task, null);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if (requestCode == REQUEST_SAVE_IMAGE_PERMISSION) {
+			String url = pendingSaveUrl;
+			pendingSaveUrl = null;
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && url != null) {
+				startImageDownload(url);
+			} else {
+				invalidateOptionsMenu();
+				Toast.makeText(this, R.string.gallery_download_permission_denied, Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString(STATE_PENDING_SAVE_URL, pendingSaveUrl);
+		savingImage = false;
+		invalidateOptionsMenu();
+	}
+
+	@Override
+	protected void onDestroy() {
+		TaskManager.cancelTasks(this);
+		super.onDestroy();
 	}
 
 	private boolean viewInBrowser() {
@@ -248,6 +345,7 @@ public class GalleryActivity extends BaseActivity implements View.OnLongClickLis
 
 			Glide.with(context)
 					.load(url)
+					.diskCacheStrategy(DiskCacheStrategy.SOURCE)
 					.fitCenter()
 					.dontAnimate()
 					.placeholder(placeholder)
